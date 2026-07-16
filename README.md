@@ -24,7 +24,11 @@ wsl --install
 ```bash
 wsl
 ```
-### 3. Instal Composer di WSL
+### 3. Masuk ke root
+```bash
+cd ~
+```
+### 4. Instal Composer di WSL
 ```bash
 sudo apt install composer
 ```
