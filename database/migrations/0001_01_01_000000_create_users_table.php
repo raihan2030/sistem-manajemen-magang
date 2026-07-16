@@ -6,17 +6,31 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
+        Schema::create('roles', function (Blueprint $table) {
+            $table->id();
+            $table->string('role_name', 50)->unique();
+        });
+
+        Schema::create('skpd', function (Blueprint $table) {
+            $table->id();
+            $table->string('kode_skpd', 50)->unique();
+            $table->string('nama_skpd', 150);
+            $table->integer('kuota_total')->default(0);
+            $table->integer('sisa_kuota')->default(0);
+        });
+
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('role_id')->constrained('roles');
+            $table->foreignId('skpd_id')->nullable()->constrained('skpd');
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->enum('tipe_user', ['mahasiswa', 'siswa'])->nullable();
+            $table->string('nomor_identitas', 30)->nullable()->unique();
             $table->rememberToken();
             $table->timestamps();
         });
@@ -37,13 +51,12 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('users');
+        Schema::dropIfExists('skpd');
+        Schema::dropIfExists('roles');
     }
 };
