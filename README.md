@@ -1,58 +1,82 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistem Manajemen Magang Berbasis Website (SKPD Pemerintah Kota Banjarmasin)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Proyek ini dikembangkan menggunakan framework **Laravel 13** dengan **PHP 8.4** dan diisolasi sepenuhnya di dalam lingkungan **Docker (Laravel Sail)** untuk menjaga konsistensi *environment* antar pengembang.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🛠️ Prasyarat (Prerequisites)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Sebelum memulai, pastikan mesin lokal Anda sudah terpasang:
+1. **Docker Desktop** (Sudah berjalan).
+2. **WSL 2 (Windows Subsystem for Linux)** dengan distro Ubuntu (Khusus pengguna Windows).
+3. **Git** untuk *cloning* repositori.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+*Catatan: Anda tidak memerlukan PHP atau MySQL lokal di laptop Anda. Semua sudah disediakan oleh Docker.*
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
+## Instalasi WSL
+### 1. Instal WSL (jika belum ada)
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+wsl --install
+```
+### 2. Buka WSL
+```bash
+wsl
+```
+### 3. Instal Composer di WSL
+```bash
+sudo apt install composer
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+## 🚀 Langkah Instalasi (Quick Start)
 
-## Contributing
+Ikuti langkah-langkah di bawah ini secara berurutan di dalam terminal WSL/Linux Anda:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 1. Clone Repositori
+```bash
+git clone https://github.com/raihan2030/sistem-manajemen-magang
+cd sistem-manajemen-magang
+code .
+```
 
-## Code of Conduct
+### 2. Setup File `.env`
+Buat file baru bernama `.env` di root proyek, lalu salin dan tempel seluruh konfigurasi yang diberikan developer.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 3. Install Dependensi Composer via Docker
+Jalankan temporary container berikut untuk mengunduh paket `vendor` dan Laravel Sail pertama kali:
 
-## Security Vulnerabilities
+```bash
+docker run --rm \
+    -u "$(id -u):$(id -g)" \
+    -v "$(pwd):/var/www/html" \
+    -w /var/www/html \
+    laravelsail/php84-composer:latest \
+    composer install --ignore-platform-reqs
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 4. Membuat Alias Laravel Sail
+Agar tidak perlu mengetik rute `./vendor/bin/sail` yang panjang, buatlah alias di terminal Anda:
 
-## License
+```bash
+alias sail="./vendor/bin/sail"
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 5. Nyalakan Container Docker
+Bangun dan jalankan semua ekosistem container di latar belakang:
+
+```bash
+sail up -d
+```
+
+### 6. Generate Application Key
+
+```bash
+sail artisan key:generate
+```
+
+### 7. Jalankan Migrasi Database
+
+```bash
+sail artisan migrate
+```
