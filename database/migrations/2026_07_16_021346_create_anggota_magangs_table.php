@@ -14,8 +14,10 @@ return new class extends Migration
     Schema::create('anggota_magang', function (Blueprint $table) {
         $table->id();
         $table->foreignId('pengajuan_id')->constrained('pengajuan_magang')->onDelete('cascade');
-        $table->foreignId('user_id')->constrained('users');
+        $table->string('nim_nisn', 30);
+        $table->string('nama_lengkap', 150);
         $table->string('berkas_pendukung', 255);
+        $table->string('kartu_identitas', 255);
     });
 }
 

@@ -14,8 +14,12 @@ return new class extends Migration
     Schema::create('pengajuan_magang', function (Blueprint $table) {
         $table->id();
         $table->foreignId('perwakilan_user_id')->constrained('users');
-        $table->foreignId('skpd_id')->constrained('skpd');
+        $table->foreignId('bidang_id')->constrained('bidang');
         $table->enum('status', ['Menunggu', 'Diterima', 'Ditolak', 'Revisi', 'Selesai'])->default('Menunggu');
+        $table->text('komentar_revisi')->nullable();
+        $table->date('tanggal_mulai');
+        $table->date('tanggal_selesai');
+        $table->string('nama_pembimbing', 150)->nullable();
         $table->timestamp('tanggal_pengajuan')->useCurrent();
         $table->timestamp('batas_verifikasi');
         $table->boolean('is_warned')->default(false);

@@ -17,9 +17,17 @@ return new class extends Migration
             $table->id();
             $table->string('kode_skpd', 50)->unique();
             $table->string('nama_skpd', 150);
+        });
+
+        Schema::create('bidang', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('skpd_id')->constrained('skpd')->onDelete('cascade');
+            $table->string('nama_bidang', 100);
+            $table->string('banner_path', 255)->nullable();
             $table->integer('kuota_total')->default(0);
             $table->integer('sisa_kuota')->default(0);
         });
+
 
         Schema::create('users', function (Blueprint $table) {
             $table->id();
@@ -29,8 +37,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->enum('tipe_user', ['mahasiswa', 'siswa'])->nullable();
-            $table->string('nomor_identitas', 30)->nullable()->unique();
+            $table->string('institusi_asal', 150)->nullable();
+            $table->string('jurusan_prodi', 100)->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
@@ -56,6 +64,7 @@ return new class extends Migration
         Schema::dropIfExists('sessions');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('users');
+        Schema::dropIfExists('bidang');
         Schema::dropIfExists('skpd');
         Schema::dropIfExists('roles');
     }
