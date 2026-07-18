@@ -60,11 +60,18 @@ docker run --rm \
 ```
 
 ### 4. Membuat Alias Laravel Sail
-Agar tidak perlu mengetik rute `./vendor/bin/sail` yang panjang, buatlah alias di terminal Anda:
+#### a. Agar tidak perlu mengetik rute `./vendor/bin/sail` yang panjang, buatlah alias di terminal Anda:
 
 ```bash
 alias sail="./vendor/bin/sail"
 ```
+
+#### b. Atau langsung tulis di `.bashrc`
+
+```bash
+nano ~/.bashrc
+```
+Setelah itu, paste `alias sail="./vendor/bin/sail"` di paling bawah, lalu Save.
 
 ### 5. Nyalakan Container Docker
 Bangun dan jalankan semua ekosistem container di latar belakang:
