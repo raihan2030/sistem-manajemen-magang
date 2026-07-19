@@ -17,13 +17,13 @@ return new class extends Migration
             $table->id();
             $table->string('kode_skpd', 50)->unique();
             $table->string('nama_skpd', 150);
+            $table->string('banner_path', 255)->nullable();
         });
 
         Schema::create('bidang', function (Blueprint $table) {
             $table->id();
             $table->foreignId('skpd_id')->constrained('skpd')->onDelete('cascade');
             $table->string('nama_bidang', 100);
-            $table->string('banner_path', 255)->nullable();
             $table->integer('kuota_total')->default(0);
             $table->integer('sisa_kuota')->default(0);
         });

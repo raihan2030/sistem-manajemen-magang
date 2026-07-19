@@ -9,7 +9,7 @@ class Skpd extends Model
 {
     protected $table = 'skpd';
     public $timestamps = false;
-    protected $fillable = ['kode_skpd', 'nama_skpd'];
+    protected $fillable = ['kode_skpd', 'nama_skpd', 'banner_path'];
 
     public function bidang(): HasMany
     {

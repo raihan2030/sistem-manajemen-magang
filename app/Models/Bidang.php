@@ -10,7 +10,7 @@ class Bidang extends Model
 {
     protected $table = 'bidang';
     public $timestamps = false;
-    protected $fillable = ['skpd_id', 'nama_bidang', 'banner_path', 'kuota_total', 'sisa_kuota'];
+    protected $fillable = ['skpd_id', 'nama_bidang', 'kuota_total', 'sisa_kuota'];
 
     public function skpd(): BelongsTo
     {
