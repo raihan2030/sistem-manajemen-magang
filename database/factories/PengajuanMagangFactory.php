@@ -27,6 +27,7 @@ class PengajuanMagangFactory extends Factory
             'bidang_id' => Bidang::inRandomOrder('')->first()->id ?? 1,
             'status' => fake()->randomElement(['Menunggu', 'Diterima', 'Ditolak', 'Revisi', 'Selesai']),
             'komentar_revisi' => null,
+            'surat_permohonan' => 'documents/surat_permohonan_dummy.pdf',
             'tanggal_mulai' => fake()->dateTimeBetween('now', '+1 month')->format('Y-m-d'),
             'tanggal_selesai' => fake()->dateTimeBetween('+2 months', '+4 months')->format('Y-m-d'),
             'nama_pembimbing' => fake()->name(),

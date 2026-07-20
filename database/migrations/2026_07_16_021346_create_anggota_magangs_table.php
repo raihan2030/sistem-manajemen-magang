@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('pengajuan_id')->constrained('pengajuan_magang')->onDelete('cascade');
             $table->string('nim_nisn', 30);
             $table->string('nama_lengkap', 150);
-            $table->string('surat_permohonan', 255);
             $table->string('kartu_identitas', 255);
         });
     }

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('bidang_id')->constrained('bidang');
             $table->enum('status', ['Menunggu', 'Diterima', 'Ditolak', 'Revisi', 'Selesai'])->default('Menunggu');
             $table->text('komentar_revisi')->nullable();
+            $table->string('surat_permohonan', 255);
             $table->date('tanggal_mulai');
             $table->date('tanggal_selesai');
             $table->string('nama_pembimbing', 150)->nullable();
