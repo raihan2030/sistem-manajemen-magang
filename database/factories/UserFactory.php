@@ -30,16 +30,43 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            
+            'role_id' => 3,
+            'skpd_id' => null,
+            'institusi_asal' => fake()->randomElement([
+                'Universitas Lambung Mangkurat',
+                'Politeknik Negeri Banjarmasin',
+                'UNISKA MAB Banjarmasin',
+                'SMKN 2 Banjarmasin',
+                'SMKN 5 Banjarmasin',
+            ]),
+            'jurusan_prodi' => fake()->randomElement([
+                'Teknik Informatika',
+                'Sistem Informasi',
+                'Rekayasa Perangkat Lunak',
+                'Teknik Komputer Jaringan',
+                'Manajemen Informatika',
+            ]),
         ];
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
-    public function unverified(): static
+    public function adminSkpd(int $skpdId): static
     {
         return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
+            'role_id' => 2,
+            'skpd_id' => $skpdId,
+            'institusi_asal' => null,
+            'jurusan_prodi' => null,
+        ]);
+    }
+
+    public function superadmin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role_id' => 1,
+            'skpd_id' => null,
+            'institusi_asal' => null,
+            'jurusan_prodi' => null,
         ]);
     }
 }
