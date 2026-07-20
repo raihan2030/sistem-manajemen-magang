@@ -14,7 +14,7 @@ class AnggotaMagang extends Model
     protected $table = 'anggota_magang';
     public $timestamps = false;
     
-    protected $fillable = ['pengajuan_id', 'nim_nisn', 'nama_lengkap', 'berkas_pendukung', 'kartu_identitas'];
+    protected $fillable = ['pengajuan_id', 'nim_nisn', 'nama_lengkap', 'surat_permohonan', 'kartu_identitas'];
 
     public function pengajuan(): BelongsTo
     {

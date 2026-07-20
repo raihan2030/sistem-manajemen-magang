@@ -20,7 +20,7 @@ class AnggotaMagangFactory extends Factory
         return [
             'nim_nisn' => fake()->unique()->numerify('##########'),
             'nama_lengkap' => fake()->name(),
-            'berkas_pendukung' => 'documents/cv_dummy.pdf',
+            'surat_permohonan' => 'documents/cv_dummy.pdf',
             'kartu_identitas' => 'documents/ktm_dummy.jpg',
         ];
     }
