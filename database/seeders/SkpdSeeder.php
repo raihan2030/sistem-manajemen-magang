@@ -77,7 +77,7 @@ class SkpdSeeder extends Seeder
             [
                 'kode_skpd' => '5.01.0.00.0.00.01.0000',
                 'nama_skpd' => 'Badan Perencanaan, Penelitian, dan Pengembangan Daerah',
-                'banner_path' => 'banners/bapperinda-header.jpg',
+                'banner_path' => 'banners/bappeda-header.jpg',
             ],
             [
                 'kode_skpd' => '5.02.0.00.0.00.01.0000',
