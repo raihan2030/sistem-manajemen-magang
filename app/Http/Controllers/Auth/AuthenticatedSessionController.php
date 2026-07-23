@@ -16,25 +16,22 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(): View
     {
-        return view('auth.login');
+        // Arahkan ke tampilan Blade milik temanmu
+        return view('pages.auth.login');
     }
 
-    /**
-     * Handle an incoming authentication request.
-     */
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
-
         $request->session()->regenerate();
 
         $user = $request->user();
 
-        // Redirect berdasarkan role_id
+        // Adjust redirect route name agar sesuai dengan routes/web.php yang baru
         return match ((int) $user->role_id) {
             1 => redirect()->intended(route('superadmin.dashboard', absolute: false)),
-            2 => redirect()->intended(route('admin-skpd.dashboard', absolute: false)),
-            3 => redirect()->intended(route('pendaftaran.dashboard', absolute: false)),
+            2 => redirect()->intended(route('admin.dashboard', absolute: false)),
+            3 => redirect()->intended(route('peserta.status', absolute: false)),
             default => redirect()->intended('/'),
         };
     }
