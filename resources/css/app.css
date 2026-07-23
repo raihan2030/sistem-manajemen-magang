@@ -1,9 +1,17 @@
 @import 'tailwindcss';
 
+/* Tambahkan path ke seluruh file blade di folder resources/views */
+@source '../views/**/*.blade.php';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
+@source "../views";
 
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+    
+    /* Custom Color Palette */
+    --color-navy: #00236F;
+    --color-kuning: #FEA619;
+    --color-navlink: #444651;
 }
