@@ -82,8 +82,8 @@
 
                 <!-- Kelola Kapasitas -->
                 <a href="{{ route('admin.kapasitas.index') }}"
-                    class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition {{ request()->routeIs('admin.kapasitas') ? 'bg-[#00236F] text-white shadow-sm' : 'text-[#1f2937]/70 hover:bg-gray-100' }}">
-                    <svg class="w-5 h-5 mr-3.5 flex-shrink-0 {{ request()->routeIs('admin.kapasitas') ? 'text-white' : 'text-gray-400' }}"
+                    class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition {{ request()->routeIs('admin.kapasitas.index') ? 'bg-[#00236F] text-white shadow-sm' : 'text-[#1f2937]/70 hover:bg-gray-100' }}">
+                    <svg class="w-5 h-5 mr-3.5 flex-shrink-0 {{ request()->routeIs('admin.kapasitas.index') ? 'text-white' : 'text-gray-400' }}"
                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
