@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminKapasitasController;
 use App\Http\Controllers\PengajuanMagangController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SkpdController;
@@ -66,10 +67,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return view('pages.admin.detail_permohonan');
         })->name('permohonan.detail');
 
-        Route::get('/kapasitas', function () {
-            return view('pages.admin.kapasitas');
-        })->name('kapasitas');
+        Route::get('/kapasitas', [AdminKapasitasController::class, 'index'])->name('kapasitas.index');
 
+        Route::put('/kapasitas/{id}', [AdminKapasitasController::class, 'update'])->name('kapasitas.update');
+        
         Route::get('/notifikasi', function () {
             return view('pages.admin.notifikasi');
         })->name('notifikasi');

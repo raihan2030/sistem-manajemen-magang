@@ -81,7 +81,7 @@
                 </a>
 
                 <!-- Kelola Kapasitas -->
-                <a href="{{ route('admin.kapasitas') }}"
+                <a href="{{ route('admin.kapasitas.index') }}"
                     class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition {{ request()->routeIs('admin.kapasitas') ? 'bg-[#00236F] text-white shadow-sm' : 'text-[#1f2937]/70 hover:bg-gray-100' }}">
                     <svg class="w-5 h-5 mr-3.5 flex-shrink-0 {{ request()->routeIs('admin.kapasitas') ? 'text-white' : 'text-gray-400' }}"
                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
