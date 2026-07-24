@@ -25,7 +25,7 @@ class PengajuanMagangFactory extends Factory
         return [
             'perwakilan_user_id' => User::factory(),
             'bidang_id' => Bidang::inRandomOrder('')->first()->id ?? 1,
-            'status' => fake()->randomElement(['Menunggu', 'Diterima', 'Ditolak', 'Revisi', 'Selesai']),
+            'status' => fake()->randomElement(['Diajukan', 'Diproses', 'Diterima', 'Ditolak', 'Revisi']),
             'komentar_revisi' => null,
             'surat_permohonan' => 'documents/surat_permohonan_dummy.pdf',
             'tanggal_mulai' => fake()->dateTimeBetween('now', '+1 month')->format('Y-m-d'),

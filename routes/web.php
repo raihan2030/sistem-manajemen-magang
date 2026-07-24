@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\PengajuanMagangController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SkpdController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -9,17 +11,10 @@ use Illuminate\Support\Facades\Route;
 | 1. RUTE PUBLIK (Dapat diakses tanpa login)
 |--------------------------------------------------------------------------
 */
-Route::get('/', function () {
-    return view('pages.public.landing');
-})->name('home');
 
-Route::get('/instansi', function () {
-    return view('pages.public.skpd');
-})->name('skpd.index');
-
-Route::get('/instansi/{id}', function ($id) {
-    return view('pages.public.skpd_detail');
-})->name('skpd.detail');
+Route::get('/', [SkpdController::class, 'landing'])->name('home');
+Route::get('/skpd', [SkpdController::class, 'index'])->name('skpd.index');
+Route::get('/skpd/{id}', [SkpdController::class, 'show'])->name('skpd.show');
 
 /*
 |--------------------------------------------------------------------------
@@ -86,17 +81,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // === KHUSUS PESERTA / PERWAKILAN (Role 3) ===
     Route::middleware(['role:3'])->prefix('peserta')->name('peserta.')->group(function () {
-        Route::get('/pendaftaran', function () {
-            return view('pages.peserta.pendaftaran');
-        })->name('pendaftaran');
+        Route::get('/pendaftaran', [PengajuanMagangController::class, 'create'])->name('pendaftaran');
+        Route::post('/pendaftaran', [PengajuanMagangController::class, 'store'])->name('pendaftaran.store');
 
-        Route::get('/status', function () {
-            return view('pages.peserta.status');
-        })->name('status');
+        Route::get('/status', [PengajuanMagangController::class, 'status'])->name('status');
 
-        Route::get('/profil', function () {
-            return view('pages.peserta.profil');
-        })->name('profil');
+        Route::get('/profil', [PengajuanMagangController::class, 'profil'])->name('profil');
+        Route::patch('/profil/pembimbing/{id}', [PengajuanMagangController::class, 'updatePembimbing'])->name('profil.update-pembimbing');
     });
 
     // === PROFILE MANAGEMENT (Bawaan Breeze) ===
@@ -105,4 +96,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
