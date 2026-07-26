@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\AnggotaMagang;
 use App\Models\PengajuanMagang;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -31,16 +32,38 @@ class DatabaseSeeder extends Seeder
             'name' => 'Admin Diskominfotik',
             'email' => 'admin.kominfo@banjarmasin.go.id',
         ]);
+        User::factory()->create([
+            'name' => 'Muhammad Raihan',
+            'email' => 'mraihan@gmail.com',
+        ]);
 
-        PengajuanMagang::factory()
-            ->count(10)
-            ->create()
-            ->each(function ($pengajuan) {
-                AnggotaMagang::factory()
-                    ->count(rand(2, 4))
-                    ->create([
-                        'pengajuan_id' => $pengajuan->id
-                    ]);
-            });
+    //     PengajuanMagang::factory()
+    //         ->count(20)
+    //         // Mengatur batas_verifikasi acak pada rentang 1 - 24 jam dari sekarang untuk tiap baris
+    //         ->state(function (array $attributes) {
+    //             return [
+    //                 'batas_verifikasi' => Carbon::now('+08:00')->addMinutes(rand(60, 1440)),
+    //             ];
+    //         })
+    //         ->create()
+    //         ->each(function ($pengajuan) {
+    //             // Ambil data user yang merupakan perwakilan dari pengajuan magang ini
+    //             $user = User::find($pengajuan->perwakilan_user_id);
+
+    //             // 1. Buat Ketua/Anggota Pertama dengan data yang identik dengan user pengaju
+    //             AnggotaMagang::factory()->create([
+    //                 'pengajuan_id' => $pengajuan->id,
+    //                 'nama_lengkap' => $user->name,
+    //                 // Jika di tabel users Anda ada kolom pendukung lain, sinkronkan juga di sini:
+    //                 // 'nim_nisn' => $user->nim ?? '123456789',
+    //             ]);
+
+    //             // 2. Buat sisa anggota kelompok lainnya (misal 1 hingga 3 orang tambahan)
+    //             AnggotaMagang::factory()
+    //                 ->count(rand(1, 3))
+    //                 ->create([
+    //                     'pengajuan_id' => $pengajuan->id
+    //                 ]);
+    //         });
     }
 }

@@ -15,9 +15,10 @@ class PengajuanMagang extends Model
     public $timestamps = false;
     
     protected $fillable = [
-        'perwakilan_user_id', 'bidang_id', 'status', 'komentar_revisi', 'surat_permohonan',
-        'tanggal_mulai', 'tanggal_selesai', 'nama_pembimbing',
-        'tanggal_pengajuan', 'batas_verifikasi', 'is_warned'
+        'perwakilan_user_id', 'bidang_id', 'status', 'komentar_revisi', 
+        'surat_permohonan', 'tanggal_mulai', 'tanggal_selesai',
+        'nama_pembimbing', 'tanggal_pengajuan', 'batas_verifikasi',
+        'is_warned', 'jenjang_pendidikan', 'institusi_asal', 
     ];
 
     protected $casts = [

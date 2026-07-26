@@ -19,8 +19,6 @@ class User extends Authenticatable
         'password',
         'role_id',
         'skpd_id',
-        'institusi_asal',
-        'jurusan_prodi',
     ];
 
     protected function casts(): array

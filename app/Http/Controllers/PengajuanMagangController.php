@@ -84,16 +84,19 @@ class PengajuanMagangController extends Controller
             DB::transaction(function () use ($request, $bidang, $userId) {
                 $suratPath = $request->file('surat_permohonan')->store('surat_permohonan', 'public');
 
-                // 📍 Menggunakan nilai default Enum DB: 'Diajukan'
+                $batasVerifikasi = $this->hitungBatasVerifikasi();
+
                 $pengajuan = PengajuanMagang::create([
                     'perwakilan_user_id' => $userId,
                     'bidang_id'          => $bidang->id,
+                    'jenjang_pendidikan' => $request->jenjang_pendidikan,
+                    'institusi_asal'     => $request->institusi_asal,
                     'status'             => 'Diajukan',
                     'surat_permohonan'   => $suratPath,
                     'tanggal_mulai'      => $request->tanggal_mulai,
                     'tanggal_selesai'    => $request->tanggal_selesai,
                     'tanggal_pengajuan'  => now(),
-                    'batas_verifikasi'   => now()->addHours(24),
+                    'batas_verifikasi'   => $batasVerifikasi,
                     'is_warned'          => false,
                 ]);
 
@@ -107,6 +110,7 @@ class PengajuanMagangController extends Controller
                         'pengajuan_id'    => $pengajuan->id,
                         'nim_nisn'        => $dataAnggota['nim_nisn'],
                         'nama_lengkap'    => $dataAnggota['nama_lengkap'],
+                        'jurusan_prodi'   => $dataAnggota['jurusan_prodi'],
                         'kartu_identitas' => $identitasPath,
                     ]);
                 }
@@ -119,6 +123,94 @@ class PengajuanMagangController extends Controller
             return back()
                 ->withInput()
                 ->withErrors(['error' => 'Gagal menyimpan pendaftaran: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Menampilkan form pendaftaran yang sudah terisi untuk direvisi.
+     */
+    public function edit($id): View|RedirectResponse
+    {
+        $pengajuan = PengajuanMagang::with(['bidang.skpd', 'anggota'])->findOrFail($id);
+
+        // Keamanan: Pastikan hanya pemilik pengajuan & status Revisi yang bisa mengedit
+        if ($pengajuan->perwakilan_user_id !== Auth::id() || $pengajuan->status !== 'Revisi') {
+            return redirect()->route('peserta.status')->with('warning', 'Anda tidak memiliki akses untuk merevisi permohonan ini.');
+        }
+
+        $bidang = $pengajuan->bidang;
+        $status_pengajuan = 'revisi';
+        $catatan_revisi = $pengajuan->komentar_revisi;
+
+        // Bawa variabel $pengajuan ke pendaftaran.blade.php
+        return view('pages.peserta.pendaftaran', compact('bidang', 'pengajuan', 'status_pengajuan', 'catatan_revisi'));
+    }
+
+    /**
+     * Memproses dan menyimpan data revisi pendaftaran.
+     */
+    public function update(StorePengajuanMagangRequest $request, $id): RedirectResponse
+    {
+        $pengajuan = PengajuanMagang::findOrFail($id);
+
+        if ($pengajuan->perwakilan_user_id !== Auth::id() || $pengajuan->status !== 'Revisi') {
+            abort(403, 'Akses ditolak.');
+        }
+
+        try {
+            DB::transaction(function () use ($request, $pengajuan) {
+                // Update Surat Permohonan jika peserta mengupload file baru
+                if ($request->hasFile('surat_permohonan')) {
+                    $pengajuan->surat_permohonan = $request->file('surat_permohonan')->store('surat_permohonan', 'public');
+                }
+
+                $batasVerifikasi = $this->hitungBatasVerifikasi();
+
+                // Update data utama
+                $pengajuan->jenjang_pendidikan = $request->jenjang_pendidikan;
+                $pengajuan->institusi_asal = $request->institusi_asal;
+                $pengajuan->tanggal_mulai = $request->tanggal_mulai;
+                $pengajuan->tanggal_selesai = $request->tanggal_selesai;
+                $pengajuan->status = 'Diajukan';
+                $pengajuan->batas_verifikasi = $batasVerifikasi;
+                $pengajuan->save();
+
+                // Simpan data file KTM lama agar tidak hilang jika tidak diupload ulang
+                $oldMembers = $pengajuan->anggota->keyBy('nim_nisn');
+                
+                // Hapus seluruh anggota lama untuk mempermudah sinkronisasi penambahan/pengurangan anggota
+                $pengajuan->anggota()->delete();
+
+                // Buat ulang anggota dengan data baru / file lama
+                foreach ($request->anggota as $index => $dataAnggota) {
+                    $identitasPath = null;
+                    
+                    if ($request->hasFile("anggota.{$index}.kartu_identitas")) {
+                        // Jika ada upload baru, gunakan file baru
+                        $identitasPath = $request->file("anggota.{$index}.kartu_identitas")->store('kartu_identitas', 'public');
+                    } else {
+                        // Jika tidak upload, cari file lama berdasarkan NIM
+                        $oldMem = $oldMembers->get($dataAnggota['nim_nisn']);
+                        $identitasPath = $oldMem ? $oldMem->kartu_identitas : null;
+                    }
+
+                    AnggotaMagang::create([
+                        'pengajuan_id'    => $pengajuan->id,
+                        'nim_nisn'        => $dataAnggota['nim_nisn'],
+                        'nama_lengkap'    => $dataAnggota['nama_lengkap'],
+                        'jurusan_prodi'   => $dataAnggota['jurusan_prodi'],
+                        'kartu_identitas' => $identitasPath,
+                    ]);
+                }
+            });
+
+            return redirect()
+                ->route('peserta.status')
+                ->with('success', 'Permohonan magang berhasil diperbaiki dan diajukan ulang!');
+        } catch (\Exception $e) {
+            return back()
+                ->withInput()
+                ->withErrors(['error' => 'Gagal memperbaiki pendaftaran: ' . $e->getMessage()]);
         }
     }
 
@@ -172,5 +264,19 @@ class PengajuanMagangController extends Controller
             'status'  => 'success',
             'message' => 'Nama pembimbing lapangan berhasil diperbarui.',
         ]);
+    }
+
+    /**
+     * Hitung SLA / Batas Verifikasi Dinamis
+     */
+    private function hitungBatasVerifikasi()
+    {
+        $now = now();
+
+        if ($now->isFriday() || $now->isSaturday() || $now->isSunday()) {
+            return (clone $now)->next(\Carbon\Carbon::TUESDAY)->startOfDay();
+        }
+
+        return (clone $now)->addHours(24);
     }
 }

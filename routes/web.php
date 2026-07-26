@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminKapasitasController;
+use App\Http\Controllers\AdminPermohonanController;
 use App\Http\Controllers\PengajuanMagangController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SkpdController;
@@ -59,18 +60,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return view('pages.admin.dashboard');
         })->name('dashboard');
 
-        Route::get('/permohonan', function () {
-            return view('pages.admin.permohonan');
-        })->name('permohonan');
+        Route::get('/permohonan', [AdminPermohonanController::class, 'index'])->name('permohonan');
 
-        Route::get('/permohonan/detail', function () {
-            return view('pages.admin.detail_permohonan');
-        })->name('permohonan.detail');
+        Route::patch('/permohonan/{id}/proses', [AdminPermohonanController::class, 'proses'])->name('permohonan.proses');
+
+        Route::get('/permohonan/detail/{id?}', [AdminPermohonanController::class, 'show'])->name('permohonan.detail');
+
+        Route::patch('/permohonan/detail/{id}', [AdminPermohonanController::class, 'updateStatus'])->name('permohonan.update');
 
         Route::get('/kapasitas', [AdminKapasitasController::class, 'index'])->name('kapasitas.index');
 
         Route::put('/kapasitas/{id}', [AdminKapasitasController::class, 'update'])->name('kapasitas.update');
-        
+
         Route::get('/notifikasi', function () {
             return view('pages.admin.notifikasi');
         })->name('notifikasi');
@@ -84,6 +85,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware(['role:3'])->prefix('peserta')->name('peserta.')->group(function () {
         Route::get('/pendaftaran', [PengajuanMagangController::class, 'create'])->name('pendaftaran');
         Route::post('/pendaftaran', [PengajuanMagangController::class, 'store'])->name('pendaftaran.store');
+
+        Route::get('/pendaftaran/revisi/{id}', [PengajuanMagangController::class, 'edit'])->name('pendaftaran.edit');
+        Route::put('/pendaftaran/revisi/{id}', [PengajuanMagangController::class, 'update'])->name('pendaftaran.update');
 
         Route::get('/status', [PengajuanMagangController::class, 'status'])->name('status');
 

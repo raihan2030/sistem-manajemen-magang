@@ -14,6 +14,8 @@ class StorePengajuanMagangRequest extends FormRequest
 
     public function rules(): array
     {
+        $isUpdate = $this->isMethod('put') || $this->isMethod('patch');
+
         return [
             // 1. Bidang SKPD Tujuan
             'bidang_id' => ['required', 'integer', 'exists:bidang,id'],
@@ -25,7 +27,9 @@ class StorePengajuanMagangRequest extends FormRequest
             'tanggal_selesai' => ['required', 'date', 'after:tanggal_mulai'],
 
             // 6. Surat Pengantar: Wajib, PDF, Maksimal 5 MB (5120 KB)
-            'surat_permohonan' => ['required', 'file', 'mimes:pdf', 'max:5120'],
+            'surat_permohonan'          => $isUpdate 
+                                            ? ['nullable', 'file', 'mimes:pdf', 'max:5120'] 
+                                            : ['required', 'file', 'mimes:pdf', 'max:5120'],
 
             // Validasi Array Anggota (Min 1, Maks 5)
             'anggota' => ['required', 'array', 'min:1', 'max:5'],
@@ -38,6 +42,11 @@ class StorePengajuanMagangRequest extends FormRequest
 
             // 3. Upload KTM: Wajib, PDF, Maksimal 5 MB (5120 KB)
             'anggota.*.kartu_identitas' => ['nullable', 'file', 'mimes:pdf', 'max:5120'],
+
+            'anggota.*.jurusan_prodi'    => ['required', 'string', 'max:100'],
+            
+            'jenjang_pendidikan' => ['required', 'in:SMA/SMK/Sederajat,Perguruan Tinggi'],
+            'institusi_asal'     => ['required', 'string', 'max:150'],
         ];
     }
 

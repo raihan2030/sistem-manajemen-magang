@@ -184,7 +184,7 @@
 
                             <!-- TOMBOL AKSI -->
                             @if ($item->status == 'Revisi')
-                                <a href="{{ route('peserta.pendaftaran') }}" class="w-full sm:w-auto text-center px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl transition shadow-2xs flex items-center justify-center gap-2">
+                                <a href="{{ route('peserta.pendaftaran.edit', $item->id) }}" class="w-full sm:w-auto text-center px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl transition shadow-2xs flex items-center justify-center gap-2">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                     Perbaiki Berkas
                                 </a>

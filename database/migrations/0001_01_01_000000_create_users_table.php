@@ -37,8 +37,6 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('institusi_asal', 150)->nullable();
-            $table->string('jurusan_prodi', 100)->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

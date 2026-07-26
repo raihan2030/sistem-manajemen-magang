@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('perwakilan_user_id')->constrained('users');
             $table->foreignId('bidang_id')->constrained('bidang');
+            $table->enum('jenjang_pendidikan', ['SMA/SMK/Sederajat', 'Perguruan Tinggi']);
+            $table->string('institusi_asal', 150);
             $table->enum('status', ['Diajukan', 'Diproses', 'Diterima', 'Ditolak', 'Revisi'])->default('Diajukan');
             $table->text('komentar_revisi')->nullable();
             $table->string('surat_permohonan', 255);
