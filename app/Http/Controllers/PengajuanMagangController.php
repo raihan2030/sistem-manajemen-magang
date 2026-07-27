@@ -11,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class PengajuanMagangController extends Controller
@@ -84,7 +85,7 @@ class PengajuanMagangController extends Controller
             DB::transaction(function () use ($request, $bidang, $userId) {
                 $suratPath = $request->file('surat_permohonan')->store('surat_permohonan', 'public');
 
-                $batasVerifikasi = $this->hitungBatasVerifikasi();
+                $batasVerifikasi = PengajuanMagang::hitungBatasVerifikasi();
 
                 $pengajuan = PengajuanMagang::create([
                     'perwakilan_user_id' => $userId,
@@ -100,29 +101,21 @@ class PengajuanMagangController extends Controller
                     'is_warned'          => false,
                 ]);
 
-                foreach ($request->anggota as $index => $dataAnggota) {
-                    $identitasPath = null;
-                    if ($request->hasFile("anggota.{$index}.kartu_identitas")) {
-                        $identitasPath = $request->file("anggota.{$index}.kartu_identitas")->store('kartu_identitas', 'public');
-                    }
-
-                    AnggotaMagang::create([
-                        'pengajuan_id'    => $pengajuan->id,
-                        'nim_nisn'        => $dataAnggota['nim_nisn'],
-                        'nama_lengkap'    => $dataAnggota['nama_lengkap'],
-                        'jurusan_prodi'   => $dataAnggota['jurusan_prodi'],
-                        'kartu_identitas' => $identitasPath,
-                    ]);
-                }
+                $this->syncAnggota($pengajuan, $request->anggota, $request);
             });
 
             return redirect()
                 ->route('peserta.status')
                 ->with('success', 'Permohonan magang berhasil diajukan!');
         } catch (\Exception $e) {
+            Log::error('Gagal memproses pendaftaran magang', [
+                'error'   => $e->getMessage(),
+                'user_id' => Auth::id(),
+            ]);
+
             return back()
                 ->withInput()
-                ->withErrors(['error' => 'Gagal menyimpan pendaftaran: ' . $e->getMessage()]);
+                ->withErrors(['error' => 'Terjadi kesalahan sistem. Silakan coba lagi atau hubungi admin.']);
         }
     }
 
@@ -164,7 +157,7 @@ class PengajuanMagangController extends Controller
                     $pengajuan->surat_permohonan = $request->file('surat_permohonan')->store('surat_permohonan', 'public');
                 }
 
-                $batasVerifikasi = $this->hitungBatasVerifikasi();
+                $batasVerifikasi = PengajuanMagang::hitungBatasVerifikasi();
 
                 // Update data utama
                 $pengajuan->jenjang_pendidikan = $request->jenjang_pendidikan;
@@ -175,42 +168,24 @@ class PengajuanMagangController extends Controller
                 $pengajuan->batas_verifikasi = $batasVerifikasi;
                 $pengajuan->save();
 
-                // Simpan data file KTM lama agar tidak hilang jika tidak diupload ulang
                 $oldMembers = $pengajuan->anggota->keyBy('nim_nisn');
-                
-                // Hapus seluruh anggota lama untuk mempermudah sinkronisasi penambahan/pengurangan anggota
                 $pengajuan->anggota()->delete();
 
-                // Buat ulang anggota dengan data baru / file lama
-                foreach ($request->anggota as $index => $dataAnggota) {
-                    $identitasPath = null;
-                    
-                    if ($request->hasFile("anggota.{$index}.kartu_identitas")) {
-                        // Jika ada upload baru, gunakan file baru
-                        $identitasPath = $request->file("anggota.{$index}.kartu_identitas")->store('kartu_identitas', 'public');
-                    } else {
-                        // Jika tidak upload, cari file lama berdasarkan NIM
-                        $oldMem = $oldMembers->get($dataAnggota['nim_nisn']);
-                        $identitasPath = $oldMem ? $oldMem->kartu_identitas : null;
-                    }
-
-                    AnggotaMagang::create([
-                        'pengajuan_id'    => $pengajuan->id,
-                        'nim_nisn'        => $dataAnggota['nim_nisn'],
-                        'nama_lengkap'    => $dataAnggota['nama_lengkap'],
-                        'jurusan_prodi'   => $dataAnggota['jurusan_prodi'],
-                        'kartu_identitas' => $identitasPath,
-                    ]);
-                }
+                $this->syncAnggota($pengajuan, $request->anggota, $request, $oldMembers);
             });
 
             return redirect()
                 ->route('peserta.status')
                 ->with('success', 'Permohonan magang berhasil diperbaiki dan diajukan ulang!');
         } catch (\Exception $e) {
+            Log::error('Gagal memproses pendaftaran magang', [
+                'error'   => $e->getMessage(),
+                'user_id' => Auth::id(),
+            ]);
+
             return back()
                 ->withInput()
-                ->withErrors(['error' => 'Gagal memperbaiki pendaftaran: ' . $e->getMessage()]);
+                ->withErrors(['error' => 'Terjadi kesalahan sistem. Silakan coba lagi atau hubungi admin.']);
         }
     }
 
@@ -228,55 +203,32 @@ class PengajuanMagangController extends Controller
     }
 
     /**
-     * Menampilkan halaman profil peserta magang.
+     * Simpan/replace data anggota untuk suatu pengajuan.
+     * Kalau file KTM tidak diupload ulang & $oldMembers disediakan, pakai file lama.
      */
-    public function profil(): View
-    {
-        $user = Auth::user();
+    private function syncAnggota(
+        PengajuanMagang $pengajuan,
+        array $anggotaData,
+        Request $request,
+        ?\Illuminate\Support\Collection $oldMembers = null
+    ): void {
+        foreach ($anggotaData as $index => $dataAnggota) {
+            $identitasPath = null;
 
-        // Ambil data pengajuan magang aktif/terakhir milik user beserta relasi bidang, skpd, dan anggota
-        $pengajuan = PengajuanMagang::with(['bidang.skpd', 'anggota'])
-            ->where('perwakilan_user_id', $user->id)
-            ->latest('tanggal_pengajuan')
-            ->first();
+            if ($request->hasFile("anggota.{$index}.kartu_identitas")) {
+                $identitasPath = $request->file("anggota.{$index}.kartu_identitas")
+                    ->store('kartu_identitas', 'public');
+            } elseif ($oldMembers) {
+                $identitasPath = $oldMembers->get($dataAnggota['nim_nisn'])?->kartu_identitas;
+            }
 
-        return view('pages.peserta.profil', compact('user', 'pengajuan'));
-    }
-
-    /**
-     * Update nama pembimbing lapangan via AJAX/Fetch API.
-     */
-    public function updatePembimbing(Request $request, $id): JsonResponse
-    {
-        $request->validate([
-            'nama_pembimbing' => ['nullable', 'string', 'max:255'],
-        ]);
-
-        $pengajuan = PengajuanMagang::where('id', $id)
-            ->where('perwakilan_user_id', Auth::id())
-            ->firstOrFail();
-
-        $pengajuan->update([
-            'nama_pembimbing' => $request->nama_pembimbing,
-        ]);
-
-        return response()->json([
-            'status'  => 'success',
-            'message' => 'Nama pembimbing lapangan berhasil diperbarui.',
-        ]);
-    }
-
-    /**
-     * Hitung SLA / Batas Verifikasi Dinamis
-     */
-    private function hitungBatasVerifikasi()
-    {
-        $now = now();
-
-        if ($now->isFriday() || $now->isSaturday() || $now->isSunday()) {
-            return (clone $now)->next(\Carbon\Carbon::TUESDAY)->startOfDay();
+            AnggotaMagang::create([
+                'pengajuan_id'    => $pengajuan->id,
+                'nim_nisn'        => $dataAnggota['nim_nisn'],
+                'nama_lengkap'    => $dataAnggota['nama_lengkap'],
+                'jurusan_prodi'   => $dataAnggota['jurusan_prodi'],
+                'kartu_identitas' => $identitasPath,
+            ]);
         }
-
-        return (clone $now)->addHours(24);
     }
 }

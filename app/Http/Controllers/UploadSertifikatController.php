@@ -5,9 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\DataMagang;
 use App\Models\Sertifikat;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -67,6 +68,11 @@ class UploadSertifikatController extends Controller
      */
     public function store(Request $request, DataMagang $dataMagang): RedirectResponse
     {
+        abort_unless(
+            $dataMagang->pengajuan->bidang->skpd_id === Auth::user()->skpd_id,
+            403
+        );
+
         $request->validate([
             'sertifikat'    => ['required', 'array'],
             'sertifikat.*'  => ['nullable', 'file', 'mimes:pdf', 'max:5120'],
@@ -74,32 +80,35 @@ class UploadSertifikatController extends Controller
             'catatan.*'     => ['nullable', 'string', 'max:500'],
         ]);
 
-        $anggotaIds = array_keys($request->file('sertifikat', []));
+        $validAnggotaIds = $dataMagang->pengajuan->anggota->pluck('id')->toArray();
+
+        $anggotaIds = array_intersect(
+            array_keys($request->file('sertifikat', [])),
+            $validAnggotaIds
+        );
+        
         $diterbitkan = 0;
 
-        foreach ($anggotaIds as $anggotaId) {
-            $file = $request->file("sertifikat.$anggotaId");
+        DB::transaction(function () use ($request, $anggotaIds, &$diterbitkan) {
+            foreach ($anggotaIds as $anggotaId) {
+                $file = $request->file("sertifikat.$anggotaId");
+                if (! $file) continue;
 
-            // Lewati kalau slot file kosong (admin boleh upload sebagian anggota dulu)
-            if (! $file) {
-                continue;
+                $path = $file->store('sertifikat', 'public');
+
+                Sertifikat::updateOrCreate(
+                    ['anggota_id' => $anggotaId],
+                    [
+                        'nomor_sertifikat' => $this->generateNomorSertifikat($anggotaId),
+                        'file_path'        => $path,
+                        'qr_code_token'    => (string) Str::uuid(),
+                        'generated_at'     => now(),
+                        'catatan'          => $request->input("catatan.$anggotaId"),
+                    ]
+                );
+                $diterbitkan++;
             }
-
-            $path = $file->store('sertifikat', 'public');
-
-            Sertifikat::updateOrCreate(
-                ['anggota_id' => $anggotaId],
-                [
-                    'nomor_sertifikat' => $this->generateNomorSertifikat($anggotaId),
-                    'file_path'        => $path,
-                    'qr_code_token'    => (string) Str::uuid(),
-                    'generated_at'     => now(),
-                    'catatan'          => $request->input("catatan.$anggotaId"),
-                ]
-            );
-
-            $diterbitkan++;
-        }
+        });
 
         if ($diterbitkan === 0) {
             return redirect()

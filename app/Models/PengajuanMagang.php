@@ -14,12 +14,21 @@ class PengajuanMagang extends Model
 
     protected $table = 'pengajuan_magang';
     public $timestamps = false;
-    
+
     protected $fillable = [
-        'perwakilan_user_id', 'bidang_id', 'status', 'komentar_revisi', 
-        'surat_permohonan', 'tanggal_mulai', 'tanggal_selesai',
-        'nama_pembimbing', 'tanggal_pengajuan', 'batas_verifikasi',
-        'is_warned', 'jenjang_pendidikan', 'institusi_asal', 
+        'perwakilan_user_id',
+        'bidang_id',
+        'status',
+        'komentar_revisi',
+        'surat_permohonan',
+        'tanggal_mulai',
+        'tanggal_selesai',
+        'nama_pembimbing',
+        'tanggal_pengajuan',
+        'batas_verifikasi',
+        'is_warned',
+        'jenjang_pendidikan',
+        'institusi_asal',
     ];
 
     protected $casts = [
@@ -47,5 +56,34 @@ class PengajuanMagang extends Model
     public function dataMagang(): HasOne
     {
         return $this->hasOne(DataMagang::class, 'pengajuan_id');
+    }
+
+    public static function hitungBatasVerifikasi(): \Carbon\Carbon
+    {
+        $now = now();
+
+        if ($now->isFriday() || $now->isSaturday() || $now->isSunday()) {
+            return (clone $now)->next(\Carbon\Carbon::TUESDAY)->startOfDay();
+        }
+
+        return (clone $now)->addHours(24);
+    }
+
+    public function scopeForSkpd($query, $skpdId)
+    {
+        return $query->whereHas('bidang', fn($q) => $q->where('skpd_id', $skpdId));
+    }
+
+    public function scopeMendesak($query)
+    {
+        return $query->whereIn('status', ['Diajukan', 'Diproses'])
+            ->where('batas_verifikasi', '>', now())
+            ->where('batas_verifikasi', '<=', now()->addHours(6)->addMinutes(59));
+    }
+
+    public function scopeTerlambat($query)
+    {
+        return $query->whereIn('status', ['Diajukan', 'Diproses'])
+            ->where('batas_verifikasi', '<', now());
     }
 }

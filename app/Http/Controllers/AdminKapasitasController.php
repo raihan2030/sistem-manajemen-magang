@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateKapasitasRequest;
 use App\Models\Bidang;
 use App\Models\Skpd;
 use Illuminate\Http\RedirectResponse;
@@ -18,11 +19,9 @@ class AdminKapasitasController extends Controller
     {
         $user = Auth::user();
 
-        // Ambil data SKPD milik Admin beserta seluruh daftar bidangnya
         $skpd = Skpd::with('bidang')->findOrFail($user->skpd_id);
         $bidangs = $skpd->bidang;
 
-        // Tentukan bidang yang sedang dipilih (Default: Bidang Pertama)
         $selectedBidangId = $request->query('bidang_id', $bidangs->first()?->id);
         $selectedBidang = $bidangs->firstWhere('id', $selectedBidangId) ?? $bidangs->first();
 
@@ -32,27 +31,21 @@ class AdminKapasitasController extends Controller
     /**
      * Memperbarui data bidang & kuota di database.
      */
-    public function update(Request $request, $id): RedirectResponse
+    public function update(UpdateKapasitasRequest $request, $id): RedirectResponse
     {
-        $request->validate([
-            'nama_bidang' => ['required', 'string', 'max:255'],
-            'kuota_total' => ['required', 'integer', 'min:0'],
-            'sisa_kuota'  => ['required', 'integer', 'min:0', 'lte:kuota_total'],
-        ], [
-            'sisa_kuota.lte' => 'Sisa kuota tidak boleh melebihi Total Kuota!',
-            'kuota_total.min' => 'Total kuota tidak boleh bernilai negatif.',
-            'sisa_kuota.min'  => 'Sisa kuota tidak boleh bernilai negatif.',
-        ]);
-
-        // Memastikan bidang yang diubah benar-benar milik SKPD admin yang login
         $bidang = Bidang::where('id', $id)
             ->where('skpd_id', Auth::user()->skpd_id)
             ->firstOrFail();
 
+        $kuotaTotalBaru = $request->validated('kuota_total');
+        $selisih = $kuotaTotalBaru - $bidang->kuota_total;
+
+        $sisaKuotaBaru = max(0, $bidang->sisa_kuota + $selisih);
+
         $bidang->update([
-            'nama_bidang' => $request->nama_bidang,
-            'kuota_total' => $request->kuota_total,
-            'sisa_kuota'  => $request->sisa_kuota,
+            'nama_bidang' => $request->validated('nama_bidang'),
+            'kuota_total' => $kuotaTotalBaru,
+            'sisa_kuota'  => $sisaKuotaBaru,
         ]);
 
         return redirect()

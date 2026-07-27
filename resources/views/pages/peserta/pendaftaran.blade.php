@@ -49,7 +49,7 @@
             </div>
 
             <h1 class="text-3xl font-extrabold text-[#00236F] leading-tight tracking-tight">Pendaftaran Magang</h1>
-            <h2 class="text-3xl font-extrabold text-amber-500 mb-2">{{ $skpd_terpilih }} ({{ $bidang_terpilih }})</h2>
+            <h2 class="text-3xl font-extrabold text-amber-500 mb-2">{{ $skpd_terpilih }}<br>({{ $bidang_terpilih }})</h2>
 
             <div
                 class="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 border border-blue-200 rounded-full text-xs font-bold text-[#00236F] mb-3">

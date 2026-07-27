@@ -35,11 +35,7 @@
                     $theme = $themeList[$index % count($themeList)];
 
                     // 3. Deskripsi fallback dinamis
-                    $deskripsi =
-                        $bidang->deskripsi ??
-                        'Unit kerja ini membuka kesempatan magang untuk membantu pelaksanaan tugas dan operasional di ' .
-                            $bidang->nama_bidang .
-                            '.';
+                    $deskripsi = 'Unit kerja ini membuka kesempatan magang untuk membantu pelaksanaan tugas dan operasional di ' . $bidang->nama_bidang . '.';
                 @endphp
 
                 <div class="bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col transition hover:shadow-md">

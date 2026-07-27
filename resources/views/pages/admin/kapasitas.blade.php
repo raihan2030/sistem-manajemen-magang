@@ -143,19 +143,18 @@
                             <p class="text-[11px] text-gray-500 mt-1.5">Target total kuota yang dialokasikan.</p>
                         </div>
 
-                        <!-- Sisa Kuota -->
+                        <!-- Sisa Kuota (Read-only, dihitung otomatis oleh sistem) -->
                         <div>
                             <label class="block text-xs font-bold text-[#1f2937] mb-2">
-                                Sisa Kuota Tersedia <span class="text-[#00236F]">*</span>
+                                Sisa Kuota Tersedia
                             </label>
                             <div class="flex items-center gap-2">
-                                <input type="number" name="sisa_kuota"
-                                    value="{{ old('sisa_kuota', $selectedBidang->sisa_kuota) }}" min="0"
-                                    class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-[#1f2937] font-bold focus:ring-[#00236F] focus:border-[#00236F] outline-none transition"
-                                    required>
+                                <input type="text" value="{{ $selectedBidang->sisa_kuota }}" disabled
+                                    class="w-full bg-gray-100 border border-gray-200 text-gray-500 font-bold rounded-lg px-4 py-2.5 text-sm cursor-not-allowed select-none outline-none">
                                 <span class="text-xs font-semibold text-gray-500 shrink-0">Orang</span>
                             </div>
-                            <p class="text-[11px] text-gray-500 mt-1.5">Sisa slot yang bisa dilamar saat ini.</p>
+                            <p class="text-[11px] text-gray-400 mt-1.5">Dihitung otomatis berdasarkan jumlah pengajuan yang
+                                sudah diterima. Menaikkan Total Kapasitas akan menambah sisa kuota secara proporsional.</p>
                         </div>
                     </div>
 

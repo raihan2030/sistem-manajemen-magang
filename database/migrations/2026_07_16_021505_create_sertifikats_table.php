@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('sertifikat', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('anggota_id')->constrained('anggota_magang');
+            $table->foreignId('anggota_id')->unique()->constrained('anggota_magang');
             $table->string('nomor_sertifikat', 100)->unique();
             $table->string('file_path', 255);
             $table->string('qr_code_token', 255);
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sertifikats');
+        Schema::dropIfExists('sertifikat');
     }
 };
