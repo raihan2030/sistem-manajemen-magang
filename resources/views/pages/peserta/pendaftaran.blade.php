@@ -359,9 +359,14 @@
                         <div>
                             <label class="block text-xs font-bold text-[#1f2937] mb-2">Tanggal Mulai <span
                                     class="text-red-500">*</span></label>
+                            @php
+                                $minTanggalMulai = $is_edit_mode
+                                    ? \Carbon\Carbon::parse($pengajuan->tanggal_pengajuan)->format('Y-m-d')
+                                    : date('Y-m-d');
+                            @endphp
                             <input type="date" id="tanggal_mulai" name="tanggal_mulai"
                                 value="{{ old('tanggal_mulai', $is_edit_mode ? \Carbon\Carbon::parse($pengajuan->tanggal_mulai)->format('Y-m-d') : '') }}"
-                                min="{{ date('Y-m-d') }}" onchange="updateMinTanggalSelesai()"
+                                min="{{ $minTanggalMulai }}" onchange="updateMinTanggalSelesai()"
                                 {{ $is_locked ? 'disabled' : '' }}
                                 class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm text-gray-600 outline-none transition"
                                 required>
@@ -477,7 +482,8 @@
             } else {
                 if (SISA_KUOTA <= 1 && !isInitialLoad) {
                     alert(
-                        `Sisa kuota untuk bidang ini hanya tersisa ${SISA_KUOTA} slot. Pendaftaran kelompok tidak dapat dilakukan.`);
+                        `Sisa kuota untuk bidang ini hanya tersisa ${SISA_KUOTA} slot. Pendaftaran kelompok tidak dapat dilakukan.`
+                        );
                     return;
                 }
 
@@ -505,7 +511,8 @@
             }
             if (memberCount >= MAX_MEMBERS) {
                 alert(
-                    `Batas maksimal anggota tambahan tercapai. Berdasarkan sisa kuota yang tersedia (${SISA_KUOTA} slot), Anda hanya dapat menambah maksimal ${MAX_MEMBERS} anggota tambahan.`);
+                    `Batas maksimal anggota tambahan tercapai. Berdasarkan sisa kuota yang tersedia (${SISA_KUOTA} slot), Anda hanya dapat menambah maksimal ${MAX_MEMBERS} anggota tambahan.`
+                    );
                 return;
             }
 

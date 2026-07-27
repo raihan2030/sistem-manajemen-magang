@@ -307,22 +307,80 @@
 
                 <!-- SERTIFIKAT PENYELESAIAN MAGANG BOX -->
                 @if ($pengajuan && $pengajuan->status === 'Diterima')
-                    <div
-                        class="bg-[#EAEFFB]/70 border border-blue-100 rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div>
-                            <h4 class="text-xs font-bold text-[#1f2937] mb-1">Sertifikat Penyelesaian Magang</h4>
-                            <p class="text-[11px] text-gray-500">Dokumen resmi penerimaan/penyelesaian magang di
-                                instansi Pemkot Banjarmasin.</p>
+                    @php
+                        // Cek apakah ada minimal 1 anggota yang sudah memiliki sertifikat
+                        $adaSertifikat = $pengajuan->anggota->contains(function ($member) {
+                            return $member->sertifikat !== null;
+                        });
+                    @endphp
+
+                    <div class="bg-white border border-gray-200 rounded-2xl p-6 md:p-8 shadow-xs mt-6">
+                        <div class="mb-5 border-b border-gray-100 pb-4 flex items-center gap-2 text-[#00236F]">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
+                                </path>
+                            </svg>
+                            <h3 class="text-sm font-bold text-[#1f2937]">Sertifikat Penyelesaian Magang</h3>
                         </div>
 
-                        <a href="{{ asset('storage/' . $pengajuan->surat_permohonan) }}" target="_blank"
-                            class="px-5 py-2.5 bg-[#00236F] hover:bg-blue-900 text-white text-xs font-bold rounded-xl transition shadow-xs flex items-center justify-center gap-2 shrink-0">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                            </svg>
-                            Unduh Berkas Pengantar
-                        </a>
+                        @if (!$adaSertifikat)
+                            <!-- TAMPILAN JIKA BELUM ADA SERTIFIKAT SAMA SEKALI -->
+                            <div
+                                class="bg-amber-50 border border-amber-200 rounded-xl p-6 flex flex-col items-center justify-center text-center">
+                                <svg class="w-8 h-8 text-amber-500 mb-2" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <h4 class="text-sm font-bold text-amber-900 mb-1">Sertifikat Belum Diterbitkan</h4>
+                                <p class="text-[11px] text-amber-700 max-w-sm">
+                                    Dokumen sertifikat Anda belum diterbitkan oleh instansi terkait. Silakan cek kembali
+                                    secara berkala setelah masa magang Anda selesai.
+                                </p>
+                            </div>
+                        @else
+                            <!-- TAMPILAN JIKA SERTIFIKAT SUDAH TERSEDIA (PER ANGGOTA) -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                @foreach ($pengajuan->anggota as $member)
+                                    <div
+                                        class="bg-[#F8FAFC] border {{ $member->sertifikat ? 'border-emerald-200' : 'border-gray-200' }} rounded-xl p-4 flex flex-col justify-between gap-4 transition-all">
+                                        <div>
+                                            <h4 class="text-xs font-bold text-[#1f2937] mb-1">
+                                                {{ $member->nama_lengkap }}</h4>
+                                            <p class="text-[10px] text-gray-500 font-semibold">NIM/NISN:
+                                                {{ $member->nim_nisn }}</p>
+                                        </div>
+
+                                        @if ($member->sertifikat && $member->sertifikat->file_path)
+                                            <a href="{{ asset('storage/' . $member->sertifikat->file_path) }}"
+                                                target="_blank"
+                                                class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold rounded-lg transition shadow-xs flex items-center justify-center gap-1.5 mt-2">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4">
+                                                    </path>
+                                                </svg>
+                                                Unduh Sertifikat
+                                            </a>
+                                        @else
+                                            <div
+                                                class="w-full py-2 bg-amber-50 text-amber-600 border border-amber-200 text-[11px] font-bold rounded-lg flex items-center justify-center gap-1 mt-2 cursor-not-allowed">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
+                                                Belum Terbit
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                 @endif
 

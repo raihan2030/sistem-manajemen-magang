@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\UploadSertifikatController;
+use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminKapasitasController;
 use App\Http\Controllers\AdminPermohonanController;
 use App\Http\Controllers\PengajuanMagangController;
@@ -56,9 +58,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // === KHUSUS ADMIN SKPD (Role 2) ===
     Route::middleware(['role:2'])->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('pages.admin.dashboard');
-        })->name('dashboard');
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
         Route::get('/permohonan', [AdminPermohonanController::class, 'index'])->name('permohonan');
 
@@ -76,9 +76,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return view('pages.admin.notifikasi');
         })->name('notifikasi');
 
-        Route::get('/upload_sertifikat', function () {
-            return view('pages.admin.upload_sertifikat');
-        })->name('upload_sertifikat');
+        Route::get('/upload-sertifikat', [UploadSertifikatController::class, 'index'])
+            ->name('upload_sertifikat');
+
+        Route::post('/upload-sertifikat/{dataMagang}', [UploadSertifikatController::class, 'store'])
+            ->name('upload_sertifikat.store');
     });
 
     // === KHUSUS PESERTA / PERWAKILAN (Role 3) ===
@@ -91,8 +93,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/status', [PengajuanMagangController::class, 'status'])->name('status');
 
-        Route::get('/profil', [PengajuanMagangController::class, 'profil'])->name('profil');
-        Route::patch('/profil/pembimbing/{id}', [PengajuanMagangController::class, 'updatePembimbing'])->name('profil.update-pembimbing');
+        Route::get('/profil', [ProfileController::class, 'index'])->name('profil');
+        Route::patch('/profil/pembimbing/{id}', [ProfileController::class, 'updatePembimbing'])->name('profil.update-pembimbing');
     });
 
     // === PROFILE MANAGEMENT (Bawaan Breeze) ===

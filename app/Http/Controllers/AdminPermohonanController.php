@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DataMagang;
 use App\Models\PengajuanMagang;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -17,9 +18,6 @@ class AdminPermohonanController extends Controller
 
         // Tangkap parameter 'filter' dari URL (Default: 'semua')
         $filter = $request->query('filter', 'semua');
-        
-        // Tetapkan waktu patokan saat ini
-        $now = now();
 
         // Mulai Query Dasar (Hanya untuk SKPD terkait)
         $query = PengajuanMagang::with(['bidang.skpd', 'anggota', 'perwakilan'])
@@ -31,12 +29,12 @@ class AdminPermohonanController extends Controller
         if ($filter === 'mendesak') {
             // SLA <= 12 Jam (belum terlewat)
             $query->whereIn('status', ['Diajukan', 'Diproses'])
-                    ->where('batas_verifikasi', '>', $now)
-                    ->where('batas_verifikasi', '<=', (clone $now)->addHours(6)->addMinutes(59));
+                ->where('batas_verifikasi', '>', now())
+                ->where('batas_verifikasi', '<=', now()->addHours(6)->addMinutes(59));
         } elseif ($filter === 'terlambat') {
             // SLA Terlewat (batas_verifikasi sudah lewat dari waktu sekarang)
             $query->whereIn('status', ['Diajukan', 'Diproses'])
-                    ->where('batas_verifikasi', '<', $now);
+                ->where('batas_verifikasi', '<', now());
         } elseif ($filter === 'revisi') {
             // Hanya tampilkan yang berstatus Revisi
             $query->where('status', 'Revisi');
@@ -48,7 +46,38 @@ class AdminPermohonanController extends Controller
         // Jalankan Query & Paginasi
         $permohonans = $query->orderBy('tanggal_pengajuan', 'desc')->paginate(10);
 
-        return view('pages.admin.permohonan', compact('skpd', 'permohonans'));
+        // === Hitung jumlah data untuk tiap tab, independen dari filter yang aktif ===
+        $baseCountQuery = fn() => PengajuanMagang::whereHas('bidang', function ($q) use ($user) {
+            $q->where('skpd_id', $user->skpd_id);
+        });
+
+        $countSemua = (clone $baseCountQuery())
+            ->whereIn('status', ['Diajukan', 'Diproses', 'Revisi'])
+            ->count();
+
+        $countMendesak = (clone $baseCountQuery())
+            ->whereIn('status', ['Diajukan', 'Diproses'])
+            ->where('batas_verifikasi', '>', now())
+            ->where('batas_verifikasi', '<=', now()->addHours(6)->addMinutes(59))
+            ->count();
+
+        $countTerlambat = (clone $baseCountQuery())
+            ->whereIn('status', ['Diajukan', 'Diproses'])
+            ->where('batas_verifikasi', '<', now())
+            ->count();
+
+        $countRevisi = (clone $baseCountQuery())
+            ->where('status', 'Revisi')
+            ->count();
+
+        return view('pages.admin.permohonan', compact(
+            'skpd',
+            'permohonans',
+            'countSemua',
+            'countMendesak',
+            'countTerlambat',
+            'countRevisi'
+        ));
     }
 
     public function proses($id): RedirectResponse
@@ -97,12 +126,16 @@ class AdminPermohonanController extends Controller
 
         $user = Auth::user();
 
-        // Cari permohonan dan pastikan itu milik SKPD admin yang sedang login
-        $pengajuan = PengajuanMagang::where('id', $id)
+        // Cari permohonan, pastikan milik SKPD admin yang login, dan load relasinya
+        $pengajuan = PengajuanMagang::with(['bidang', 'anggota'])
+            ->where('id', $id)
             ->whereHas('bidang', function ($q) use ($user) {
                 $q->where('skpd_id', $user->skpd_id);
             })
             ->firstOrFail();
+
+        // Simpan status lama untuk mencegah pengurangan kuota berulang (double-deduct)
+        $statusSebelumnya = $pengajuan->status;
 
         // Siapkan data dasar yang akan di-update
         $updateData = [
@@ -115,12 +148,38 @@ class AdminPermohonanController extends Controller
             $updateData['batas_verifikasi'] = now()->addHours(24);
         }
 
-        // Update database
-        $pengajuan->update($updateData);
+        try {
+            // Gunakan Transaction agar jika ada yang gagal, semuanya di-rollback
+            \Illuminate\Support\Facades\DB::transaction(function () use ($pengajuan, $updateData, $request, $statusSebelumnya) {
+                
+                // 1. Update status pengajuan
+                $pengajuan->update($updateData);
 
-        // Redirect kembali ke daftar permohonan dengan pesan sukses
-        return redirect()
-            ->route('admin.permohonan') 
-            ->with('success', 'Status permohonan berhasil diperbarui menjadi ' . $request->status . '!');
+                // 2. Jika status Diterima (dan sebelumnya belum Diterima)
+                if ($request->status === 'Diterima' && $statusSebelumnya !== 'Diterima') {
+                    
+                    // Buat record DataMagang
+                    DataMagang::firstOrCreate(
+                        ['pengajuan_id' => $pengajuan->id],
+                        ['status' => 'Berlangsung']
+                    );
+
+                    // Hitung jumlah anggota tim
+                    $jumlahAnggota = $pengajuan->anggota->count();
+
+                    // Kurangi sisa kuota pada bidang terkait
+                    $pengajuan->bidang()->decrement('sisa_kuota', $jumlahAnggota);
+                }
+            });
+
+            // Redirect kembali ke daftar permohonan dengan pesan sukses
+            return redirect()
+                ->route('admin.permohonan')
+                ->with('success', 'Status permohonan berhasil diperbarui menjadi ' . $request->status . '!');
+
+        } catch (\Exception $e) {
+            // Tangkap jika terjadi error database
+            return back()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
+        }
     }
 }

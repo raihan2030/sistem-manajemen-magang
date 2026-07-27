@@ -10,7 +10,7 @@ class Sertifikat extends Model
     protected $table = 'sertifikat';
     public $timestamps = false;
     
-    protected $fillable = ['anggota_id', 'nomor_sertifikat', 'file_path', 'qr_code_token', 'generated_at'];
+    protected $fillable = ['anggota_id', 'nomor_sertifikat', 'file_path', 'qr_code_token', 'generated_at', 'catatan'];
 
     public function anggota(): BelongsTo
     {

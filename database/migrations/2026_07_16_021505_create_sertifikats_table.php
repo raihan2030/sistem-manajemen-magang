@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('nomor_sertifikat', 100)->unique();
             $table->string('file_path', 255);
             $table->string('qr_code_token', 255);
+            $table->text('catatan')->nullable();
             $table->timestamp('generated_at')->useCurrent();
         });
     }

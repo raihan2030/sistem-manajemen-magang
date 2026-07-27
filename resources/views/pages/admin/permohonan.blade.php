@@ -42,25 +42,25 @@
                 <!-- Tab Semua -->
                 <a href="{{ route('admin.permohonan', ['filter' => 'semua']) }}"
                     class="px-4 py-2 text-xs font-bold rounded-lg shadow-2xs transition {{ $currentFilter == 'semua' ? 'bg-blue-50 text-[#00236F] border border-blue-200' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200' }}">
-                    Semua ({{ $currentFilter == 'semua' ? $permohonans->total() : '...' }})
+                    Semua ({{ $countSemua ?? 0 }})
                 </a>
 
                 <!-- Tab Mendesak -->
                 <a href="{{ route('admin.permohonan', ['filter' => 'mendesak']) }}"
                     class="px-4 py-2 text-xs font-bold rounded-lg shadow-2xs transition {{ $currentFilter == 'mendesak' ? 'bg-amber-50 text-amber-600 border border-amber-200' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200' }}">
-                    Mendesak</a>
+                    Mendesak ({{ $countMendesak ?? 0 }})</a>
 
-                        <!-- Tab Terlambat -->
-                        <a href="{{ route('admin.permohonan', ['filter' => 'terlambat']) }}"
-                            class="px-4 py-2 text-xs font-bold rounded-lg shadow-2xs transition {{ $currentFilter == 'terlambat' ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200' }}">
-                            Terlambat Waktu
-                        </a>
+                <!-- Tab Terlambat -->
+                <a href="{{ route('admin.permohonan', ['filter' => 'terlambat']) }}"
+                    class="px-4 py-2 text-xs font-bold rounded-lg shadow-2xs transition {{ $currentFilter == 'terlambat' ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200' }}">
+                    Terlambat ({{ $countTerlambat ?? 0 }})
+                </a>
 
-                        <!-- Tab Revisi -->
-                        <a href="{{ route('admin.permohonan', ['filter' => 'revisi']) }}"
-                            class="px-4 py-2 text-xs font-bold rounded-lg shadow-2xs transition {{ $currentFilter == 'revisi' ? 'bg-purple-50 text-purple-600 border border-purple-200' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200' }}">
-                            Status Revisi
-                        </a>
+                <!-- Tab Revisi -->
+                <a href="{{ route('admin.permohonan', ['filter' => 'revisi']) }}"
+                    class="px-4 py-2 text-xs font-bold rounded-lg shadow-2xs transition {{ $currentFilter == 'revisi' ? 'bg-purple-50 text-purple-600 border border-purple-200' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200' }}">
+                    Revisi ({{ $countRevisi ?? 0 }})
+                </a>
             </div>
 
             <!-- Teks Indikator Menampilkan Data -->
@@ -73,14 +73,15 @@
 
         <!-- Tabel Daftar Permohonan -->
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse min-w-[750px]">
+            <table class="w-full text-left border-collapse min-w-212.5">
                 <thead>
                     <tr class="text-xs text-gray-500 font-semibold border-b border-gray-200 bg-white">
-                        <th class="px-6 py-4 w-[28%]">Pemohon (Ketua)</th>
-                        <th class="px-6 py-4 w-[32%]">Akun / Bidang</th>
-                        <th class="px-6 py-4 w-[20%]">Tanggal Masuk</th>
-                        <th class="px-6 py-4 w-[15%]">Batas Waktu (SLA)</th>
-                        <th class="px-6 py-4 w-[15%] text-center">Aksi</th>
+                        <th class="px-6 py-4 w-[22%]">Pemohon (Ketua)</th>
+                        <th class="px-6 py-4 w-[22%]">Institusi Asal / Jurusan</th>
+                        <th class="px-6 py-4 w-[18%]">Bidang</th>
+                        <th class="px-6 py-4 w-[18%]">Tanggal Masuk</th>
+                        <th class="px-6 py-4 w-[12%]">Batas Waktu (SLA)</th>
+                        <th class="px-6 py-4 w-[8%] text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="text-sm divide-y divide-gray-100">
@@ -123,15 +124,20 @@
                                 <div class="font-bold text-[#1f2937] text-sm items-center">
                                     {{ $ketua->nama_lengkap ?? ($row->perwakilan->name ?? 'Pemohon') }}
                                 </div>
-                                <div class="text-xs text-gray-500 mt-0.5">NIM/NISN: {{ $ketua->nim_nisn ?? '-' }}</div>
+                                <div class="text-xs text-gray-500 mt-0.5">{{ $row->perwakilan->email ?? '-' }}</div>
                             </td>
 
-                            <!-- Kolom Akun / Bidang -->
+                            <!-- Kolom Institusi Asal / Jurusan -->
                             <td class="px-6 py-4.5 align-middle">
                                 <div class="font-medium text-[#1f2937] text-sm">
-                                    {{ $row->perwakilan->email ?? 'Akun Peserta' }}</div>
-                                <div class="text-xs text-[#00236F] font-bold mt-0.5">{{ $row->bidang->nama_bidang ?? '-' }}
+                                    {{ $row->institusi_asal ?? '-' }}
                                 </div>
+                                <div class="text-xs text-gray-500 mt-0.5">{{ $ketua->jurusan_prodi ?? '-' }}</div>
+                            </td>
+
+                            <!-- Kolom Bidang yang Diajukan -->
+                            <td class="px-6 py-4.5 align-middle">
+                                <div class="text-navy font-bold text-sm items-center">{{ $row->bidang->nama_bidang ?? '-' }}</div>
                             </td>
 
                             <!-- Kolom Tanggal Masuk -->
@@ -235,7 +241,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-6 py-12 text-center text-gray-500 font-medium">
+                            <td colspan="6" class="px-6 py-12 text-center text-gray-500 font-medium">
                                 Belum ada permohonan magang yang masuk sesuai filter ini.
                             </td>
                         </tr>

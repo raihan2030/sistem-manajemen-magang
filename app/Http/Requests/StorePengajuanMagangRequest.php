@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\PengajuanMagang;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,12 +17,34 @@ class StorePengajuanMagangRequest extends FormRequest
     {
         $isUpdate = $this->isMethod('put') || $this->isMethod('patch');
 
+        // === Tentukan batas minimal tanggal_mulai ===
+        // - Create (Daftar baru): minimal hari ini
+        // - Update (Edit): minimal tanggal_pengajuan milik record yang sedang diedit
+        $minTanggalMulai = 'today';
+
+        if ($isUpdate) {
+            // Coba ambil record dari route parameter.
+            // Sesuaikan nama parameter route jika berbeda dari yang dicoba di bawah ini.
+            $pengajuan = $this->route('pengajuan_magang')
+                ?? $this->route('pengajuan')
+                ?? $this->route('id');
+
+            // Jika route binding hanya berupa ID mentah (bukan instance Model), ambil manual dari DB
+            if ($pengajuan && ! $pengajuan instanceof PengajuanMagang) {
+                $pengajuan = PengajuanMagang::find($pengajuan);
+            }
+
+            if ($pengajuan && $pengajuan->tanggal_pengajuan) {
+                $minTanggalMulai = \Carbon\Carbon::parse($pengajuan->tanggal_pengajuan)->toDateString();
+            }
+        }
+
         return [
             // 1. Bidang SKPD Tujuan
             'bidang_id' => ['required', 'integer', 'exists:bidang,id'],
 
-            // 4. Tanggal Mulai: Wajib, minimal hari ini
-            'tanggal_mulai' => ['required', 'date', 'after_or_equal:today'],
+            // 4. Tanggal Mulai: Wajib, minimal tergantung mode (create -> hari ini, update -> tanggal_pengajuan)
+            'tanggal_mulai' => ['required', 'date', 'after_or_equal:' . $minTanggalMulai],
 
             // 5. Tanggal Selesai: Wajib, minimal sehari setelah tanggal mulai
             'tanggal_selesai' => ['required', 'date', 'after:tanggal_mulai'],
@@ -58,7 +81,9 @@ class StorePengajuanMagangRequest extends FormRequest
 
             // Pesan Validasi Tanggal
             'tanggal_mulai.required' => 'Tanggal mulai magang tidak boleh kosong.',
-            'tanggal_mulai.after_or_equal' => 'Tanggal mulai hanya bisa dipilih dari hari ini dan seterusnya.',
+            'tanggal_mulai.after_or_equal' => $this->isMethod('put') || $this->isMethod('patch')
+                ? 'Tanggal mulai tidak boleh sebelum tanggal pengajuan awal.'
+                : 'Tanggal mulai hanya bisa dipilih dari hari ini dan seterusnya.',
 
             'tanggal_selesai.required' => 'Tanggal selesai magang tidak boleh kosong.',
             'tanggal_selesai.after' => 'Tanggal selesai harus diset minimal sehari setelah tanggal mulai.',

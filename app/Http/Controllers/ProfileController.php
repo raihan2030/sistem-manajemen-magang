@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\PengajuanMagang;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +13,44 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
+    /**
+     * Menampilkan halaman profil peserta magang.
+     */
+    public function index(): View
+    {
+        $user = Auth::user();
+
+        // Ambil data pengajuan magang aktif/terakhir milik user beserta relasi bidang, skpd, dan anggota
+        $pengajuan = PengajuanMagang::with(['bidang.skpd', 'anggota'])
+            ->where('perwakilan_user_id', $user->id)
+            ->latest('tanggal_pengajuan')
+            ->first();
+
+        return view('pages.peserta.profil', compact('user', 'pengajuan'));
+    }
+
+    /**
+     * Update nama pembimbing lapangan via AJAX/Fetch API.
+     */
+    public function updatePembimbing(Request $request, $id): JsonResponse
+    {
+        $request->validate([
+            'nama_pembimbing' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $pengajuan = PengajuanMagang::where('id', $id)
+            ->where('perwakilan_user_id', Auth::id())
+            ->firstOrFail();
+
+        $pengajuan->update([
+            'nama_pembimbing' => $request->nama_pembimbing,
+        ]);
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Nama pembimbing lapangan berhasil diperbarui.',
+        ]);
+    }
     /**
      * Display the user's profile form.
      */

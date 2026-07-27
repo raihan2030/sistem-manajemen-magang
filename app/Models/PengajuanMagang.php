@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class PengajuanMagang extends Model
 {
@@ -41,5 +42,10 @@ class PengajuanMagang extends Model
     public function anggota(): HasMany
     {
         return $this->hasMany(AnggotaMagang::class, 'pengajuan_id');
+    }
+
+    public function dataMagang(): HasOne
+    {
+        return $this->hasOne(DataMagang::class, 'pengajuan_id');
     }
 }
