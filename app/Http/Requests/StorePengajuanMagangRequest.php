@@ -36,16 +36,16 @@ class StorePengajuanMagangRequest extends FormRequest
             'bidang_id' => ['required', 'integer', 'exists:bidang,id'],
             'tanggal_mulai' => ['required', 'date', 'after_or_equal:' . $minTanggalMulai],
             'tanggal_selesai' => ['required', 'date', 'after:tanggal_mulai'],
-            'surat_permohonan'          => $isUpdate
+            'surat_permohonan' => $isUpdate
                 ? ['nullable', 'file', 'mimes:pdf', 'max:5120']
                 : ['required', 'file', 'mimes:pdf', 'max:5120'],
             'anggota' => ['required', 'array', 'min:1', 'max:5'],
-            'anggota.*.nama_lengkap' => ['required', 'string', 'max:255'],
+            'anggota.*.nama_lengkap' => ['required', 'string', 'max:60'],
             'anggota.*.nim_nisn' => ['required', 'string', 'min:8', 'max:13'],
             'anggota.*.kartu_identitas' => ['nullable', 'file', 'mimes:pdf', 'max:5120'],
             'anggota.*.jurusan_prodi'    => ['required', 'string', 'max:100'],
             'jenjang_pendidikan' => ['required', 'in:SMA/SMK/Sederajat,Perguruan Tinggi'],
-            'institusi_asal'     => ['required', 'string', 'max:150'],
+            'institusi_asal'     => ['required', 'string', 'max:100'],
         ];
     }
 

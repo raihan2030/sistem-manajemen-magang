@@ -1,12 +1,13 @@
 <?php
 
-use App\Http\Controllers\UploadSertifikatController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminKapasitasController;
 use App\Http\Controllers\AdminPermohonanController;
+use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\PengajuanMagangController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SkpdController;
+use App\Http\Controllers\UploadSertifikatController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -72,15 +73,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::put('/kapasitas/{id}', [AdminKapasitasController::class, 'update'])->name('kapasitas.update');
 
-        Route::get('/notifikasi', function () {
-            return view('pages.admin.notifikasi');
-        })->name('notifikasi');
+        Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi');
+        Route::patch('/notifikasi/{id}/dibaca', [NotifikasiController::class, 'tandaiDibaca'])->name('notifikasi.dibaca');
+        Route::patch('/notifikasi/dibaca-semua', [NotifikasiController::class, 'tandaiSemuaDibaca'])->name('notifikasi.dibaca-semua');
 
         Route::get('/upload-sertifikat', [UploadSertifikatController::class, 'index'])
             ->name('upload_sertifikat');
 
         Route::post('/upload-sertifikat/{dataMagang}', [UploadSertifikatController::class, 'store'])
             ->name('upload_sertifikat.store');
+        
+        Route::get('/peserta', function () {
+            return view('pages.admin.peserta');
+        })->name('peserta.index');
     });
 
     // === KHUSUS PESERTA / PERWAKILAN (Role 3) ===

@@ -6,6 +6,7 @@ use App\Http\Requests\StorePengajuanMagangRequest;
 use App\Models\AnggotaMagang;
 use App\Models\Bidang;
 use App\Models\PengajuanMagang;
+use App\Services\NotifikasiService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -23,7 +24,8 @@ class PengajuanMagangController extends Controller
     {
         $userId = Auth::id();
 
-        $pengajuanTerakhir = PengajuanMagang::where('perwakilan_user_id', $userId)
+        $pengajuanTerakhir = PengajuanMagang::query()
+            ->where('perwakilan_user_id', $userId)
             ->latest('tanggal_pengajuan')
             ->first();
 
@@ -58,13 +60,18 @@ class PengajuanMagangController extends Controller
     /**
      * Menyimpan data pengajuan magang baru.
      */
-    public function store(StorePengajuanMagangRequest $request): RedirectResponse
+    public function store(StorePengajuanMagangRequest $request, NotifikasiService $notifikasiService): RedirectResponse
     {
         $userId = Auth::id();
 
         // 🛑 Double protection di server-side untuk status aktif
-        $existingPengajuan = PengajuanMagang::where('perwakilan_user_id', $userId)
-            ->whereIn('status', ['Diajukan', 'Diproses', 'Diterima'])
+        $existingPengajuan = PengajuanMagang::query()
+            ->where('perwakilan_user_id', '=', $userId)
+            ->where(function ($q) {
+                $q->where('status', 'Diajukan')
+                    ->orWhere('status', 'Diproses')
+                    ->orWhere('status', 'Diterima');
+            })
             ->first();
 
         if ($existingPengajuan) {
@@ -82,7 +89,7 @@ class PengajuanMagangController extends Controller
         }
 
         try {
-            DB::transaction(function () use ($request, $bidang, $userId) {
+            DB::transaction(function () use ($request, $bidang, $userId, $notifikasiService) {
                 $suratPath = $request->file('surat_permohonan')->store('surat_permohonan', 'public');
 
                 $batasVerifikasi = PengajuanMagang::hitungBatasVerifikasi();
@@ -102,6 +109,10 @@ class PengajuanMagangController extends Controller
                 ]);
 
                 $this->syncAnggota($pengajuan, $request->anggota, $request);
+
+                // 🔔 Buat notifikasi "permohonan baru" untuk admin SKPD terkait
+                $pengajuan->load(['bidang', 'anggota']);
+                $notifikasiService->buatNotifikasiPermohonanBaru($pengajuan);
             });
 
             return redirect()

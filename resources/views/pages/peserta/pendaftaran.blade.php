@@ -207,7 +207,7 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-[#1f2937] mb-2">Nama Institusi Asal <span
+                            <label class="block text-xs font-bold text-[#1f2937] mb-2">Nama Sekolah / Institusi Asal <span
                                     class="text-red-500">*</span></label>
                             <input type="text" name="institusi_asal"
                                 value="{{ old('institusi_asal', $pengajuan->institusi_asal ?? '') }}"
@@ -240,7 +240,7 @@
                                 required>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-[#1f2937] mb-2">NISN/NIM <span
+                            <label class="block text-xs font-bold text-[#1f2937] mb-2">NISN / NIM <span
                                     class="text-red-500">*</span></label>
                             <input type="text" name="anggota[0][nim_nisn]"
                                 value="{{ old('anggota.0.nim_nisn', $ketua->nim_nisn ?? '') }}" minlength="8"
@@ -309,7 +309,7 @@
                                                 required>
                                         </div>
                                         <div>
-                                            <label class="block text-xs font-bold text-[#1f2937] mb-2">NISN/NIM <span
+                                            <label class="block text-xs font-bold text-[#1f2937] mb-2">NISN / NIM <span
                                                     class="text-red-500">*</span></label>
                                             <input type="text" name="anggota[{{ $memberIndex }}][nim_nisn]"
                                                 value="{{ $member->nim_nisn }}" minlength="8" maxlength="13"
@@ -538,7 +538,7 @@
                             <input type="text" name="anggota[${memberIndex}][nama_lengkap]" placeholder="Sesuai kartu identitas" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm outline-none transition" required>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-[#1f2937] mb-2">NISN/NIM <span class="text-red-500">*</span></label>
+                            <label class="block text-xs font-bold text-[#1f2937] mb-2">NISN / NIM <span class="text-red-500">*</span></label>
                             <input type="text" name="anggota[${memberIndex}][nim_nisn]" minlength="8" maxlength="13" placeholder="Masukkan nomor induk" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm outline-none transition" required>
                         </div>
                         <div>
