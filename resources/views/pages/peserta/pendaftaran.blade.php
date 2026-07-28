@@ -259,10 +259,11 @@
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-[#1f2937] mb-2">Upload KTM / Kartu Pelajar <span
-                                    class="text-gray-400 font-normal">({{ $is_edit_mode ? 'Opsional: Abaikan jika tidak diubah' : 'Opsional' }})</span></label>
+                                    class="text-red-500">*</span></label>
                             <input type="file" name="anggota[0][kartu_identitas]" accept=".pdf"
                                 {{ $is_locked ? 'disabled' : '' }}
-                                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 bg-white file:mr-4 file:py-1.5 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-[#00236F] hover:file:bg-blue-100 cursor-pointer">
+                                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 bg-white file:mr-4 file:py-1.5 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-[#00236F] hover:file:bg-blue-100 cursor-pointer"
+                                required>
                         </div>
                     </div>
                 </div>
@@ -326,11 +327,11 @@
                                         </div>
                                         <div>
                                             <label class="block text-xs font-bold text-[#1f2937] mb-2">Upload KTM /
-                                                Kartu Pelajar <span class="text-gray-400 font-normal">(Abaikan jika
-                                                    tidak diubah)</span></label>
+                                                Kartu Pelajar <span class="text-red-500">*</span></label>
                                             <input type="file"
                                                 name="anggota[{{ $memberIndex }}][kartu_identitas]" accept=".pdf"
-                                                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 bg-white file:mr-4 file:py-1.5 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-[#00236F] hover:file:bg-blue-100 cursor-pointer">
+                                                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 bg-white file:mr-4 file:py-1.5 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-[#00236F] hover:file:bg-blue-100 cursor-pointer"
+                                                required>
                                         </div>
                                     </div>
                                 </div>
@@ -388,23 +389,19 @@
                     <div class="flex items-center gap-2 text-[#00236F] font-bold text-base mb-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 01-2-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
                             </path>
                         </svg>
-                        <h3>Berkas Persyaratan (Surat Pengantar)</h3>
+                        <h3>Berkas Persyaratan (Surat Pengantar) <span class="text-red-500">*</span></h3>
                     </div>
-                    <p class="text-xs text-gray-500 mb-5">Unggah surat pengantar dari sekolah/universitas.</p>
+                    <p class="text-xs text-gray-500 mb-5">Unggah surat pengantar resmi dari sekolah/universitas.</p>
                     <div
                         class="border-2 border-dashed border-gray-300 rounded-xl bg-[#FAFBFF] py-6 px-6 flex flex-col items-center justify-center text-center hover:border-blue-300 transition">
                         <input type="file" name="surat_permohonan" accept=".pdf"
                             {{ $is_locked ? 'disabled' : '' }}
                             class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-[#00236F] hover:file:bg-blue-100 cursor-pointer"
-                            {{ $is_edit_mode ? '' : 'required' }}>
-                        <p class="text-[11px] text-gray-400 mt-2">Format wajib: PDF. Ukuran maksimal: 5 MB.
-                            @if ($is_edit_mode)
-                                <strong>(Abaikan jika tidak ingin merubah dokumen lama)</strong>
-                            @endif
-                        </p>
+                            required>
+                        <p class="text-[11px] text-gray-400 mt-2">Format wajib: PDF. Ukuran maksimal: 5 MB.</p>
                     </div>
                 </div>
 
@@ -430,7 +427,6 @@
 
     <!-- SCRIPT LOGIKA FORM & VALIDASI DINAMIS -->
     <script>
-        // Set state awal berdasarkan data database (apabila mode edit dan anggotanya banyak)
         let memberCount = {{ isset($pengajuan) ? max(0, $pengajuan->anggota->count() - 1) : 0 }};
         const SISA_KUOTA = {{ $sisa_kuota }};
         const MAX_MEMBERS = {{ $max_anggota_tambahan }};
@@ -483,7 +479,7 @@
                 if (SISA_KUOTA <= 1 && !isInitialLoad) {
                     alert(
                         `Sisa kuota untuk bidang ini hanya tersisa ${SISA_KUOTA} slot. Pendaftaran kelompok tidak dapat dilakukan.`
-                        );
+                    );
                     return;
                 }
 
@@ -497,7 +493,6 @@
                 titlePemohon.innerText = 'Data Pemohon (Ketua)';
                 sectionAnggota.classList.remove('hidden');
 
-                // Hanya tambah otomatis jika belum ada anggota yang me-load dari database
                 if (memberCount === 0 && !isInitialLoad) {
                     tambahAnggota();
                 }
@@ -512,7 +507,7 @@
             if (memberCount >= MAX_MEMBERS) {
                 alert(
                     `Batas maksimal anggota tambahan tercapai. Berdasarkan sisa kuota yang tersedia (${SISA_KUOTA} slot), Anda hanya dapat menambah maksimal ${MAX_MEMBERS} anggota tambahan.`
-                    );
+                );
                 return;
             }
 
@@ -546,8 +541,8 @@
                             <input type="text" name="anggota[${memberIndex}][jurusan_prodi]" placeholder="Contoh: Teknologi Informasi" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm outline-none transition" required>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-[#1f2937] mb-2">Upload KTM / Kartu Pelajar <span class="text-gray-400 font-normal">(Opsional)</span></label>
-                            <input type="file" name="anggota[${memberIndex}][kartu_identitas]" accept=".pdf" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 bg-white file:mr-4 file:py-1.5 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-[#00236F] hover:file:bg-blue-100 cursor-pointer">
+                            <label class="block text-xs font-bold text-[#1f2937] mb-2">Upload KTM / Kartu Pelajar <span class="text-red-500">*</span></label>
+                            <input type="file" name="anggota[${memberIndex}][kartu_identitas]" accept=".pdf" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 bg-white file:mr-4 file:py-1.5 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-[#00236F] hover:file:bg-blue-100 cursor-pointer" required>
                         </div>
                     </div>
                 </div>

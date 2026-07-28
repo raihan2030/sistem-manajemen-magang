@@ -6,7 +6,6 @@
 
 {{-- DUMMY DATA UNTUK SLICING --}}
 @php
-    // Data diperbanyak untuk simulasi list panjang
     $antreans = [
         [
             'id' => 'PRM-002', 
@@ -88,6 +87,22 @@
             'batas_verifikasi' => '05 Okt 2024', 
             'status' => 'Terlambat'
         ],
+        [
+            'id' => 'PRM-011', 
+            'nama_skpd' => 'Dinas Komunikasi dan Informatika', 
+            'name' => 'Dewi Lestari', 
+            'tangagl_pengajuan' => '04 Okt 2024', 
+            'batas_verifikasi' => '09 Okt 2024', 
+            'status' => 'Terlambat'
+        ],
+        [
+            'id' => 'PRM-012', 
+            'nama_skpd' => 'Dinas Perhubungan', 
+            'name' => 'Fajar Sidik', 
+            'tangagl_pengajuan' => '13 Okt 2024', 
+            'batas_verifikasi' => '18 Okt 2024', 
+            'status' => 'Menunggu'
+        ],
     ];
 @endphp
 
@@ -102,7 +117,7 @@
     <!-- Table Header -->
     <div class="flex justify-between items-center p-5 border-b border-gray-200">
         <h2 class="text-lg font-bold text-[#1f2937]">Antrean Verifikasi Permohonan Magang</h2>
-        <button class="text-xs font-bold text-[#00236F] border border-[#00236F] bg-blue-50/50 hover:bg-blue-50 px-4 py-2 rounded-md transition">
+        <button class="text-xs font-bold text-[#00236F] border border-[#00236F] bg-blue-50/50 hover:bg-blue-50 px-4 py-2 rounded-md transition cursor-pointer">
             Unduh CSV
         </button>
     </div>
@@ -121,9 +136,9 @@
                     <th class="px-5 py-4 w-16 text-center">Aksi</th>
                 </tr>
             </thead>
-            <tbody class="text-sm">
+            <tbody id="permohonanTableBody" class="text-sm">
                 @foreach($antreans as $row)
-                <tr class="border-b border-gray-100 transition hover:bg-gray-50 {{ $row['status'] == 'Terlambat' ? 'bg-red-50/30' : '' }}">
+                <tr class="antrean-row border-b border-gray-100 transition hover:bg-gray-50 {{ $row['status'] == 'Terlambat' ? 'bg-red-50/30' : '' }}">
                     <td class="px-5 py-4 font-semibold {{ $row['status'] == 'Terlambat' ? 'text-red-600' : 'text-[#1f2937]/70' }}">
                         {{ $row['id'] }}
                     </td>
@@ -152,12 +167,18 @@
                     </td>
                     <td class="px-5 py-4 text-center">
                         @if($row['status'] == 'Terlambat')
-                            <button class="text-red-600 hover:text-red-800 transition" title="Peringatan">
-                                <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                            <!-- 📍 IKON DIUBAH MENJADI MENGIRIM NOTIFIKASI (WARNA MERAH) -->
+                            <button class="text-red-600 hover:text-red-800 transition cursor-pointer inline-flex items-center justify-center p-1 rounded-lg hover:bg-red-100/50" title="Kirim Notifikasi Peringatan">
+                                <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                                </svg>
                             </button>
                         @else
-                            <button class="text-[#00236F] hover:opacity-70 transition" title="Lihat Detail">
-                                <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                            <button class="text-[#00236F] hover:opacity-70 transition cursor-pointer inline-flex items-center justify-center p-1 rounded-lg hover:bg-blue-50" title="Lihat Detail">
+                                <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
                             </button>
                         @endif
                     </td>
@@ -167,29 +188,116 @@
         </table>
     </div>
 
-    <!-- Table Footer (Pagination) -->
+    <!-- Table Footer (Paginasi Aktif) -->
     <div class="flex flex-col sm:flex-row justify-between items-center p-5 border-t border-gray-200 bg-gray-50/50 rounded-b-xl gap-4">
         <!-- Limit Dropdown -->
         <div class="flex items-center text-sm text-[#1f2937]/70 font-medium">
             Tampilkan
-            <select class="mx-2 border border-gray-300 rounded-md text-sm focus:ring-[#00236F] focus:border-[#00236F] py-1.5 px-3 bg-white outline-none cursor-pointer">
-                <option value="5">5</option>
-                <option value="10" selected>10</option>
+            <select id="limitSelect" onchange="changeLimit()" class="mx-2 border border-gray-300 rounded-md text-sm focus:ring-[#00236F] focus:border-[#00236F] py-1.5 px-3 bg-white outline-none cursor-pointer">
+                <option value="5" selected>5</option>
+                <option value="10">10</option>
                 <option value="15">15</option>
                 <option value="20">20</option>
             </select>
             data
         </div>
 
-        <!-- Paginasi Standar -->
+        <!-- Paginasi Dinamis -->
         <div class="flex items-center space-x-1">
-            <button class="px-3 py-1.5 border border-gray-300 rounded-md text-sm text-gray-400 bg-white cursor-not-allowed" disabled>Sebelumnya</button>
-            <button class="px-3 py-1.5 border border-[#00236F] bg-[#00236F] text-white rounded-md text-sm font-semibold">1</button>
-            <button class="px-3 py-1.5 border border-gray-300 bg-white text-[#1f2937]/70 hover:bg-gray-50 rounded-md text-sm font-medium transition">2</button>
-            <button class="px-3 py-1.5 border border-gray-300 bg-white text-[#1f2937]/70 hover:bg-gray-50 rounded-md text-sm font-medium transition">3</button>
-            <button class="px-3 py-1.5 border border-gray-300 rounded-md text-sm text-[#1f2937]/70 hover:bg-gray-50 bg-white transition font-medium">Selanjutnya</button>
+            <button id="btnPrev" onclick="changePage(-1)" class="px-3 py-1.5 border border-gray-300 rounded-md text-sm text-gray-400 bg-white transition">
+                Sebelumnya
+            </button>
+            
+            <!-- Container Angka Paginasi (1, 2, 3, dst.) -->
+            <div id="paginationNumbers" class="flex items-center space-x-1"></div>
+
+            <button id="btnNext" onclick="changePage(1)" class="px-3 py-1.5 border border-gray-300 rounded-md text-sm text-[#1f2937]/70 hover:bg-gray-50 bg-white transition font-medium">
+                Selanjutnya
+            </button>
         </div>
     </div>
 </div>
+
+<!-- 📍 SCRIPT LOGIKA PAGINASI REAL-TIME -->
+<script>
+    let currentPage = 1;
+    let itemsPerPage = parseInt(document.getElementById('limitSelect').value) || 5;
+
+    const allRows = Array.from(document.querySelectorAll('.antrean-row'));
+
+    function renderTable() {
+        const totalItems = allRows.length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
+
+        const startIdx = (currentPage - 1) * itemsPerPage;
+        const endIdx = startIdx + itemsPerPage;
+
+        // Sembunyikan semua baris
+        allRows.forEach(row => row.style.display = 'none');
+
+        // Tampilkan baris sesuai rentang paginasi
+        allRows.slice(startIdx, endIdx).forEach(row => {
+            row.style.display = '';
+        });
+
+        // Update Tombol Prev & Next
+        const btnPrev = document.getElementById('btnPrev');
+        const btnNext = document.getElementById('btnNext');
+
+        if (currentPage === 1) {
+            btnPrev.disabled = true;
+            btnPrev.className = "px-3 py-1.5 border border-gray-300 rounded-md text-sm text-gray-300 bg-white cursor-not-allowed";
+        } else {
+            btnPrev.disabled = false;
+            btnPrev.className = "px-3 py-1.5 border border-gray-300 rounded-md text-sm text-[#1f2937]/70 hover:bg-gray-50 bg-white transition font-medium cursor-pointer";
+        }
+
+        if (currentPage === totalPages || totalItems === 0) {
+            btnNext.disabled = true;
+            btnNext.className = "px-3 py-1.5 border border-gray-300 rounded-md text-sm text-gray-300 bg-white cursor-not-allowed";
+        } else {
+            btnNext.disabled = false;
+            btnNext.className = "px-3 py-1.5 border border-gray-300 rounded-md text-sm text-[#1f2937]/70 hover:bg-gray-50 bg-white transition font-medium cursor-pointer";
+        }
+
+        // Render Angka Paginasi (1, 2, 3...)
+        const container = document.getElementById('paginationNumbers');
+        container.innerHTML = '';
+
+        for (let i = 1; i <= totalPages; i++) {
+            const btn = document.createElement('button');
+            btn.innerText = i;
+            if (i === currentPage) {
+                btn.className = "px-3 py-1.5 border border-[#00236F] bg-[#00236F] text-white rounded-md text-sm font-semibold cursor-default";
+            } else {
+                btn.className = "px-3 py-1.5 border border-gray-300 bg-white text-[#1f2937]/70 hover:bg-gray-50 rounded-md text-sm font-medium transition cursor-pointer";
+                btn.onclick = () => {
+                    currentPage = i;
+                    renderTable();
+                };
+            }
+            container.appendChild(btn);
+        }
+    }
+
+    function changePage(direction) {
+        currentPage += direction;
+        renderTable();
+    }
+
+    function changeLimit() {
+        itemsPerPage = parseInt(document.getElementById('limitSelect').value);
+        currentPage = 1; // Reset ke halaman 1 saat limit baris diubah
+        renderTable();
+    }
+
+    // Inisialisasi awal saat halaman selesai dirender
+    document.addEventListener('DOMContentLoaded', () => {
+        renderTable();
+    });
+</script>
 
 @endsection

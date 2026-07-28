@@ -81,6 +81,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::post('/upload-sertifikat/{dataMagang}', [UploadSertifikatController::class, 'store'])
             ->name('upload_sertifikat.store');
+        
+        Route::get('/peserta', function () {
+            return view('pages.admin.peserta');
+        })->name('peserta.index'); 
     });
 
     // === KHUSUS PESERTA / PERWAKILAN (Role 3) ===

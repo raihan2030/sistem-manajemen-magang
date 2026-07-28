@@ -24,7 +24,7 @@
 
     <!-- OVERLAY LAYAR GELAP UNTUK MOBILE -->
     <div id="sidebarOverlay" onclick="toggleSidebar()"
-        class="fixed inset-0 bg-gray-900/50 z-40 hidden transition-opacity lg:hidden backdrop-blur-sm"></div>
+        class="fixed inset-0 bg-gray-900/50 z-40 hidden transition-opacity lg:hidden backdrop-blur-xs"></div>
 
     <!-- SIDEBAR ADMIN -->
     <aside id="sidebar"
@@ -33,14 +33,14 @@
             <!-- Logo & Title Horizontal -->
             <div class="flex items-center justify-between p-6 border-b border-gray-100">
                 <div class="flex items-center">
-                    <img src="{{ asset('images/logo-bjm.jpg') }}" alt="Logo Banjarmasin"
+                    <img src="{{ asset('images/logo-bjm.png') }}" alt="Logo Banjarmasin"
                         class="w-10 h-10 object-contain mr-3">
                     <div>
                         <h2 class="text-base font-bold text-[#00236F] leading-none mb-1">
                             SIMANGAT-BJM
                         </h2>
                         <p class="text-[10px] text-[#1f2937]/60 font-medium">
-                            Kota Banjarmasin
+                            Pemerintah Kota Banjarmasin
                         </p>
                     </div>
                 </div>
@@ -58,7 +58,7 @@
             <nav class="px-4 pt-6 space-y-1.5 overflow-y-auto">
                 <!-- Dashboard -->
                 <a href="{{ route('admin.dashboard') }}"
-                    class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition {{ request()->routeIs('admin.dashboard') ? 'bg-[#00236F] text-white shadow-sm' : 'text-[#1f2937]/70 hover:bg-gray-100' }}">
+                    class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition {{ request()->routeIs('admin.dashboard') ? 'bg-[#00236F] text-white shadow-2xs' : 'text-[#1f2937]/70 hover:bg-gray-100' }}">
                     <svg class="w-5 h-5 mr-3.5 flex-shrink-0 {{ request()->routeIs('admin.dashboard') ? 'text-white' : 'text-gray-400' }}"
                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -70,8 +70,8 @@
 
                 <!-- Permohonan -->
                 <a href="{{ route('admin.permohonan') }}"
-                    class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition {{ request()->routeIs('admin.permohonan') ? 'bg-[#00236F] text-white shadow-sm' : 'text-[#1f2937]/70 hover:bg-gray-100' }}">
-                    <svg class="w-5 h-5 mr-3.5 flex-shrink-0 {{ request()->routeIs('admin.permohonan') ? 'text-white' : 'text-gray-400' }}"
+                    class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition {{ request()->routeIs('admin.permohonan*') ? 'bg-[#00236F] text-white shadow-2xs' : 'text-[#1f2937]/70 hover:bg-gray-100' }}">
+                    <svg class="w-5 h-5 mr-3.5 flex-shrink-0 {{ request()->routeIs('admin.permohonan*') ? 'text-white' : 'text-gray-400' }}"
                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
@@ -80,10 +80,10 @@
                     Permohonan
                 </a>
 
-                <!-- Kelola Kapasitas -->
+                <!-- Kelola Kapasitas / Instansi -->
                 <a href="{{ route('admin.kapasitas.index') }}"
-                    class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition {{ request()->routeIs('admin.kapasitas.index') ? 'bg-[#00236F] text-white shadow-sm' : 'text-[#1f2937]/70 hover:bg-gray-100' }}">
-                    <svg class="w-5 h-5 mr-3.5 flex-shrink-0 {{ request()->routeIs('admin.kapasitas.index') ? 'text-white' : 'text-gray-400' }}"
+                    class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition {{ request()->routeIs('admin.kapasitas*') ? 'bg-[#00236F] text-white shadow-2xs' : 'text-[#1f2937]/70 hover:bg-gray-100' }}">
+                    <svg class="w-5 h-5 mr-3.5 flex-shrink-0 {{ request()->routeIs('admin.kapasitas*') ? 'text-white' : 'text-gray-400' }}"
                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
@@ -92,22 +92,34 @@
                     Instansi
                 </a>
 
-                <!-- Menu Upload Sertifikat -->
-                <a href="{{ route('admin.upload_sertifikat') }}"
-                    class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition {{ request()->routeIs('admin.upload_sertifikat') ? 'bg-[#00236F] text-white shadow-sm' : 'text-[#1f2937]/70 hover:bg-gray-100' }}">
-                    <svg class="w-5 h-5 mr-3.5 flex-shrink-0 {{ request()->routeIs('admin.upload_sertifikat') ? 'text-white' : 'text-gray-400' }}"
+                <!-- Menu Peserta -->
+                <a href="{{ route('admin.peserta.index') }}"
+                    class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition {{ request()->routeIs('admin.peserta*') ? 'bg-[#00236F] text-white shadow-2xs' : 'text-[#1f2937]/70 hover:bg-gray-100' }}">
+                    <svg class="w-5 h-5 mr-3.5 flex-shrink-0 {{ request()->routeIs('admin.peserta*') ? 'text-white' : 'text-gray-400' }}"
                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
                         </path>
                     </svg>
-                    Upload Sertifikat
+                    Peserta
+                </a>
+
+                <!-- 📍 UPLOAD SERTIFIKAT (UPDATED ICON CLOUD UPLOAD) -->
+                <a href="{{ route('admin.upload_sertifikat') }}"
+                    class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition {{ request()->routeIs('admin.upload_sertifikat*') ? 'bg-[#00236F] text-white shadow-2xs' : 'text-[#1f2937]/70 hover:bg-gray-100' }}">
+                    <svg class="w-5 h-5 mr-3.5 flex-shrink-0 {{ request()->routeIs('admin.upload_sertifikat*') ? 'text-white' : 'text-gray-400' }}"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
+                        </path>
+                    </svg>
+                    Upload Sertifikat Peserta
                 </a>
 
                 <!-- Menu Notifikasi -->
                 <a href="{{ route('admin.notifikasi') }}"
-                    class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition {{ request()->routeIs('admin.notifikasi') ? 'bg-[#00236F] text-white shadow-sm' : 'text-[#1f2937]/70 hover:bg-gray-100' }}">
-                    <svg class="w-5 h-5 mr-3.5 flex-shrink-0 {{ request()->routeIs('admin.notifikasi') ? 'text-white' : 'text-gray-400' }}"
+                    class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition {{ request()->routeIs('admin.notifikasi*') ? 'bg-[#00236F] text-white shadow-2xs' : 'text-[#1f2937]/70 hover:bg-gray-100' }}">
+                    <svg class="w-5 h-5 mr-3.5 flex-shrink-0 {{ request()->routeIs('admin.notifikasi*') ? 'text-white' : 'text-gray-400' }}"
                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
@@ -140,9 +152,9 @@
 
         <!-- HEADER MOBILE (Hanya Muncul di Layar Kecil) -->
         <header
-            class="flex items-center justify-between bg-white px-4 py-3 border-b border-gray-200 lg:hidden sticky top-0 z-30 shadow-sm">
+            class="flex items-center justify-between bg-white px-4 py-3 border-b border-gray-200 lg:hidden sticky top-0 z-30 shadow-2xs">
             <div class="flex items-center gap-2">
-                <img src="{{ asset('images/logo-bjm.jpg') }}" alt="Logo" class="w-8 h-8 object-contain">
+                <img src="{{ asset('images/logo-bjm.png') }}" alt="Logo" class="w-8 h-8 object-contain">
                 <span class="font-bold text-[#00236F] text-sm">SIMANGAT-BJM</span>
             </div>
             <!-- Tombol Hamburger -->
@@ -167,9 +179,7 @@
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
 
-            // Geser sidebar masuk/keluar
             sidebar.classList.toggle('-translate-x-full');
-            // Tampilkan/sembunyikan overlay gelap
             overlay.classList.toggle('hidden');
         }
     </script>

@@ -95,7 +95,7 @@
             </div>
         </div>
         <div class="relative z-10">
-            <p class="text-xs font-semibold text-blue-100 mb-1">nama_skpd Aktif</p>
+            <p class="text-xs font-semibold text-blue-100 mb-1">SKPD Aktif</p>
             <h3 class="text-3xl font-extrabold text-white">{{ $stats['nama_skpd_aktif'] }}</h3>
         </div>
     </div>
@@ -156,8 +156,10 @@
                     </td>
                     <td class="px-5 py-4 text-center">
                         @if($row['status'] == 'Terlambat')
-                            <button class="text-red-600 hover:text-red-800 transition" title="Peringatan">
-                                <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                            <button class="text-red-600 hover:text-red-800 transition cursor-pointer inline-flex items-center justify-center p-1 rounded-lg hover:bg-red-100/50" title="Kirim Notifikasi Peringatan">
+                                <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                                </svg>
                             </button>
                         @else
                             <button class="text-[#00236F] hover:opacity-70 transition" title="Lihat Detail">
@@ -176,9 +178,9 @@
         <!-- Limit Dropdown -->
         <div class="flex items-center text-sm text-[#1f2937]/70 font-medium">
             Tampilkan
-            <select class="mx-2 border border-gray-300 rounded-md text-sm focus:ring-[#00236F] focus:border-[#00236F] py-1.5 px-3 bg-white outline-none cursor-pointer">
-                <option value="5">5</option>
-                <option value="10" selected>10</option>
+            <select id="limitSelect" onchange="changeLimit()" class="mx-2 border border-gray-300 rounded-md text-sm focus:ring-[#00236F] focus:border-[#00236F] py-1.5 px-3 bg-white outline-none cursor-pointer">
+                <option value="5" selected>5</option>
+                <option value="10">10</option>
                 <option value="15">15</option>
                 <option value="20">20</option>
             </select>
@@ -192,5 +194,11 @@
         </a>
     </div>
 </div>
+
+<script>
+    allRows.slice(startIdx, endIdx).forEach(row => {
+            row.style.display = '';
+        });
+</script>
 
 @endsection

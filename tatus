@@ -1,0 +1,26 @@
+[33mcommit f606ff9bc089ae28f4d9f079068a222b00fd7dc7[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeat/frontend-ui[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/feat/frontend-ui[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m
+Author: raihan2030 <raihan.muhammad.bjm@gmail.com>
+Date:   Mon Jul 27 15:58:47 2026 +0800
+
+    Refactor Controller for line code efficiency
+
+ app/Http/Controllers/AdminDashboardController.php                        |  85 [32m+++++[m[31m------------------[m
+ app/Http/Controllers/AdminKapasitasController.php                        |  27 [32m+++[m[31m-----[m
+ app/Http/Controllers/AdminPermohonanController.php                       | 115 [32m++++++++[m[31m-----------------------[m
+ app/Http/Controllers/PengajuanMagangController.php                       | 130 [32m+++++++++++[m[31m------------------------[m
+ app/Http/Controllers/UploadSertifikatController.php                      |  57 [32m++++++++[m[31m-------[m
+ app/Http/Requests/StorePengajuanMagangRequest.php                        |  36 [32m++[m[31m--------[m
+ app/Http/Requests/UpdateKapasitasRequest.php                             |  29 [32m++++++++[m
+ app/Http/Requests/UpdateStatusPermohonanRequest.php                      |  21 [32m++++++[m
+ app/Models/PengajuanMagang.php                                           |  48 [32m+++++++++++[m[31m--[m
+ app/Services/PermohonanStatsService.php                                  |  25 [32m+++++++[m
+ database/migrations/2026_07_16_021327_create_pengajuan_magangs_table.php |   2 [32m+[m[31m-[m
+ database/migrations/2026_07_16_021505_create_sertifikats_table.php       |   4 [32m+[m[31m-[m
+ resources/views/components/skpd-card.blade.php                           |  54 [32m+++++++++++++++[m
+ resources/views/layouts/sidebarSuperadmin.blade.php                      |   2 [32m+[m[31m-[m
+ resources/views/pages/admin/kapasitas.blade.php                          |  13 [32m++[m[31m--[m
+ resources/views/pages/peserta/pendaftaran.blade.php                      |   2 [32m+[m[31m-[m
+ resources/views/pages/public/landing.blade.php                           |  67 [32m+[m[31m-----------------[m
+ resources/views/pages/public/skpd.blade.php                              |  82 [32m+[m[31m---------------------[m
+ resources/views/pages/public/skpd_detail.blade.php                       |   6 [32m+[m[31m-[m
+ 19 files changed, 320 insertions(+), 485 deletions(-)

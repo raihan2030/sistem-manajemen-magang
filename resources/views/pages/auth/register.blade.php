@@ -8,7 +8,7 @@
             <div>
                 <!-- Logo & Brand -->
                 <div class="flex items-center space-x-3 mb-10">
-                    <img src="{{ asset('images/logo-bjm.jpg') }}" alt="Logo Banjarmasin" class="w-11 h-11 object-contain">
+                    <img src="{{ asset('images/logo-bjm.png') }}" alt="Logo Banjarmasin" class="w-11 h-11 object-contain">
                     <div>
                         <h2 class="text-3xl font-bold text-[#00236F] leading-none mb-1">
                             SIMANGAT-<span class="text-[#FEA619]">BJM</span>
