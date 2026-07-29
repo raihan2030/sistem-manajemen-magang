@@ -54,6 +54,10 @@
                 <!-- List Peserta -->
                 <div class="flex-1 overflow-y-auto p-4 space-y-3" id="participantList">
                     @foreach ($peserta as $index => $p)
+                        @php
+                            $statusPeserta = $p['status'] ?? 'Berlangsung';
+                            $isSelesaiPeserta = $statusPeserta === 'Selesai';
+                        @endphp
                         <div onclick="selectParticipant({{ $p['id'] }})" id="card-{{ $p['id'] }}"
                             data-name="{{ strtolower($p['name']) }}"
                             class="participant-card cursor-pointer border rounded-xl p-3 flex items-center justify-between transition-all duration-200 {{ $index === 0 ? 'bg-[#EEF2F9] border-[#00236F]' : 'bg-[#F8FAFC] border-transparent hover:border-gray-300' }}">
@@ -62,9 +66,8 @@
                                 <h3 class="text-sm font-bold text-[#1f2937]">{{ $p['name'] }}</h3>
                                 <p class="text-[11px] font-semibold text-gray-500 mt-0.5">
                                     {{ $p['tipe'] }} &middot; {{ $p['total_anggota'] }} orang &middot;
-                                    <span
-                                        class="{{ ($p['status'] ?? '') == 'Selesai' ? 'text-emerald-600' : 'text-amber-500' }}">
-                                        {{ $p['status'] ?? 'Berlangsung' }}
+                                    <span class="{{ $isSelesaiPeserta ? 'text-emerald-600' : 'text-amber-500' }}">
+                                        {{ $isSelesaiPeserta ? 'Selesai' : 'Belum Selesai' }}
                                     </span>
                                 </p>
                             </div>
@@ -203,8 +206,9 @@
                 submitBtn.classList.add('bg-[#00236F]', 'hover:bg-blue-900');
             } else {
                 warningBanner.classList.remove('hidden');
+                // Ganti status mentah dari database dengan label yang lebih ramah pengguna
                 warningText.innerText =
-                    `Sertifikat belum dapat diterbitkan karena peserta masih dalam masa magang (Status: ${data.status || 'Berlangsung'}).`;
+                    'Sertifikat belum dapat diterbitkan karena peserta masih dalam masa magang (Status: Belum Selesai).';
                 submitBtn.disabled = true;
                 submitBtn.classList.add('bg-gray-400');
                 submitBtn.classList.remove('bg-[#00236F]', 'hover:bg-blue-900');

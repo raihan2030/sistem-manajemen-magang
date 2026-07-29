@@ -5,11 +5,9 @@
 @section('content')
 
     @php
-        // Ambil data ketua dari relasi anggota (indeks 0)
         $ketua = $pengajuan->anggota->first();
         $jumlahAnggota = $pengajuan->anggota->count();
 
-        // Tentukan tipe permohonan
         $tipe_permohonan = $jumlahAnggota > 1 ? 'Kelompok' : 'Individu';
     @endphp
 

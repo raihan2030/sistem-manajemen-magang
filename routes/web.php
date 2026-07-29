@@ -5,11 +5,15 @@ use App\Http\Controllers\AdminKapasitasController;
 use App\Http\Controllers\AdminPermohonanController;
 use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\PengajuanMagangController;
+use App\Http\Controllers\PesertaMagangController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SkpdController;
+use App\Http\Controllers\SuperadminDashboardController;
+use App\Http\Controllers\SuperadminPermohonanController;
 use App\Http\Controllers\UploadSertifikatController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -40,14 +44,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // === KHUSUS SUPERADMIN (Role 1) ===
     Route::middleware(['role:1'])->prefix('superadmin')->name('superadmin.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('pages.superadmin.dashboard');
-        })->name('dashboard');
+        Route::get('/dashboard', [SuperadminDashboardController::class, 'index'])->name('dashboard');
 
-        Route::get('/permohonan', function () {
-            return view('pages.superadmin.permohonan');
-        })->name('permohonan');
-
+        Route::get('/permohonan', [SuperadminPermohonanController::class, 'index'])->name('permohonan');
+        
         Route::get('/aktivitas', function () {
             return view('pages.superadmin.aktivitas');
         })->name('aktivitas');
@@ -83,9 +83,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/upload-sertifikat/{dataMagang}', [UploadSertifikatController::class, 'store'])
             ->name('upload_sertifikat.store');
         
-        Route::get('/peserta', function () {
-            return view('pages.admin.peserta');
-        })->name('peserta.index');
+        Route::get('/peserta', [PesertaMagangController::class, 'index'])->name('peserta.index');
     });
 
     // === KHUSUS PESERTA / PERWAKILAN (Role 3) ===

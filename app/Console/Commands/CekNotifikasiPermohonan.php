@@ -8,7 +8,6 @@ use Illuminate\Console\Command;
 class CekNotifikasiPermohonan extends Command
 {
     protected $signature = 'notifikasi:cek-permohonan';
-
     protected $description = 'Cek pengajuan yang mendesak/terlambat SLA dan buat notifikasi untuk admin terkait';
 
     public function handle(NotifikasiService $service): int

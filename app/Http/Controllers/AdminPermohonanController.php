@@ -100,7 +100,7 @@ class AdminPermohonanController extends Controller
 
                     DataMagang::firstOrCreate(
                         ['pengajuan_id' => $pengajuan->id],
-                        ['status' => 'Berlangsung']
+                        ['status' => 'Terdaftar']
                     );
 
                     $jumlahAnggota = $pengajuan->anggota->count();
