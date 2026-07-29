@@ -107,15 +107,11 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
 
             <!-- KARTU PROFIL KIRI -->
-            <div
-                class="lg:col-span-1 bg-white border border-gray-200 rounded-2xl p-6 md:p-8 shadow-xs flex flex-col items-center text-center">
-
-                <!-- Avatar Placeholder -->
-                <div
-                    class="w-28 h-28 rounded-full bg-[#00236F] flex items-center justify-center text-white mb-5 shadow-sm">
-                    <svg class="w-16 h-16" fill="currentColor" viewBox="0 0 24 24">
-                        <path
-                            d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+            <div class="lg:col-span-1 bg-white border border-gray-200 rounded-xl p-6 shadow-xs flex flex-col items-center justify-center text-center">
+                <!-- Avatar Placeholder Circle -->
+                <div class="w-24 h-24 rounded-full bg-blue-50/60 border border-blue-100 flex items-center justify-center mb-4 text-[#00236F] shadow-inner">
+                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                     </svg>
                 </div>
 
