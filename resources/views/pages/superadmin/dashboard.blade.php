@@ -12,13 +12,12 @@
 
 <!-- Card Statistik -->
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <!-- Card 1 -->
     <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
         <div class="flex justify-between items-start mb-4">
             <div class="w-10 h-10 rounded-lg bg-blue-50 text-[#00236F] flex items-center justify-center">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
             </div>
-            {{-- <span class="bg-[#F8F9FF] text-[#00236F] text-[10px] font-bold px-2 py-1 rounded-md border border-gray-100">{{ $stats['tren_total'] }}</span> --}}
+            <span class="bg-[#F8F9FF] text-[#00236F] text-[10px] font-bold px-2 py-1 rounded-md border border-gray-100">{{ $stats['tren_total'] }}</span>
         </div>
         <div>
             <p class="text-xs font-semibold text-[#1f2937]/60 mb-1">Total Permohonan</p>
@@ -26,13 +25,12 @@
         </div>
     </div>
 
-    <!-- Card 2 -->
     <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
         <div class="flex justify-between items-start mb-4">
             <div class="w-10 h-10 rounded-lg bg-orange-50 text-[#FEA619] flex items-center justify-center">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
             </div>
-            {{-- <span class="bg-[#F8F9FF] text-[#00236F] text-[10px] font-bold px-2 py-1 rounded-md border border-gray-100">{{ $stats['tren_baru'] }}</span> --}}
+            <span class="bg-[#F8F9FF] text-[#00236F] text-[10px] font-bold px-2 py-1 rounded-md border border-gray-100">{{ $stats['tren_baru'] }}</span>
         </div>
         <div>
             <p class="text-xs font-semibold text-[#1f2937]/60 mb-1">Permohonan Baru (Hari Ini)</p>
@@ -40,7 +38,6 @@
         </div>
     </div>
 
-    <!-- Card 3 (Primary Blue) -->
     <div class="bg-[#00236F] p-6 rounded-xl shadow-md flex flex-col justify-between relative overflow-hidden">
         <svg class="absolute -top-4 -right-4 w-24 h-24 text-white opacity-10" fill="currentColor" viewBox="0 0 24 24"><path d="M4 4h4v4H4V4zm6 0h4v4h-4V4zm6 0h4v4h-4V4zM4 10h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4zM4 16h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z"></path></svg>
         <div class="mb-4 relative z-10">
@@ -55,14 +52,75 @@
     </div>
 </div>
 
+<!-- Section Grafik Tren Pemohon -->
+<div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mb-8">
+    <div class="flex items-center justify-between mb-4">
+        <div>
+            <h2 class="text-lg font-bold text-[#1f2937]">Grafik Tren Pemohon Magang</h2>
+            <p class="text-xs text-[#1f2937]/60">Jumlah permohonan magang yang masuk selama 12 bulan terakhir</p>
+        </div>
+    </div>
+    <div class="relative w-full h-72">
+        <canvas id="trenPemohonChart"></canvas>
+    </div>
+</div>
+
 <!-- Table Section -->
 <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
-    <!-- Table Header -->
-    <div class="flex justify-between items-center p-5 border-b border-gray-200">
-        <h2 class="text-lg font-bold text-[#1f2937]">Seluruh Permohonan Magang</h2>
-        <button class="text-xs font-bold text-[#00236F] border border-[#00236F] bg-blue-50/50 hover:bg-blue-50 px-4 py-2 rounded-md transition">
-            Unduh CSV
-        </button>
+    <!-- Table Header & Filter -->
+    <div class="p-5 border-b border-gray-200 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h2 class="text-lg font-bold text-[#1f2937]">Seluruh Permohonan Magang</h2>
+            <p class="text-xs text-[#1f2937]/60 mt-0.5">Daftar pengajuan magang yang telah terdaftar di sistem</p>
+        </div>
+
+        <!-- Form Filter Bulan dan Tahun -->
+        <form method="GET" action="{{ route('superadmin.dashboard') }}" class="flex flex-wrap items-center gap-2">
+            <input type="hidden" name="per_page" value="{{ request('per_page', 10) }}">
+
+            <!-- Dropdown Bulan -->
+            <select name="bulan" class="border border-gray-300 rounded-lg text-xs font-medium py-2 px-3 bg-white text-[#1f2937] focus:ring-2 focus:ring-[#00236F] focus:border-[#00236F] outline-none">
+                <option value="">-- Semua Bulan --</option>
+                @php
+                    $namaBulan = [
+                        1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+                        5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+                        9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+                    ];
+                @endphp
+                @foreach ($namaBulan as $num => $nama)
+                    <option value="{{ $num }}" {{ (string)request('bulan', $bulanFilter) === (string)$num ? 'selected' : '' }}>
+                        {{ $nama }}
+                    </option>
+                @endforeach
+            </select>
+
+            <!-- Dropdown Tahun -->
+            <select name="tahun" class="border border-gray-300 rounded-lg text-xs font-medium py-2 px-3 bg-white text-[#1f2937] focus:ring-2 focus:ring-[#00236F] focus:border-[#00236F] outline-none">
+                <option value="">-- Semua Tahun --</option>
+                @foreach ($tahunOptions as $year)
+                    <option value="{{ $year }}" {{ (string)request('tahun', $tahunFilter) === (string)$year ? 'selected' : '' }}>
+                        {{ $year }}
+                    </option>
+                @endforeach
+            </select>
+
+            <!-- Tombol Filter & Reset -->
+            <button type="submit" class="bg-[#00236F] text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-blue-900 transition flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                Filter
+            </button>
+
+            @if(request('bulan') || request('tahun'))
+                <a href="{{ route('superadmin.dashboard', ['per_page' => request('per_page', 10)]) }}" class="bg-gray-100 text-gray-600 text-xs font-semibold px-3 py-2 rounded-lg hover:bg-gray-200 transition">
+                    Reset
+                </a>
+            @endif
+
+            <button type="button" class="text-xs font-bold text-[#00236F] border border-[#00236F] bg-blue-50/50 hover:bg-blue-50 px-4 py-2 rounded-lg transition ml-auto md:ml-2">
+                Unduh CSV
+            </button>
+        </form>
     </div>
 
     <!-- Table Body -->
@@ -84,8 +142,6 @@
                     @php
                         $ketua = $row->anggota->first();
 
-                        // Tentukan status tampilan: status final (Diterima/Ditolak/Revisi) apa adanya,
-                        // sedangkan Diajukan/Diproses dicek dulu apakah sudah lewat SLA (jadi "Terlambat")
                         $isSlaLewat = in_array($row->status, ['Diajukan', 'Diproses'])
                             && \Carbon\Carbon::parse($row->batas_verifikasi)->isPast();
 
@@ -96,7 +152,7 @@
                             'Diterima'  => ['bg' => 'bg-emerald-100', 'text' => 'text-emerald-700', 'border' => 'border-emerald-200'],
                             'Ditolak'   => ['bg' => 'bg-gray-200', 'text' => 'text-gray-600', 'border' => 'border-gray-300'],
                             'Revisi'    => ['bg' => 'bg-purple-100', 'text' => 'text-purple-700', 'border' => 'border-purple-200'],
-                            default     => ['bg' => 'bg-yellow-50', 'text' => 'text-[#FEA619]', 'border' => 'border-[#FEA619]/30'], // Diajukan / Diproses
+                            default     => ['bg' => 'bg-yellow-50', 'text' => 'text-[#FEA619]', 'border' => 'border-[#FEA619]/30'],
                         };
 
                         $rowHighlight = $statusTampilan === 'Terlambat' ? 'bg-red-50/30' : '';
@@ -124,7 +180,6 @@
                             </span>
                         </td>
                         <td class="px-5 py-4 text-center">
-                            {{-- <a href="{{ route('superadmin.permohonan.detail', ['id' => $row->id]) }}" --}}
                             <a href="#"
                                 class="{{ $statusTampilan === 'Terlambat' ? 'text-red-600 hover:text-red-800' : 'text-[#00236F] hover:opacity-70' }} transition inline-block"
                                 title="Lihat Detail">
@@ -138,7 +193,7 @@
                 @empty
                     <tr>
                         <td colspan="7" class="px-5 py-12 text-center text-gray-500 font-medium">
-                            Belum ada permohonan magang yang masuk.
+                            Belum ada permohonan magang yang sesuai dengan kriteria filter.
                         </td>
                     </tr>
                 @endforelse
@@ -146,12 +201,12 @@
         </table>
     </div>
 
-    <!-- Table Footer (Pagination & Lihat Semua) -->
+    <!-- Table Footer (Pagination & Limit) -->
     <div class="flex flex-col sm:flex-row justify-between items-center p-5 border-t border-gray-200 bg-gray-50/50 rounded-b-xl gap-4">
         <!-- Limit Dropdown -->
         <div class="flex items-center text-sm text-[#1f2937]/70 font-medium">
             Tampilkan
-            <select onchange="window.location.href='?per_page=' + this.value"
+            <select onchange="let url = new URL(window.location.href); url.searchParams.set('per_page', this.value); url.searchParams.set('page', 1); window.location.href = url.href;"
                 class="mx-2 border border-gray-300 rounded-md text-sm focus:ring-[#00236F] focus:border-[#00236F] py-1.5 px-3 bg-white outline-none cursor-pointer">
                 <option value="5" {{ request('per_page', 10) == 5 ? 'selected' : '' }}>5</option>
                 <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
@@ -161,11 +216,80 @@
             data
         </div>
 
-        {{-- Pagination asli --}}
+        <!-- Pagination -->
         <div>
-            {{ $antreans->links('components.pagination') }}
+            {{ $antreans->appends(request()->query())->links('components.pagination') }}
         </div>
     </div>
 </div>
 
+<!-- Simpan Data JSON di Tag HTML khusus -->
+<script id="chart-labels-data" type="application/json">
+    {!! json_encode($chartLabels) !!}
+</script>
+<script id="chart-values-data" type="application/json">
+    {!! json_encode($chartValues) !!}
+</script>
+
+<!-- Eksekusi Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const ctx = document.getElementById('trenPemohonChart').getContext('2d');
+        
+        const chartLabels = JSON.parse(document.getElementById('chart-labels-data').textContent);
+        const chartValues = JSON.parse(document.getElementById('chart-values-data').textContent);
+
+        const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+        gradient.addColorStop(0, 'rgba(0, 35, 111, 0.25)');
+        gradient.addColorStop(1, 'rgba(0, 35, 111, 0.0)');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: 'Jumlah Permohonan',
+                    data: chartValues,
+                    borderColor: '#00236F',
+                    borderWidth: 2.5,
+                    backgroundColor: gradient,
+                    fill: true,
+                    tension: 0.35,
+                    pointBackgroundColor: '#00236F',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#1f2937',
+                        titleFont: { size: 12, weight: 'bold' },
+                        bodyFont: { size: 12 },
+                        padding: 10,
+                        cornerRadius: 8,
+                        displayColors: false
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 11 }, color: '#6b7280' }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: { precision: 0, font: { size: 11 }, color: '#6b7280' },
+                        grid: { color: '#f3f4f6' }
+                    }
+                }
+            }
+        });
+    });
+</script>
 @endsection

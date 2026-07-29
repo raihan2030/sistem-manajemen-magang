@@ -14,3 +14,8 @@
     --color-kuning: #FEA619;
     --color-navlink: #444651;
 }
+/* Sembunyikan icon reveal password bawaan Edge / IE / Chrome */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none;
+}
