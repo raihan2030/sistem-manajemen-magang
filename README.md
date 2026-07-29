@@ -89,5 +89,14 @@ sail artisan key:generate
 ### 7. Jalankan Migrasi Database
 
 ```bash
-sail artisan migrate
+sail artisan migrate:fresh
+```
+Atau dengan `--seed` untuk menjalankan seeder sekaligus
+```bash
+sail artisan migrate:fresh --seed
+```
+
+### 8. Jalankan scheduler
+```bash
+sail artisan schedule:work
 ```
