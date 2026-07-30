@@ -9,6 +9,10 @@
         $jumlahAnggota = $pengajuan->anggota->count();
 
         $tipe_permohonan = $jumlahAnggota > 1 ? 'Kelompok' : 'Individu';
+
+        // Tombol aksi & form catatan verifikator hanya relevan saat status "Diproses"
+        // (Diajukan/Revisi/Ditolak/Diterima tidak lagi butuh aksi verifikasi di halaman ini)
+        $bisaDiverifikasi = $pengajuan->status === 'Diproses';
     @endphp
 
     <!-- Header Page & Action Buttons -->
@@ -26,36 +30,85 @@
             </p>
         </div>
 
-        <!-- Tombol Aksi Utama -->
-        <div class="flex items-center gap-3 self-start md:self-auto">
-            <button type="button" onclick="handleAction('Revisi')"
-                class="px-5 py-2.5 bg-white border border-[#00236F] text-[#00236F] hover:bg-blue-50/50 text-xs font-bold rounded-lg transition shadow-xs cursor-pointer">
-                Revisi
-            </button>
-            <button type="button" onclick="handleAction('Ditolak')"
-                class="px-5 py-2.5 bg-white border border-red-500 text-red-600 hover:bg-red-50/50 text-xs font-bold rounded-lg transition shadow-xs cursor-pointer">
-                Tolak
-            </button>
-            <button type="button" onclick="handleAction('Diterima')"
-                class="px-5 py-2.5 bg-[#00236F] text-white hover:bg-blue-900 text-xs font-bold rounded-lg transition shadow-xs cursor-pointer">
-                Setujui Permohonan
-            </button>
-        </div>
+        @if ($bisaDiverifikasi)
+            <!-- Tombol Aksi Utama -->
+            <div class="flex items-center gap-3 self-start md:self-auto">
+                <button type="button" onclick="handleAction('Revisi')"
+                    class="px-5 py-2.5 bg-white border border-[#00236F] text-[#00236F] hover:bg-blue-50/50 text-xs font-bold rounded-lg transition shadow-xs cursor-pointer">
+                    Revisi
+                </button>
+                <button type="button" onclick="handleAction('Ditolak')"
+                    class="px-5 py-2.5 bg-white border border-red-500 text-red-600 hover:bg-red-50/50 text-xs font-bold rounded-lg transition shadow-xs cursor-pointer">
+                    Tolak
+                </button>
+                <button type="button" onclick="handleAction('Diterima')"
+                    class="px-5 py-2.5 bg-[#00236F] text-white hover:bg-blue-900 text-xs font-bold rounded-lg transition shadow-xs cursor-pointer">
+                    Setujui Permohonan
+                </button>
+            </div>
+        @else
+            @php
+                $statusBadge = match ($pengajuan->status) {
+                    'Diajukan' => [
+                        'bg' => 'bg-yellow-50',
+                        'text' => 'text-[#FEA619]',
+                        'border' => 'border-[#FEA619]/30',
+                        'label' => 'Menunggu Diproses',
+                    ],
+                    'Diterima' => [
+                        'bg' => 'bg-emerald-50',
+                        'text' => 'text-emerald-700',
+                        'border' => 'border-emerald-200',
+                        'label' => 'Diterima',
+                    ],
+                    'Ditolak' => [
+                        'bg' => 'bg-gray-100',
+                        'text' => 'text-gray-600',
+                        'border' => 'border-gray-300',
+                        'label' => 'Ditolak',
+                    ],
+                    'Revisi' => [
+                        'bg' => 'bg-purple-50',
+                        'text' => 'text-purple-700',
+                        'border' => 'border-purple-200',
+                        'label' => 'Menunggu Revisi dari Peserta',
+                    ],
+                    default => [
+                        'bg' => 'bg-gray-100',
+                        'text' => 'text-gray-600',
+                        'border' => 'border-gray-300',
+                        'label' => $pengajuan->status,
+                    ],
+                };
+            @endphp
+            <div class="self-start md:self-auto">
+                <span
+                    class="inline-flex items-center gap-2 px-4 py-2.5 {{ $statusBadge['bg'] }} {{ $statusBadge['text'] }} border {{ $statusBadge['border'] }} text-xs font-bold rounded-lg">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    {{ $statusBadge['label'] }}
+                </span>
+            </div>
+        @endif
     </div>
 
     <!-- SECTION 1: PROFIL & INFORMASI AKADEMIK -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 items-stretch">
 
         <!-- Kartu Profil Pemohon (Kiri) -->
-        <div 
+        <div
             class="lg:col-span-1 bg-white border border-gray-200 rounded-xl p-6 shadow-xs flex flex-col items-center justify-center text-center">
-                <!-- Avatar Placeholder Circle -->
-                <div class="w-24 h-24 rounded-full bg-blue-50/60 border border-blue-100 flex items-center justify-center mb-4 text-[#00236F] shadow-inner">
-                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                    </svg>
-                </div>
-                
+            <!-- Avatar Placeholder Circle -->
+            <div
+                class="w-24 h-24 rounded-full bg-blue-50/60 border border-blue-100 flex items-center justify-center mb-4 text-[#00236F] shadow-inner">
+                <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                </svg>
+            </div>
+
             <h2 class="text-base font-bold text-[#00236F] mb-1 uppercase tracking-wide">
                 {{ $ketua->nama_lengkap ?? ($pengajuan->perwakilan->name ?? 'Pemohon') }}</h2>
             <p class="text-xs text-gray-500 font-medium mb-6">{{ $pengajuan->perwakilan->email ?? '-' }}</p>
@@ -253,49 +306,66 @@
         </div>
     </div>
 
-    <!-- SECTION 4: CATATAN VERIFIKATOR & FORM -->
-    <div class="bg-[#F8FAFC] border border-dashed border-gray-300 rounded-xl p-5 mb-10">
-        <div class="flex items-center gap-2 mb-3 text-xs font-bold text-gray-700">
-            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
-            </svg>
-            <span>Catatan Verifikator (Wajib diisi jika Revisi / Tolak)</span>
+    @if ($bisaDiverifikasi)
+        <!-- SECTION 4: CATATAN VERIFIKATOR & FORM -->
+        <div class="bg-[#F8FAFC] border border-dashed border-gray-300 rounded-xl p-5 mb-10">
+            <div class="flex items-center gap-2 mb-3 text-xs font-bold text-gray-700">
+                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7">
+                    </path>
+                </svg>
+                <span>Catatan Verifikator (Wajib diisi jika Revisi / Tolak)</span>
+            </div>
+
+            <!-- Form untuk memproses data -->
+            <form id="formVerifikasi" action="{{ route('admin.permohonan.update', $pengajuan->id) }}" method="POST">
+                @csrf
+                @method('PATCH')
+                <input type="hidden" name="status" id="inputStatus">
+                <textarea name="komentar_revisi" id="catatanVerifikator" rows="3"
+                    placeholder="Masukkan catatan atau alasan penolakan/revisi di sini..."
+                    class="w-full bg-white border border-gray-200 rounded-xl p-3.5 text-xs text-gray-700 placeholder-gray-400 focus:ring-[#00236F] focus:border-[#00236F] outline-none transition resize-none">{{ old('komentar_revisi', $pengajuan->komentar_revisi) }}</textarea>
+            </form>
         </div>
+    @elseif ($pengajuan->komentar_revisi)
+        <!-- Riwayat catatan verifikator sebelumnya (read-only), kalau ada -->
+        <div class="bg-[#F8FAFC] border border-gray-200 rounded-xl p-5 mb-10">
+            <div class="flex items-center gap-2 mb-3 text-xs font-bold text-gray-700">
+                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7">
+                    </path>
+                </svg>
+                <span>Catatan Verifikator (Riwayat)</span>
+            </div>
+            <p class="text-xs text-gray-600 leading-relaxed">{{ $pengajuan->komentar_revisi }}</p>
+        </div>
+    @endif
 
-        <!-- Form untuk memproses data -->
-        <form id="formVerifikasi" action="{{ route('admin.permohonan.update', $pengajuan->id) }}" method="POST">
-            @csrf
-            @method('PATCH')
-            <input type="hidden" name="status" id="inputStatus">
-            <textarea name="komentar_revisi" id="catatanVerifikator" rows="3"
-                placeholder="Masukkan catatan atau alasan penolakan/revisi di sini..."
-                class="w-full bg-white border border-gray-200 rounded-xl p-3.5 text-xs text-gray-700 placeholder-gray-400 focus:ring-[#00236F] focus:border-[#00236F] outline-none transition resize-none">{{ old('komentar_revisi', $pengajuan->komentar_revisi) }}</textarea>
-        </form>
-    </div>
+    @if ($bisaDiverifikasi)
+        <!-- SCRIPT AKSI VERIFIKASI -->
+        <script>
+            function handleAction(statusTarget) {
+                const catatan = document.getElementById('catatanVerifikator').value.trim();
+                const form = document.getElementById('formVerifikasi');
+                const inputStatus = document.getElementById('inputStatus');
 
-    <!-- SCRIPT AKSI VERIFIKASI -->
-    <script>
-        function handleAction(statusTarget) {
-            const catatan = document.getElementById('catatanVerifikator').value.trim();
-            const form = document.getElementById('formVerifikasi');
-            const inputStatus = document.getElementById('inputStatus');
+                if (statusTarget === 'Revisi' || statusTarget === 'Ditolak') {
+                    if (!catatan) {
+                        alert('Harap isi "Catatan Verifikator" untuk memberikan alasan/instruksi!');
+                        document.getElementById('catatanVerifikator').focus();
+                        return;
+                    }
+                }
 
-            if (statusTarget === 'Revisi' || statusTarget === 'Ditolak') {
-                if (!catatan) {
-                    alert('Harap isi "Catatan Verifikator" untuk memberikan alasan/instruksi!');
-                    document.getElementById('catatanVerifikator').focus();
-                    return;
+                const confirmMsg =
+                    `Apakah Anda yakin ingin memberikan status: ${statusTarget.toUpperCase()} pada permohonan ini?`;
+
+                if (confirm(confirmMsg)) {
+                    inputStatus.value = statusTarget;
+                    form.submit();
                 }
             }
-
-            const confirmMsg =
-                `Apakah Anda yakin ingin memberikan status: ${statusTarget.toUpperCase()} pada permohonan ini?`;
-
-            if (confirm(confirmMsg)) {
-                inputStatus.value = statusTarget;
-                form.submit();
-            }
-        }
-    </script>
+        </script>
+    @endif
 
 @endsection

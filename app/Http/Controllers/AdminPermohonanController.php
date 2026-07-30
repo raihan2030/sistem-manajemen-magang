@@ -7,11 +7,12 @@ use App\Models\DataMagang;
 use App\Models\PengajuanMagang;
 use App\Services\PermohonanStatsService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
+use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AdminPermohonanController extends Controller
 {
@@ -122,5 +123,103 @@ class AdminPermohonanController extends Controller
                 ->withInput()
                 ->withErrors(['error' => 'Terjadi kesalahan sistem. Silakan coba lagi atau hubungi admin.']);
         }
+    }
+
+    protected function getPermohonanFilteredQuery(Request $request)
+    {
+        $skpdId = Auth::user()->skpd_id;
+        $filter = $request->query('filter', 'semua');
+
+        $query = PengajuanMagang::with(['anggota', 'bidang', 'perwakilan'])
+            ->forSkpd($skpdId)
+            ->whereNotIn('status', ['Ditolak', 'Diterima']);
+
+        match ($filter) {
+            'mendesak'  => $query->mendesak(),
+            'terlambat' => $query->terlambat(),
+            'revisi'    => $query->where('status', 'Revisi'),
+            default     => null,
+        };
+
+        return $query->latest('tanggal_pengajuan');
+    }
+
+    /**
+     * Hitung teks SLA per baris, sama persis logikanya dengan yang ada di blade.
+     */
+    protected function hitungSlaText(PengajuanMagang $row): string
+    {
+        if ($row->status === 'Revisi') {
+            return 'Menunggu Revisi';
+        }
+
+        $sekarang = \Carbon\Carbon::now('+08:00');
+        $batasVerifikasi = \Carbon\Carbon::parse($row->batas_verifikasi)->timezone('+08:00');
+
+        if ($sekarang->greaterThan($batasVerifikasi)) {
+            return 'Waktu Habis';
+        }
+
+        $selisihJam  = (int) $sekarang->diffInHours($batasVerifikasi);
+        $selisihHari = (int) $sekarang->diffInDays($batasVerifikasi);
+
+        return $selisihJam <= 24
+            ? $selisihJam . ' Jam Tersisa'
+            : $selisihHari . ' Hari Tersisa';
+    }
+
+    public function exportCsv(Request $request)
+    {
+        $permohonans = $this->getPermohonanFilteredQuery($request)->get();
+        $filename = 'daftar-permohonan-' . now()->format('Y-m-d-His') . '.csv';
+
+        $headers = [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $callback = function () use ($permohonans) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, ['Pemohon', 'Email', 'Institusi Asal', 'Jurusan', 'Bidang', 'Tanggal Pengajuan', 'Status', 'SLA']);
+
+            foreach ($permohonans as $row) {
+                $ketua = $row->anggota->first();
+
+                fputcsv($file, [
+                    $ketua->nama_lengkap ?? ($row->perwakilan->name ?? 'Pemohon'),
+                    $row->perwakilan->email ?? '-',
+                    $row->institusi_asal ?? '-',
+                    $ketua->jurusan_prodi ?? '-',
+                    $row->bidang->nama_bidang ?? '-',
+                    \Carbon\Carbon::parse($row->tanggal_pengajuan)->translatedFormat('d M Y H:i'),
+                    $row->status,
+                    $this->hitungSlaText($row),
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $permohonans = $this->getPermohonanFilteredQuery($request)->get();
+        $filter = $request->query('filter', 'semua');
+
+        $pdf = Pdf::loadView('pages.admin.exports.permohonan_pdf', [
+            'permohonans' => $permohonans,
+            'filterLabel' => match ($filter) {
+                'mendesak'  => 'Mendesak',
+                'terlambat' => 'Terlambat',
+                'revisi'    => 'Revisi',
+                default     => 'Semua',
+            },
+            'skpdNama' => Auth::user()->skpd->nama_skpd ?? '-',
+            'slaTextResolver' => fn ($row) => $this->hitungSlaText($row),
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->download('daftar-permohonan-' . now()->format('Y-m-d-His') . '.pdf');
     }
 }

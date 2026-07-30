@@ -47,6 +47,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/dashboard', [SuperadminDashboardController::class, 'index'])->name('dashboard');
 
         Route::get('/permohonan', [SuperadminPermohonanController::class, 'index'])->name('permohonan');
+
+        Route::get('/permohonan/export/csv', [SuperadminPermohonanController::class, 'exportCsv'])
+            ->name('permohonan.export.csv');
+
+        Route::get('/permohonan/export/pdf', [SuperadminPermohonanController::class, 'exportPdf'])
+            ->name('permohonan.export.pdf');
         
         Route::get('/aktivitas', function () {
             return view('pages.superadmin.aktivitas');
@@ -69,6 +75,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::patch('/permohonan/detail/{id}', [AdminPermohonanController::class, 'updateStatus'])->name('permohonan.update');
 
+        Route::get('/permohonan/export/csv', [AdminPermohonanController::class, 'exportCsv'])
+            ->name('permohonan.export.csv');
+
+        Route::get('/permohonan/export/pdf', [AdminPermohonanController::class, 'exportPdf'])
+            ->name('permohonan.export.pdf');
+
         Route::get('/kapasitas', [AdminKapasitasController::class, 'index'])->name('kapasitas.index');
 
         Route::put('/kapasitas/{id}', [AdminKapasitasController::class, 'update'])->name('kapasitas.update');
@@ -84,6 +96,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('upload_sertifikat.store');
         
         Route::get('/peserta', [PesertaMagangController::class, 'index'])->name('peserta.index');
+
+        Route::get('/peserta/export/csv', [PesertaMagangController::class, 'exportCsv'])
+            ->name('peserta.export.csv');
+
+        Route::get('/peserta/export/pdf', [PesertaMagangController::class, 'exportPdf'])
+            ->name('peserta.export.pdf');
     });
 
     // === KHUSUS PESERTA / PERWAKILAN (Role 3) ===

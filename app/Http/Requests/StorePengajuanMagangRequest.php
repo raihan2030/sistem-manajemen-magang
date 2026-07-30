@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Bidang;
 use App\Models\PengajuanMagang;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -32,6 +33,8 @@ class StorePengajuanMagangRequest extends FormRequest
             }
         }
 
+        $maxAnggota = $this->hitungMaxAnggota();
+
         return [
             'bidang_id' => ['required', 'integer', 'exists:bidang,id'],
             'tanggal_mulai' => ['required', 'date', 'after_or_equal:' . $minTanggalMulai],
@@ -39,7 +42,7 @@ class StorePengajuanMagangRequest extends FormRequest
             'surat_permohonan' => $isUpdate
                 ? ['nullable', 'file', 'mimes:pdf', 'max:5120']
                 : ['required', 'file', 'mimes:pdf', 'max:5120'],
-            'anggota' => ['required', 'array', 'min:1', 'max:5'],
+            'anggota' => ['required', 'array', 'min:1', 'max:' . $maxAnggota],
             'anggota.*.nama_lengkap' => ['required', 'string', 'max:60'],
             'anggota.*.nim_nisn' => ['required', 'string', 'min:8', 'max:13'],
             'anggota.*.kartu_identitas' => ['nullable', 'file', 'mimes:pdf', 'max:5120'],
@@ -49,8 +52,22 @@ class StorePengajuanMagangRequest extends FormRequest
         ];
     }
 
+    private function hitungMaxAnggota(): int
+    {
+        $bidangId = $this->input('bidang_id');
+        $bidang = $bidangId ? Bidang::find($bidangId) : null;
+
+        if (! $bidang) {
+            return PHP_INT_MAX;
+        }
+
+        return max(1, (int) $bidang->sisa_kuota);
+    }
+
     public function messages(): array
     {
+        $maxAnggota = $this->hitungMaxAnggota();
+
         return [
             'bidang_id.required' => 'Silakan pilih bidang instansi tujuan magang.',
             'bidang_id.exists' => 'Bidang yang dipilih tidak valid.',
@@ -69,7 +86,9 @@ class StorePengajuanMagangRequest extends FormRequest
 
             'anggota.required' => 'Data pemohon/anggota magang wajib diisi.',
             'anggota.min' => 'Pendaftaran minimal menyertakan 1 pemohon.',
-            'anggota.max' => 'Pendaftaran kelompok maksimal terdiri dari 5 anggota.',
+            'anggota.max' => $maxAnggota === PHP_INT_MAX
+                ? 'Jumlah anggota melebihi sisa kuota yang tersedia pada bidang ini.'
+                : "Jumlah anggota melebihi sisa kuota yang tersedia pada bidang ini (maksimal {$maxAnggota} orang).",
 
             'anggota.*.nama_lengkap.required' => 'Nama lengkap pemohon/anggota tidak boleh kosong.',
 

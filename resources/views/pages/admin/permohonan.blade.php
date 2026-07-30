@@ -61,14 +61,36 @@
                     class="px-4 py-2 text-xs font-bold rounded-lg shadow-2xs transition {{ $currentFilter == 'revisi' ? 'bg-purple-50 text-purple-600 border border-purple-200' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200' }}">
                     Revisi ({{ $countRevisi ?? 0 }})
                 </a>
+
+                <!-- Teks Indikator Menampilkan Data -->
+                <span class="text-xs text-gray-500 font-medium ms-2">
+                    Menampilkan <span
+                        class="font-bold text-gray-700">{{ $permohonans->firstItem() ?? 0 }}-{{ $permohonans->lastItem() ?? 0 }}</span>
+                    dari <span class="font-bold text-gray-700">{{ $permohonans->total() }}</span> data
+                </span>
             </div>
 
-            <!-- Teks Indikator Menampilkan Data -->
-            <span class="text-xs text-gray-500 font-medium">
-                Menampilkan <span
-                    class="font-bold text-gray-700">{{ $permohonans->firstItem() ?? 0 }}-{{ $permohonans->lastItem() ?? 0 }}</span>
-                dari <span class="font-bold text-gray-700">{{ $permohonans->total() }}</span> data
-            </span>
+            <!-- Tombol Export, ikut filter tab yang aktif -->
+            <div class="flex items-center gap-2">
+                <a href="{{ route('admin.permohonan.export.csv', ['filter' => $currentFilter]) }}"
+                    class="px-3.5 py-2 border border-emerald-600 text-emerald-700 bg-white hover:bg-emerald-50 rounded-lg text-xs font-bold transition shadow-2xs flex items-center gap-1.5 whitespace-nowrap">
+                    <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                        </path>
+                    </svg>
+                    Unduh CSV
+                </a>
+                <a href="{{ route('admin.permohonan.export.pdf', ['filter' => $currentFilter]) }}"
+                    class="px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-bold transition shadow-2xs flex items-center gap-1.5 whitespace-nowrap">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                        </path>
+                    </svg>
+                    Unduh PDF
+                </a>
+            </div>
         </div>
 
         <!-- Tabel Daftar Permohonan -->
@@ -137,7 +159,8 @@
 
                             <!-- Kolom Bidang yang Diajukan -->
                             <td class="px-6 py-4.5 align-middle">
-                                <div class="text-navy font-bold text-sm items-center">{{ $row->bidang->nama_bidang ?? '-' }}</div>
+                                <div class="text-navy font-bold text-sm items-center">
+                                    {{ $row->bidang->nama_bidang ?? '-' }}</div>
                             </td>
 
                             <!-- Kolom Tanggal Masuk -->

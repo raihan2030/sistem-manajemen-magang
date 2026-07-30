@@ -56,19 +56,25 @@
 
                 <!-- Select Filter Status -->
                 <div class="w-full sm:w-44">
-                    <select id="statusFilter" onchange="filterTable()"
-                        class="w-full px-3.5 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-xs font-semibold text-gray-600 outline-none focus:border-[#00236F] transition cursor-pointer">
-                        <option value="all">Semua Status</option>
-                        <option value="Terdaftar">Terdaftar</option>
-                        <option value="Berlangsung">Berlangsung</option>
-                        <option value="Selesai">Selesai</option>
-                    </select>
+                    <div class="relative">
+                        <select id="statusFilter" onchange="filterTable()"
+                            class="appearance-none w-full pl-3 pr-8 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-xs font-semibold text-gray-600 outline-none focus:border-[#00236F] transition cursor-pointer">
+                            <option value="all">Semua Status</option>
+                            <option value="Terdaftar">Terdaftar</option>
+                            <option value="Berlangsung">Berlangsung</option>
+                            <option value="Selesai">Selesai</option>
+                        </select>
+                        <svg class="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-700"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
                 </div>
             </div>
 
             <!-- Sisi Kanan: Tombol Export CSV & PDF -->
             <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
-                <a href="#"
+                <a id="btnExportCsv" href="{{ route('admin.peserta.export.csv') }}"
                     class="px-4 py-2.5 border border-emerald-600 text-emerald-700 bg-white hover:bg-emerald-50 rounded-xl text-xs font-bold transition shadow-2xs flex items-center gap-2">
                     <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -78,7 +84,7 @@
                     Unduh CSV
                 </a>
 
-                <a href="#"
+                <a id="btnExportPdf" href="{{ route('admin.peserta.export.pdf') }}"
                     class="px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold transition shadow-2xs flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -96,8 +102,8 @@
                 <thead>
                     <tr
                         class="bg-[#F4F7FF]/80 text-[11px] font-bold text-[#00236F] tracking-wider uppercase border-b border-gray-100">
-                        <th class="px-6 py-4 w-[25%]">NAMA PESERTA</th>
-                        <th class="px-6 py-4 w-[25%]">INSTANSI</th>
+                        <th class="px-6 py-4 w-[30%]">NAMA PESERTA</th>
+                        <th class="px-6 py-4 w-[20%]">INSTANSI</th>
                         <th class="px-6 py-4 w-[20%]">JURUSAN</th>
                         <th class="px-6 py-4 w-[18%]">PERIODE MAGANG</th>
                         <th class="px-6 py-4 w-[12%]">STATUS</th>
@@ -117,10 +123,27 @@
                         @endphp
                         <tr class="peserta-row hover:bg-gray-50/60 transition" data-status="{{ $row['status'] }}">
 
-                            <!-- name & NIM/NISN -->
+                            <!-- name & NIM/NISN (Ketua/Perwakilan) -->
                             <td class="px-6 py-4.5 align-middle">
-                                <div class="font-bold text-[#1f2937] text-xs">{{ $row['name'] }}</div>
-                                <div class="text-[11px] text-gray-400 mt-0.5">NIM/NISN: {{ $row['nim'] }}</div>
+                                <div class="flex items-center gap-5">
+                                    <div>
+                                        <div class="font-bold text-[#1f2937] text-xs">
+                                            {{ $row['name'] }}
+                                            @if ($row['tipe'] === 'Kelompok')
+                                                <br><span class="text-[10px] font-semibold text-gray-400">(Ketua)</span>
+                                            @endif
+                                        </div>
+                                        <div class="text-[11px] text-gray-400 mt-0.5">NIM/NISN: {{ $row['nim'] }}</div>
+                                    </div>
+
+                                    @if ($row['tipe'] === 'Kelompok')
+                                        <span
+                                            class="shrink-0 bg-blue-50 text-[#00236F] border border-blue-200/80 text-[10px] font-bold px-2 py-1 rounded-full whitespace-nowrap cursor-help"
+                                            title="Anggota lain: {{ $row['nama_anggota_lain'] }}">
+                                            +{{ $row['total_anggota'] - 1 }} anggota
+                                        </span>
+                                    @endif
+                                </div>
                             </td>
 
                             <!-- institusi_asal -->
@@ -310,6 +333,26 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             renderTable();
+        });
+
+        function updateExportLinks() {
+            const statusVal = document.getElementById('statusFilter').value;
+            const csvBase = "{{ route('admin.peserta.export.csv') }}";
+            const pdfBase = "{{ route('admin.peserta.export.pdf') }}";
+
+            document.getElementById('btnExportCsv').href = `${csvBase}?status=${statusVal}`;
+            document.getElementById('btnExportPdf').href = `${pdfBase}?status=${statusVal}`;
+        }
+
+        function filterTable() {
+            currentPage = 1;
+            renderTable();
+            updateExportLinks(); // ⬅️ tambahkan ini
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTable();
+            updateExportLinks(); // ⬅️ tambahkan ini, biar default status "all" ke-set di awal
         });
     </script>
 

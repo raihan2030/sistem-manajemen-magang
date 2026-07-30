@@ -73,14 +73,20 @@
                     <label class="block text-xs font-bold text-[#00236F] uppercase tracking-wider mb-2">
                         Pilih Sub Bagian / Bidang yang Dikelola
                     </label>
-                    <select onchange="window.location.href='?bidang_id=' + this.value"
-                        class="w-full bg-white border border-gray-300 text-[#1f2937] font-bold rounded-lg px-4 py-2.5 text-sm focus:ring-[#00236F] focus:border-[#00236F] outline-none transition cursor-pointer">
-                        @foreach ($bidangs as $b)
-                            <option value="{{ $b->id }}" {{ $b->id == $selectedBidang->id ? 'selected' : '' }}>
-                                {{ $b->nama_bidang }} (Sisa Kuota: {{ $b->sisa_kuota }} / Total: {{ $b->kuota_total }})
-                            </option>
-                        @endforeach
-                    </select>
+                    <div class="relative">
+                        <select onchange="window.location.href='?bidang_id=' + this.value"
+                            class="appearance-none w-full bg-white border border-gray-300 text-[#1f2937] font-bold rounded-lg pl-3 pr-8 py-2.5 text-sm focus:ring-[#00236F] focus:border-[#00236F] outline-none transition cursor-pointer">
+                            @foreach ($bidangs as $b)
+                                <option value="{{ $b->id }}" {{ $b->id == $selectedBidang->id ? 'selected' : '' }}>
+                                    {{ $b->nama_bidang }} (Sisa Kuota: {{ $b->sisa_kuota }} / Total: {{ $b->kuota_total }})
+                                </option>
+                            @endforeach
+                        </select>
+                        <svg class="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-700"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
                     <p class="text-[11px] text-gray-500 mt-1.5">Pilih bidang dari list di atas untuk mengedit kapasitasnya.
                     </p>
                 </div>
