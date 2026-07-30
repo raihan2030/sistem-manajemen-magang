@@ -146,7 +146,7 @@
                         </div>
 
                         <button type="submit" id="submitBtn"
-                            class="w-full py-3 bg-[#00236F] text-white text-sm font-bold rounded-lg shadow-xs hover:bg-blue-900 transition flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                            class="w-full py-3 bg-[#00236F] text-white text-sm font-bold rounded-lg shadow-xs hover:bg-blue-900 transition flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
@@ -163,13 +163,15 @@
         </div>
     @endif
 
+    {{-- Import Library SweetAlert2 --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <!-- SCRIPT LOGIKA DINAMIS -->
     <script>
         // Data peserta dari server
         const participants = @json($peserta);
 
         // Template URL submit per data_magang
-        // Pastikan nama route ini sesuai dengan deklarasi di routes/web.php Anda
         const storeUrlTemplate = "{{ route('admin.upload_sertifikat.store', ['dataMagang' => '__ID__']) }}";
 
         function selectParticipant(id) {
@@ -206,7 +208,6 @@
                 submitBtn.classList.add('bg-[#00236F]', 'hover:bg-blue-900');
             } else {
                 warningBanner.classList.remove('hidden');
-                // Ganti status mentah dari database dengan label yang lebih ramah pengguna
                 warningText.innerText =
                     'Sertifikat belum dapat diterbitkan karena peserta masih dalam masa magang (Status: Belum Selesai).';
                 submitBtn.disabled = true;
@@ -242,7 +243,7 @@
                         </label>
                         <input type="file" name="sertifikat[${member.anggota_id}]" accept=".pdf"
                             ${isSelesai ? '' : 'disabled'}
-                            class="w-full text-xs text-gray-500 mb-3 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-[11px] file:font-semibold file:bg-blue-50 file:text-[#00236F] hover:file:bg-blue-100 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:hover:file:bg-gray-200 disabled:file:text-gray-500">
+                            class="sertifikat-input w-full text-xs text-gray-500 mb-3 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-[11px] file:font-semibold file:bg-blue-50 file:text-[#00236F] hover:file:bg-blue-100 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:hover:file:bg-gray-200 disabled:file:text-gray-500">
 
                         <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Catatan (Opsional)</label>
                         <input type="text" name="catatan[${member.anggota_id}]" placeholder="Contoh: Predikat sangat baik"
@@ -263,6 +264,60 @@
             document.querySelectorAll('.participant-card').forEach(card => {
                 const name = card.getAttribute('data-name') || '';
                 card.style.display = name.includes(keyword) ? '' : 'none';
+            });
+        });
+
+        // Event listener SweetAlert untuk Submit Form Penerbitan Sertifikat
+        document.getElementById('uploadForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const form = this;
+
+            // Cek apakah ada minimal 1 file sertifikat yang dipilih
+            const fileInputs = form.querySelectorAll('.sertifikat-input');
+            let hasSelectedFile = false;
+
+            fileInputs.forEach(input => {
+                if (input.files && input.files.length > 0) {
+                    hasSelectedFile = true;
+                }
+            });
+
+            // Jika belum ada file PDF yang dipilih sama sekali, tampilkan peringatan
+            if (!hasSelectedFile) {
+                Swal.fire({
+                    title: 'Pilih File Sertifikat',
+                    text: 'Silakan pilih minimal satu file sertifikat (PDF) yang ingin diunggah.',
+                    icon: 'warning',
+                    confirmButtonColor: '#00236F',
+                    confirmButtonText: 'Paham'
+                });
+                return;
+            }
+
+            // Jika ada file yang dipilih, tampilkan modal konfirmasi
+            Swal.fire({
+                title: 'Terbitkan Sertifikat?',
+                text: "Sertifikat yang diunggah akan dapat diakses dan diunduh langsung oleh peserta.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#00236F',
+                cancelButtonColor: '#6B7280',
+                confirmButtonText: 'Ya, Terbitkan',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Tampilkan indicator loading sederhana
+                    Swal.fire({
+                        title: 'Mengunggah Sertifikat...',
+                        text: 'Mohon tunggu sebentar',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                    form.submit();
+                }
             });
         });
 

@@ -4,11 +4,17 @@
 
 @section('content')
 
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     @php
         $ketua = $pengajuan->anggota->first();
         $jumlahAnggota = $pengajuan->anggota->count();
 
         $tipe_permohonan = $jumlahAnggota > 1 ? 'Kelompok' : 'Individu';
+        
+        // Cek apakah permohonan sudah dalam status final (Diterima atau Ditolak)
+        $isFinal = in_array($pengajuan->status, ['Diterima', 'Ditolak']);
     @endphp
 
     <!-- Header Page & Action Buttons -->
@@ -26,20 +32,40 @@
             </p>
         </div>
 
-        <!-- Tombol Aksi Utama -->
+        <!-- Tombol Aksi Utama / Badge Status -->
         <div class="flex items-center gap-3 self-start md:self-auto">
-            <button type="button" onclick="handleAction('Revisi')"
-                class="px-5 py-2.5 bg-white border border-[#00236F] text-[#00236F] hover:bg-blue-50/50 text-xs font-bold rounded-lg transition shadow-xs cursor-pointer">
-                Revisi
-            </button>
-            <button type="button" onclick="handleAction('Ditolak')"
-                class="px-5 py-2.5 bg-white border border-red-500 text-red-600 hover:bg-red-50/50 text-xs font-bold rounded-lg transition shadow-xs cursor-pointer">
-                Tolak
-            </button>
-            <button type="button" onclick="handleAction('Diterima')"
-                class="px-5 py-2.5 bg-[#00236F] text-white hover:bg-blue-900 text-xs font-bold rounded-lg transition shadow-xs cursor-pointer">
-                Setujui Permohonan
-            </button>
+            @if (!$isFinal)
+                {{-- Tampilkan Tombol Aksi hanya jika belum Diterima atau Ditolak --}}
+                <button type="button" onclick="handleAction('Revisi')"
+                    class="px-5 py-2.5 bg-white border border-[#00236F] text-[#00236F] hover:bg-blue-50/50 text-xs font-bold rounded-lg transition shadow-xs cursor-pointer">
+                    Revisi
+                </button>
+                <button type="button" onclick="handleAction('Ditolak')"
+                    class="px-5 py-2.5 bg-white border border-red-500 text-red-600 hover:bg-red-50/50 text-xs font-bold rounded-lg transition shadow-xs cursor-pointer">
+                    Tolak
+                </button>
+                <button type="button" onclick="handleAction('Diterima')"
+                    class="px-5 py-2.5 bg-[#00236F] text-white hover:bg-blue-900 text-xs font-bold rounded-lg transition shadow-xs cursor-pointer">
+                    Setujui Permohonan
+                </button>
+            @else
+                {{-- Tampilkan Badge Status jika sudah selesai diproses --}}
+                @if ($pengajuan->status === 'Diterima')
+                    <span class="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-extrabold rounded-lg shadow-xs">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Permohonan Disetujui
+                    </span>
+                @elseif ($pengajuan->status === 'Ditolak')
+                    <span class="inline-flex items-center gap-1.5 px-4 py-2 bg-red-50 border border-red-200 text-red-600 text-xs font-extrabold rounded-lg shadow-xs">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        Permohonan Ditolak
+                    </span>
+                @endif
+            @endif
         </div>
     </div>
 
@@ -259,43 +285,85 @@
             <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
             </svg>
-            <span>Catatan Verifikator (Wajib diisi jika Revisi / Tolak)</span>
+            <span>Catatan Verifikator</span>
         </div>
 
-        <!-- Form untuk memproses data -->
-        <form id="formVerifikasi" action="{{ route('admin.permohonan.update', $pengajuan->id) }}" method="POST">
-            @csrf
-            @method('PATCH')
-            <input type="hidden" name="status" id="inputStatus">
-            <textarea name="komentar_revisi" id="catatanVerifikator" rows="3"
-                placeholder="Masukkan catatan atau alasan penolakan/revisi di sini..."
-                class="w-full bg-white border border-gray-200 rounded-xl p-3.5 text-xs text-gray-700 placeholder-gray-400 focus:ring-[#00236F] focus:border-[#00236F] outline-none transition resize-none">{{ old('komentar_revisi', $pengajuan->komentar_revisi) }}</textarea>
-        </form>
+        @if (!$isFinal)
+            <!-- Form untuk memproses data jika permohonan belum final -->
+            <form id="formVerifikasi" action="{{ route('admin.permohonan.update', $pengajuan->id) }}" method="POST">
+                @csrf
+                @method('PATCH')
+                <input type="hidden" name="status" id="inputStatus">
+                <textarea name="komentar_revisi" id="catatanVerifikator" rows="3"
+                    placeholder="Masukkan catatan atau alasan penolakan/revisi di sini..."
+                    class="w-full bg-white border border-gray-200 rounded-xl p-3.5 text-xs text-gray-700 placeholder-gray-400 focus:ring-[#00236F] focus:border-[#00236F] outline-none transition resize-none">{{ old('komentar_revisi', $pengajuan->komentar_revisi) }}</textarea>
+            </form>
+        @else
+            <!-- Tampilan Read-Only catatan jika permohonan sudah final -->
+            <div class="bg-white border border-gray-200 rounded-xl p-3.5 text-xs text-gray-700 min-h-[60px]">
+                {{ $pengajuan->komentar_revisi ?: 'Tidak ada catatan tambahan.' }}
+            </div>
+        @endif
     </div>
 
     <!-- SCRIPT AKSI VERIFIKASI -->
-    <script>
-        function handleAction(statusTarget) {
-            const catatan = document.getElementById('catatanVerifikator').value.trim();
-            const form = document.getElementById('formVerifikasi');
-            const inputStatus = document.getElementById('inputStatus');
+    @if (!$isFinal)
+        <script>
+            function handleAction(statusTarget) {
+                const catatan = document.getElementById('catatanVerifikator').value.trim();
+                const form = document.getElementById('formVerifikasi');
+                const inputStatus = document.getElementById('inputStatus');
 
-            if (statusTarget === 'Revisi' || statusTarget === 'Ditolak') {
-                if (!catatan) {
-                    alert('Harap isi "Catatan Verifikator" untuk memberikan alasan/instruksi!');
-                    document.getElementById('catatanVerifikator').focus();
+                // Validasi catatan jika memilih Revisi atau Tolak
+                if ((statusTarget === 'Revisi' || statusTarget === 'Ditolak') && !catatan) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Catatan Wajib Diisi',
+                        text: 'Harap isi "Catatan Verifikator" untuk memberikan alasan atau instruksi!',
+                        confirmButtonColor: '#00236F'
+                    }).then(() => {
+                        document.getElementById('catatanVerifikator').focus();
+                    });
                     return;
                 }
-            }
 
-            const confirmMsg =
-                `Apakah Anda yakin ingin memberikan status: ${statusTarget.toUpperCase()} pada permohonan ini?`;
+                // Pengaturan modal SweetAlert2 berdasarkan status target
+                let swalConfig = {
+                    title: 'Konfirmasi Aksi',
+                    text: '',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Lanjutkan',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true
+                };
 
-            if (confirm(confirmMsg)) {
-                inputStatus.value = statusTarget;
-                form.submit();
+                if (statusTarget === 'Diterima') {
+                    swalConfig.title = 'Setujui Permohonan?';
+                    swalConfig.text = 'Permohonan magang ini akan disetujui dan diproses lebih lanjut.';
+                    swalConfig.icon = 'success';
+                    swalConfig.confirmButtonColor = '#00236F';
+                } else if (statusTarget === 'Revisi') {
+                    swalConfig.title = 'Minta Revisi Permohonan?';
+                    swalConfig.text = 'Permohonan akan dikembalikan ke pemohon untuk diperbaiki sesuai catatan Anda.';
+                    swalConfig.icon = 'warning';
+                    swalConfig.confirmButtonColor = '#00236F';
+                } else if (statusTarget === 'Ditolak') {
+                    swalConfig.title = 'Tolak Permohonan?';
+                    swalConfig.text = 'Permohonan magang ini akan ditolak.';
+                    swalConfig.icon = 'error';
+                    swalConfig.confirmButtonColor = '#ef4444';
+                }
+
+                // Tampilkan SweetAlert
+                Swal.fire(swalConfig).then((result) => {
+                    if (result.isConfirmed) {
+                        inputStatus.value = statusTarget;
+                        form.submit();
+                    }
+                });
             }
-        }
-    </script>
+        </script>
+    @endif
 
 @endsection

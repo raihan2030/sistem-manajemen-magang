@@ -106,7 +106,7 @@
             </select>
 
             <!-- Tombol Filter & Reset -->
-            <button type="submit" class="bg-[#00236F] text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-blue-900 transition flex items-center gap-1">
+            <button type="submit" class="bg-[#00236F] text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-blue-900 transition flex items-center gap-1 cursor-pointer">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
                 Filter
             </button>
@@ -117,7 +117,7 @@
                 </a>
             @endif
 
-            <button type="button" class="text-xs font-bold text-[#00236F] border border-[#00236F] bg-blue-50/50 hover:bg-blue-50 px-4 py-2 rounded-lg transition ml-auto md:ml-2">
+            <button type="button" class="text-xs font-bold text-[#00236F] border border-[#00236F] bg-blue-50/50 hover:bg-blue-50 px-4 py-2 rounded-lg transition ml-auto md:ml-2 cursor-pointer">
                 Unduh CSV
             </button>
         </form>
@@ -240,9 +240,11 @@
         const chartLabels = JSON.parse(document.getElementById('chart-labels-data').textContent);
         const chartValues = JSON.parse(document.getElementById('chart-values-data').textContent);
 
+        // Gradasi warna lembut di bawah garis
         const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-        gradient.addColorStop(0, 'rgba(0, 35, 111, 0.25)');
-        gradient.addColorStop(1, 'rgba(0, 35, 111, 0.0)');
+        gradient.addColorStop(0, 'rgba(0, 35, 111, 0.18)');
+        gradient.addColorStop(0.8, 'rgba(0, 35, 111, 0.01)');
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
 
         new Chart(ctx, {
             type: 'line',
@@ -251,41 +253,58 @@
                 datasets: [{
                     label: 'Jumlah Permohonan',
                     data: chartValues,
-                    borderColor: '#00236F',
-                    borderWidth: 2.5,
+                    borderColor: '#00236F',         // Warna garis utama (Biru Navy)
+                    borderWidth: 3,
                     backgroundColor: gradient,
                     fill: true,
-                    tension: 0.35,
-                    pointBackgroundColor: '#00236F',
-                    pointBorderColor: '#ffffff',
-                    pointBorderWidth: 2,
-                    pointRadius: 4,
-                    pointHoverRadius: 6
+                    tension: 0.4,                   // Kelengkungan garis lebih natural
+
+                    // Settingan Titik / Buletan Oranye
+                    pointBackgroundColor: '#FEA619', // Warna oranye utama
+                    pointBorderColor: '#ffffff',    // Border putih agar terlihat timbul
+                    pointBorderWidth: 2.5,
+                    pointRadius: 5.5,               // Ukuran normal titik
+                    pointHoverRadius: 8,            // Ukuran saat kursor diarahkan ke titik
+                    pointHoverBackgroundColor: '#FEA619',
+                    pointHoverBorderColor: '#00236F', // Border biru saat hover
+                    pointHoverBorderWidth: 3
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
+                },
                 plugins: {
                     legend: { display: false },
                     tooltip: {
                         backgroundColor: '#1f2937',
                         titleFont: { size: 12, weight: 'bold' },
                         bodyFont: { size: 12 },
-                        padding: 10,
-                        cornerRadius: 8,
-                        displayColors: false
+                        padding: 12,
+                        cornerRadius: 10,
+                        displayColors: true,
+                        boxWidth: 8,
+                        boxHeight: 8,
+                        boxPadding: 4,
+                        callbacks: {
+                            label: function(context) {
+                                return ` Total: ${context.parsed.y} Permohonan`;
+                            }
+                        }
                     }
                 },
                 scales: {
                     x: {
                         grid: { display: false },
-                        ticks: { font: { size: 11 }, color: '#6b7280' }
+                        ticks: { font: { size: 11, weight: '500' }, color: '#6b7280' }
                     },
                     y: {
                         beginAtZero: true,
-                        ticks: { precision: 0, font: { size: 11 }, color: '#6b7280' },
-                        grid: { color: '#f3f4f6' }
+                        ticks: { precision: 0, font: { size: 11, weight: '500' }, color: '#6b7280' },
+                        grid: { color: '#f3f4f6', strokeDashArray: [4, 4] }
                     }
                 }
             }

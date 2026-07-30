@@ -193,7 +193,7 @@
                         <div>
                             <label class="block text-xs font-bold text-[#1f2937] mb-2">Jenjang Pendidikan <span
                                     class="text-red-500">*</span></label>
-                            <select name="jenjang_pendidikan" {{ $is_locked ? 'disabled' : '' }}
+                            <select name="jenjang_pendidikan" id="jenjang_pendidikan" {{ $is_locked ? 'disabled' : '' }}
                                 class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-[#00236F] focus:border-[#00236F] outline-none transition bg-white"
                                 required>
                                 <option value="" disabled
@@ -210,7 +210,7 @@
                         <div>
                             <label class="block text-xs font-bold text-[#1f2937] mb-2">Nama Sekolah / Institusi Asal <span
                                     class="text-red-500">*</span></label>
-                            <input type="text" name="institusi_asal"
+                            <input type="text" name="institusi_asal" id="institusi_asal"
                                 value="{{ old('institusi_asal', $pengajuan->institusi_asal ?? '') }}"
                                 {{ $is_locked ? 'disabled' : '' }} placeholder="Contoh: Universitas Lambung Mangkurat"
                                 maxlength="100"
@@ -236,7 +236,7 @@
                         <div>
                             <label class="block text-xs font-bold text-[#1f2937] mb-2">Nama Lengkap <span
                                     class="text-red-500">*</span></label>
-                            <input type="text" name="anggota[0][nama_lengkap]"
+                            <input type="text" name="anggota[0][nama_lengkap]" id="nama_ketua"
                                 value="{{ old('anggota.0.nama_lengkap', $ketua->nama_lengkap ?? (Auth::user()->name ?? '')) }}"
                                 {{ $is_locked ? 'disabled' : '' }} placeholder="Sesuai kartu identitas"
                                 maxlength="70"
@@ -247,7 +247,7 @@
                         <div>
                             <label class="block text-xs font-bold text-[#1f2937] mb-2">NISN / NIM <span
                                     class="text-red-500">*</span></label>
-                            <input type="text" name="anggota[0][nim_nisn]"
+                            <input type="text" name="anggota[0][nim_nisn]" id="nim_ketua"
                                 value="{{ old('anggota.0.nim_nisn', $ketua->nim_nisn ?? '') }}" minlength="4"
                                 maxlength="15" {{ $is_locked ? 'disabled' : '' }} placeholder="Masukkan nomor induk"
                                 oninput="cleanNimInput(this)"
@@ -257,7 +257,7 @@
                         <div>
                             <label class="block text-xs font-bold text-[#1f2937] mb-2">Jurusan / Program Studi <span
                                     class="text-red-500">*</span></label>
-                            <input type="text" name="anggota[0][jurusan_prodi]"
+                            <input type="text" name="anggota[0][jurusan_prodi]" id="prodi_ketua"
                                 value="{{ old('anggota.0.jurusan_prodi', $ketua->jurusan_prodi ?? '') }}"
                                 {{ $is_locked ? 'disabled' : '' }} placeholder="Contoh: Teknologi Informasi"
                                 maxlength="70"
@@ -481,7 +481,7 @@
                             class="px-6 py-2.5 border border-gray-300 bg-white text-[#1f2937] text-sm font-bold rounded-lg shadow-xs hover:bg-gray-100 transition cursor-pointer">Batal</button>
                         
                         <button type="submit" id="btnSubmitForm"
-                            class="px-6 py-2.5 bg-[#00236F] text-white text-sm font-bold rounded-lg shadow-xs hover:bg-blue-900 transition flex items-center gap-2 cursor-pointer">
+                            class="px-6 py-2.5 bg-[#00236F] text-[#00236F] text-sm font-bold rounded-lg shadow-xs hover:bg-blue-900 transition flex items-center gap-2 cursor-pointer text-white">
                             <span id="btnSubmitText">{{ $is_revisi ? 'Kirim Ulang Permohonan' : 'Ajukan Pendaftaran' }}</span>
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -500,21 +500,118 @@
         const SISA_KUOTA = {{ $sisa_kuota }};
         const MAX_MEMBERS = {{ $max_anggota_tambahan }};
         let isFormSubmitted = false;
+        let currentType = 'individu';
+        const STORAGE_KEY = 'simangat_pendaftaran_draft';
 
         document.addEventListener('DOMContentLoaded', () => {
-            if (memberCount > 0) {
+            // Push dummy state untuk intersept navigasi tombol back/gesture HP
+            history.pushState({ page: "form_pendaftaran" }, "", window.location.href);
+
+            // Restore data yang ada dari localStorage (apabila pernah diisi sebelumnya)
+            restoreFormData();
+
+            if (memberCount > 0 && currentType === 'kelompok') {
                 toggleType('kelompok', true);
+            }
+
+            // Attach listener auto-save pada setiap input di form
+            document.getElementById('pendaftaranForm').addEventListener('input', saveFormData);
+            document.getElementById('pendaftaranForm').addEventListener('change', saveFormData);
+        });
+
+        // 💾 LOGIKA AUTO-SAVE KE LOCALSTORAGE
+        function saveFormData() {
+            if (isFormSubmitted) return;
+
+            const formData = {
+                type: currentType,
+                memberCount: memberCount,
+                inputs: {}
+            };
+
+            const inputs = document.querySelectorAll('#pendaftaranForm input:not([type="file"]):not([type="hidden"]), #pendaftaranForm select');
+            inputs.forEach(input => {
+                if (input.name) {
+                    formData.inputs[input.name] = input.value;
+                }
+            });
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+        }
+
+        // 🔄 LOGIKA RESTORE DATA DARI LOCALSTORAGE
+        function restoreFormData() {
+            const savedData = localStorage.getItem(STORAGE_KEY);
+            if (!savedData) return;
+
+            try {
+                const data = JSON.parse(savedData);
+                
+                // 1. Restore Tipe (Individu/Kelompok) & Anggota
+                if (data.type === 'kelompok') {
+                    toggleType('kelompok', true);
+                    
+                    // Render elemen DOM anggota tambahan yang sebelumnya dibuat
+                    const savedMemberCount = data.memberCount || 0;
+                    while (memberCount < savedMemberCount && memberCount < MAX_MEMBERS) {
+                        tambahAnggota(true); // pass true agar tidak auto-save saat pembentukan dom
+                    }
+                }
+
+                // 2. Isi kembali nilai-nilai input
+                if (data.inputs) {
+                    Object.keys(data.inputs).forEach(name => {
+                        const field = document.querySelector(`[name="${name}"]`);
+                        if (field && data.inputs[name]) {
+                            field.value = data.inputs[name];
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error("Gagal memuat draft formulir dari localStorage", e);
+            }
+        }
+
+        // 🧹 LOGIKA HAPUS DRAFT LOCALSTORAGE
+        function clearFormData() {
+            localStorage.removeItem(STORAGE_KEY);
+        }
+
+        // TANGKAP NAVIGASI BACK BROWSER / GESTURE HP
+        window.addEventListener("popstate", function (event) {
+            if (isFormSubmitted) return;
+
+            if (isFormDirty()) {
+                history.pushState({ page: "form_pendaftaran" }, "", window.location.href);
+
+                Swal.fire({
+                    title: 'Batalkan Pendaftaran?',
+                    text: "Data yang telah diisi tidak akan tersimpan.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Ya, Batalkan',
+                    cancelButtonText: 'Lanjut Mengisi',
+                    allowOutsideClick: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        clearFormData();
+                        window.location.href = "{{ route('peserta.status') }}";
+                    }
+                });
+            } else {
+                clearFormData();
+                window.location.href = "{{ route('peserta.status') }}";
             }
         });
 
         // 1. CLEANSING/SANITASI SIMBOL DARI INPUT TEKS
         function cleanTextInput(input) {
-            // Huruf, Angka, Spasi, serta Tanda Baca Nama/Gelar (. , ' -)
             input.value = input.value.replace(/[^a-zA-Z0-9\s.,'\-]/g, '');
         }
 
         function cleanNimInput(input) {
-            // Huruf dan Angka saja (TANPA SPASI ATAU SIMBOL)
             input.value = input.value.replace(/[^a-zA-Z0-9]/g, '');
         }
 
@@ -538,6 +635,7 @@
 
         // 3. TOGGLE INDIVIDU / KELOMPOK
         function toggleType(type, isInitialLoad = false) {
+            currentType = type;
             const cardIndividu = document.getElementById('card-individu');
             const cardKelompok = document.getElementById('card-kelompok');
             const iconIndividu = document.getElementById('icon-individu');
@@ -583,10 +681,11 @@
                     tambahAnggota();
                 }
             }
+            saveFormData();
         }
 
         // 4. TAMBAH ANGGOTA KELOMPOK
-        function tambahAnggota() {
+        function tambahAnggota(skipSave = false) {
             if (MAX_MEMBERS <= 0) {
                 alert('Sisa kuota pada bidang ini tidak mencukupi untuk menambah anggota.');
                 return;
@@ -598,7 +697,7 @@
 
             memberCount++;
             const memberIndex = memberCount;
-            const memberId = Date.now();
+            const memberId = Date.now() + "_" + memberIndex;
 
             const memberHTML = `
                 <div class="anggota-item bg-white border border-gray-200 rounded-xl p-6 mb-5 relative" id="anggota-${memberId}">
@@ -651,7 +750,7 @@
             `;
 
             document.getElementById('list-anggota').insertAdjacentHTML('beforeend', memberHTML);
-            perbaruiLabelAnggota();
+            if (!skipSave) saveFormData();
         }
 
         // 5. VALIDASI HAPUS ANGGOTA
@@ -670,12 +769,11 @@
                 }
             });
 
-            // Jalankan fungsi eksekusi hapus
             const doRemove = () => {
                 memberElement.remove();
                 memberCount--;
-                perbaruiLabelAnggota();
                 if (memberCount === 0) toggleType('individu');
+                saveFormData();
             };
 
             if (isFilled) {
@@ -684,8 +782,8 @@
                     text: "Data anggota yang telah diisi akan hilang.",
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#ef4444', // Merah
-                    cancelButtonColor: '#6b7280',  // Abu-abu
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#6b7280',
                     confirmButtonText: 'Ya, Hapus!',
                     cancelButtonText: 'Batal'
                 }).then((result) => {
@@ -765,10 +863,12 @@
                     cancelButtonText: 'Lanjut Mengisi'
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        clearFormData();
                         window.location.href = "{{ route('peserta.status') }}";
                     }
                 });
             } else {
+                clearFormData();
                 window.location.href = "{{ route('peserta.status') }}";
             }
         }
@@ -796,13 +896,14 @@
                 text: "Pastikan seluruh data dan berkas pendaftaran yang diisi sudah benar.",
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#00236F', // Warna Biru SIMANGAT
+                confirmButtonColor: '#00236F',
                 cancelButtonColor: '#6b7280',
                 confirmButtonText: 'Ya, Kirim Sekarang!',
                 cancelButtonText: 'Cek Kembali'
             }).then((result) => {
                 if (result.isConfirmed) {
                     isFormSubmitted = true;
+                    clearFormData(); // Bersihkan draft lokal karena form sudah berhasil disubmit
                     
                     // Ubah button state menjadi loading
                     const btnSubmit = document.getElementById('btnSubmitForm');

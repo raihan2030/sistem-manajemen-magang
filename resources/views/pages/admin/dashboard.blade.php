@@ -100,8 +100,21 @@
                 <span>{{ $persentase_kapasitas == '100%' ? 'Kapasitas Penuh' : '' }}</span>
             </div>
             <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
-                <div class="{{ $persentase_kapasitas == '100%' ? 'bg-red-600' : 'bg-navy'}} h-full rounded-full" style="width: {{ $persentase_kapasitas }}"></div>
+                <div class="{{ $persentase_kapasitas == '100%' ? 'bg-red-600' : 'bg-navy' }} h-full rounded-full" style="width: {{ $persentase_kapasitas }}"></div>
             </div>
+        </div>
+    </div>
+
+    <!-- Grafik Visualisasi Tren Pendaftaran Magang -->
+    <div class="bg-white border border-gray-200 rounded-xl shadow-xs p-6 mb-8">
+        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
+            <div>
+                <h2 class="text-base font-bold text-[#1f2937]">Grafik Tren Pendaftaran Magang</h2>
+                <p class="text-xs text-gray-500 mt-0.5">Jumlah pendaftar yang masuk ke {{ $skpd->nama_skpd ?? 'SKPD' }} per bulan.</p>
+            </div>
+        </div>
+        <div class="w-full h-64">
+            <canvas id="chartTrenPendaftaran"></canvas>
         </div>
     </div>
 
@@ -301,10 +314,68 @@
             </table>
         </div>
 
-        <!-- Pagination Link (appends agar filter tidak hilang saat pindah halaman) -->
+        <!-- Pagination Link -->
         <div class="p-4 border-t border-gray-200 bg-white rounded-b-xl">
             {{ $permohonans->appends(request()->query())->links('components.pagination') }}
         </div>
     </div>
+
+    <!-- Script Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const ctx = document.getElementById('chartTrenPendaftaran').getContext('2d');
+
+            // Mengambil data murni dari database via Controller
+            const labelsChart = {{ \Illuminate\Support\Js::from($chartLabels) }};
+            const dataChart = {{ \Illuminate\Support\Js::from($chartData) }};
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labelsChart,
+                    datasets: [{
+                        label: 'Jumlah Pendaftar',
+                        data: dataChart,
+                        borderColor: '#00236F',
+                        backgroundColor: 'rgba(0, 35, 111, 0.08)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.35,
+                        pointBackgroundColor: '#FEA619',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1f2937',
+                            titleFont: { size: 12, weight: 'bold' },
+                            bodyFont: { size: 12 },
+                            padding: 10,
+                            cornerRadius: 8
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#1f2937', font: { size: 11 } }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f3f4f6' },
+                            ticks: { precision: 0, color: '#1f2937', font: { size: 11 } }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 
 @endsection

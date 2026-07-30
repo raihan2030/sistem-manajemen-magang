@@ -85,7 +85,8 @@
                     </p>
                 </div>
 
-                <form action="{{ route('admin.kapasitas.update', $selectedBidang->id) }}" method="POST">
+                {{-- Ditambahkan ID "formKapasitas" --}}
+                <form id="formKapasitas" action="{{ route('admin.kapasitas.update', $selectedBidang->id) }}" method="POST">
                     @csrf
                     @method('PUT')
 
@@ -160,12 +161,14 @@
 
                     <!-- Tombol Aksi Form -->
                     <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
-                        <a href="{{ route('admin.kapasitas.index', ['bidang_id' => $selectedBidang->id]) }}"
-                            class="px-6 py-2.5 border border-gray-300 text-[#00236F] font-bold text-xs rounded-lg hover:bg-gray-50 transition">
+                        {{-- Tombol Batal diganti type="button" dan ditambahkan ID "btnBatal" --}}
+                        <button type="button" id="btnBatal"
+                            class="px-6 py-2.5 border border-gray-300 text-[#00236F] font-bold text-xs rounded-lg hover:bg-gray-50 transition cursor-pointer">
                             Batal
-                        </a>
-                        <button type="submit"
-                            class="px-6 py-2.5 bg-[#00236F] text-white font-bold text-xs rounded-lg hover:bg-blue-900 transition shadow-xs">
+                        </button>
+                        {{-- Tombol Simpan Perubahan ditambahkan ID "btnSimpan" --}}
+                        <button type="button" id="btnSimpan"
+                            class="px-6 py-2.5 bg-[#00236F] text-white font-bold text-xs rounded-lg hover:bg-blue-900 transition shadow-xs cursor-pointer">
                             Simpan Perubahan
                         </button>
                     </div>
@@ -257,5 +260,63 @@
                 database.</p>
         </div>
     @endif
+
+    {{-- Script SweetAlert2 --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('formKapasitas');
+            const btnSimpan = document.getElementById('btnSimpan');
+            const btnBatal = document.getElementById('btnBatal');
+
+            // SweetAlert Konfirmasi Simpan
+            if (btnSimpan) {
+                btnSimpan.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    // Cek validasi HTML bawaan form
+                    if (!form.checkValidity()) {
+                        form.reportValidity();
+                        return;
+                    }
+
+                    Swal.fire({
+                        title: 'Simpan Perubahan?',
+                        text: "Data kapasitas bidang ini akan diperbarui.",
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#00236F',
+                        cancelButtonColor: '#6B7280',
+                        confirmButtonText: 'Ya, Simpan',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            }
+
+            // SweetAlert Konfirmasi Batal
+            if (btnBatal) {
+                btnBatal.addEventListener('click', function () {
+                    Swal.fire({
+                        title: 'Batalkan Perubahan?',
+                        text: "Semua perubahan input yang belum disimpan akan dikembalikan.",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#DC2626',
+                        cancelButtonColor: '#6B7280',
+                        confirmButtonText: 'Ya, Batalkan',
+                        cancelButtonText: 'Kembali Edit'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = "{{ route('admin.kapasitas.index', ['bidang_id' => $selectedBidang->id ?? '']) }}";
+                        }
+                    });
+                });
+            }
+        });
+    </script>
 
 @endsection
