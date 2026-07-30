@@ -29,6 +29,36 @@ class AdminKapasitasController extends Controller
     }
 
     /**
+     * Menambahkan bidang/sub-bagian baru.
+     */
+    public function store(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'nama_bidang_baru' => 'required|string|max:255',
+            'kuota_baru'       => 'required|integer|min:1',
+        ], [
+            'nama_bidang_baru.required' => 'Nama bidang/sub bagian wajib diisi.',
+            'kuota_baru.required'       => 'Kuota awal wajib diisi.',
+            'kuota_baru.min'            => 'Kuota minimal harus 1 orang.',
+        ]);
+
+        $user = Auth::user();
+
+        // Simpan bidang baru
+        $bidang = Bidang::create([
+            'skpd_id'     => $user->skpd_id,
+            'nama_bidang' => $request->nama_bidang_baru,
+            'kuota_total' => $request->kuota_baru,
+            'sisa_kuota'  => $request->kuota_baru, // Sisa kuota awal disamakan dengan total kuota
+        ]);
+
+        // Redirect kembali dengan memilih bidang yang baru dibuat pada dropdown
+        return redirect()
+            ->route('admin.kapasitas.index', ['bidang_id' => $bidang->id])
+            ->with('success', 'Sub bagian/bidang "' . $bidang->nama_bidang . '" berhasil ditambahkan!');
+    }
+
+    /**
      * Memperbarui data bidang & kuota di database.
      */
     public function update(UpdateKapasitasRequest $request, $id): RedirectResponse

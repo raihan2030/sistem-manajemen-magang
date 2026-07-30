@@ -11,6 +11,8 @@ use App\Http\Controllers\SkpdController;
 use App\Http\Controllers\SuperadminDashboardController;
 use App\Http\Controllers\SuperadminPermohonanController;
 use App\Http\Controllers\UploadSertifikatController;
+use App\Http\Controllers\SuperadminKelolaAkunController;
+use App\Http\Controllers\SuperadminSkpdController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -58,9 +60,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return view('pages.superadmin.aktivitas');
         })->name('aktivitas');
 
-        Route::get('/kelola_skpd', function () {
-            return view('pages.superadmin.kelola_skpd');
-        })->name('kelola_skpd');
+        Route::get('/kelola_akun', [SuperadminKelolaAkunController::class, 'index'])->name('kelola_akun');
+        Route::post('/kelola_akun', [SuperadminKelolaAkunController::class, 'store'])->name('kelola_akun.store');
+        Route::put('/kelola_akun/{id}', [SuperadminKelolaAkunController::class, 'update'])->name('kelola_akun.update');
+        Route::delete('/kelola_akun/{id}', [SuperadminKelolaAkunController::class, 'destroy'])->name('kelola_akun.destroy');
+
+        // === RUTE KELOLA SKPD (SUPERADMIN) ===
+        Route::get('/kelola_skpd', [SuperadminSkpdController::class, 'index'])->name('kelola_skpd');
+        Route::post('/kelola_skpd', [SuperadminSkpdController::class, 'store'])->name('kelola_skpd.store');
+        Route::put('/kelola_skpd/{id}', [SuperadminSkpdController::class, 'update'])->name('kelola_skpd.update');
+        Route::delete('/kelola_skpd/{id}', [SuperadminSkpdController::class, 'destroy'])->name('kelola_skpd.destroy');
     });
 
     // === KHUSUS ADMIN SKPD (Role 2) ===
@@ -81,8 +90,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/permohonan/export/pdf', [AdminPermohonanController::class, 'exportPdf'])
             ->name('permohonan.export.pdf');
 
+        // Kelola Kapasitas & Bidang
         Route::get('/kapasitas', [AdminKapasitasController::class, 'index'])->name('kapasitas.index');
-
+        Route::post('/kapasitas', [AdminKapasitasController::class, 'store'])->name('kapasitas.store');
         Route::put('/kapasitas/{id}', [AdminKapasitasController::class, 'update'])->name('kapasitas.update');
 
         Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi');
@@ -102,6 +112,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/peserta/export/pdf', [PesertaMagangController::class, 'exportPdf'])
             ->name('peserta.export.pdf');
+
     });
 
     // === KHUSUS PESERTA / PERWAKILAN (Role 3) ===

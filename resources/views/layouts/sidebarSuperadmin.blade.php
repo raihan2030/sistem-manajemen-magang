@@ -27,14 +27,13 @@
 <body x-data="{ sidebarOpen: false }"
     class="bg-[#f3f4f6] text-[#1f2937] antialiased flex flex-col lg:flex-row h-screen overflow-hidden">
 
-    <!-- HEADER MOBILE (Tampil hanya di HP/Tablet < lg) -->
+    <!-- HEADER MOBILE -->
     <header
         class="lg:hidden bg-[#F8F9FF] border-b border-gray-200 px-4 py-3 flex items-center justify-between flex-shrink-0 z-30">
         <div class="flex items-center space-x-3">
             <img src="{{ asset('images/logo-bjm.png') }}" alt="Logo Banjarmasin" class="w-8 h-8 object-contain">
             <span class="font-bold text-[#00236F] text-base">SIMANGAT-BJM</span>
         </div>
-        <!-- Tombol Hamburger -->
         <button type="button" @click="sidebarOpen = !sidebarOpen"
             class="p-2 text-gray-600 hover:text-[#00236F] focus:outline-none rounded-lg hover:bg-gray-100">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -57,7 +56,6 @@
         <div>
             <!-- Header Sidebar -->
             <div class="flex flex-col items-center justify-center py-6 lg:py-8 border-b border-gray-100 relative">
-                <!-- Tombol Close (Hanya Mobile) -->
                 <button type="button" @click="sidebarOpen = false"
                     class="lg:hidden absolute top-4 right-4 p-1 text-gray-400 hover:text-gray-600 rounded-lg">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -78,10 +76,9 @@
 
             <!-- Menu Navigation -->
             <nav class="px-5 pt-6 space-y-2 overflow-y-auto">
-                <!-- Menu Dashboard -->
+                <!-- Dashboard -->
                 <a href="{{ route('superadmin.dashboard') }}"
                     class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition {{ request()->routeIs('superadmin.dashboard') ? 'bg-[#00236F] text-white shadow-sm' : 'text-[#1f2937]/70 hover:bg-gray-100' }}">
-
                     <svg class="w-5 h-5 mr-3.5 flex-shrink-0 {{ request()->routeIs('superadmin.dashboard') ? 'text-white' : 'text-gray-400' }}"
                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -91,10 +88,9 @@
                     Dashboard
                 </a>
 
-                <!-- Menu Permohonan -->
+                <!-- Permohonan -->
                 <a href="{{ route('superadmin.permohonan') }}"
                     class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition {{ request()->routeIs('superadmin.permohonan') ? 'bg-[#00236F] text-white shadow-sm' : 'text-[#1f2937]/70 hover:bg-gray-100' }}">
-
                     <svg class="w-5 h-5 mr-3.5 flex-shrink-0 {{ request()->routeIs('superadmin.permohonan') ? 'text-white' : 'text-gray-400' }}"
                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -104,6 +100,7 @@
                     Permohonan
                 </a>
 
+                <!-- Aktivitas -->
                 <a href="{{ route('superadmin.aktivitas') }}"
                     class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition {{ request()->routeIs('superadmin.aktivitas') ? 'bg-[#00236F] text-white shadow-sm' : 'text-[#1f2937]/70 hover:bg-gray-100' }}">
                     <svg class="w-5 h-5 mr-3.5 flex-shrink-0 {{ request()->routeIs('superadmin.aktivitas') ? 'text-white' : 'text-gray-400' }}"
@@ -115,10 +112,22 @@
                     Aktivitas & Peringatan
                 </a>
 
-                <!-- Menu Kelola Akun SKPD -->
+                <!-- Menu Kelola SKPD -->
                 <a href="{{ route('superadmin.kelola_skpd') }}"
-                    class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition {{ request()->routeIs('superadmin.kelola_skpd') ? 'bg-[#00236F] text-white shadow-sm' : 'text-[#1f2937]/70 hover:bg-gray-100' }}">
-                    <svg class="w-5 h-5 mr-3.5 flex-shrink-0 {{ request()->routeIs('superadmin.kelola_skpd') ? 'text-white' : 'text-gray-400' }}"
+                    class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition {{ request()->routeIs('superadmin.kelola_skpd*') ? 'bg-[#00236F] text-white shadow-sm' : 'text-[#1f2937]/70 hover:bg-gray-100' }}">
+                    <svg class="w-5 h-5 mr-3.5 flex-shrink-0 {{ request()->routeIs('superadmin.kelola_skpd*') ? 'text-white' : 'text-gray-400' }}"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                        </path>
+                    </svg>
+                    Kelola SKPD
+                </a>
+
+                <!-- Menu Kelola Akun SKPD -->
+                <a href="{{ route('superadmin.kelola_akun') }}"
+                    class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition {{ request()->routeIs('superadmin.kelola_akun') ? 'bg-[#00236F] text-white shadow-sm' : 'text-[#1f2937]/70 hover:bg-gray-100' }}">
+                    <svg class="w-5 h-5 mr-3.5 flex-shrink-0 {{ request()->routeIs('superadmin.kelola_akun') ? 'text-white' : 'text-gray-400' }}"
                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z">

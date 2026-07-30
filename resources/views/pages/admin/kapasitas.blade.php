@@ -28,14 +28,12 @@
     <!-- Header Page -->
     <div class="mb-8">
         <h1 class="text-2xl font-bold text-[#1f2937] tracking-tight">Kelola Kapasitas SKPD</h1>
-        <p class="text-sm text-[#1f2937]/70 mt-1">Perbarui informasi kapasitas dan detail bidang/sub-bagian untuk penempatan
-            mahasiswa.</p>
+        <p class="text-sm text-[#1f2937]/70 mt-1">Perbarui informasi kapasitas dan detail bidang/sub-bagian untuk penempatan mahasiswa.</p>
     </div>
 
     {{-- ALERT BANNER SUCCESS --}}
     @if (session('success'))
-        <div
-            class="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl p-4 mb-6 flex items-center gap-3 shadow-xs">
+        <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl p-4 mb-6 flex items-center gap-3 shadow-xs">
             <svg class="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
             </svg>
@@ -48,10 +46,9 @@
         <div class="bg-red-50 border border-red-200 text-red-800 rounded-xl p-4 mb-6 shadow-xs">
             <div class="flex items-center gap-2 mb-1">
                 <svg class="w-5 h-5 text-red-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
-                <h3 class="text-xs font-bold text-red-900">Gagal memperbarui data:</h3>
+                <h3 class="text-xs font-bold text-red-900">Gagal memproses data:</h3>
             </div>
             <ul class="text-xs text-red-700 list-disc pl-7 space-y-0.5">
                 @foreach ($errors->all() as $error)
@@ -61,130 +58,193 @@
         </div>
     @endif
 
-    @if ($selectedBidang)
-        <!-- Main Grid Form & Information Panel -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start mb-10">
+    <!-- Main Grid Form & Information Panel -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start mb-10">
 
-            <!-- Bagian Kiri: Form Detail Instansi & Kapasitas -->
-            <div class="lg:col-span-2 bg-white border border-gray-200 rounded-xl shadow-xs p-6 lg:p-8">
+        <!-- Bagian Kiri: Form Tambah Bidang Baru & Form Edit Kapasitas -->
+        <div class="lg:col-span-2 space-y-6">
 
-                <!-- 📍 DROPDOWN PILIH BIDANG -->
-                <div class="mb-6 p-4 bg-[#F8FAFC] border border-blue-100 rounded-xl">
-                    <label class="block text-xs font-bold text-[#00236F] uppercase tracking-wider mb-2">
-                        Pilih Sub Bagian / Bidang yang Dikelola
-                    </label>
-                    <div class="relative">
-                        <select onchange="window.location.href='?bidang_id=' + this.value"
-                            class="appearance-none w-full bg-white border border-gray-300 text-[#1f2937] font-bold rounded-lg pl-3 pr-8 py-2.5 text-sm focus:ring-[#00236F] focus:border-[#00236F] outline-none transition cursor-pointer">
-                            @foreach ($bidangs as $b)
-                                <option value="{{ $b->id }}" {{ $b->id == $selectedBidang->id ? 'selected' : '' }}>
-                                    {{ $b->nama_bidang }} (Sisa Kuota: {{ $b->sisa_kuota }} / Total: {{ $b->kuota_total }})
-                                </option>
-                            @endforeach
-                        </select>
-                        <svg class="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-700"
-                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path>
+            <!-- ➕ CARD BARU: INPUT NAMA BIDANG & KUOTA BARU -->
+            <div class="bg-white border border-gray-200 rounded-xl shadow-xs p-6 lg:p-8">
+                <div class="flex items-center gap-2.5 mb-4 border-b border-gray-100 pb-3">
+                    <div class="w-7 h-7 rounded-lg bg-blue-50 text-[#00236F] flex items-center justify-center shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                         </svg>
                     </div>
-                    <p class="text-[11px] text-gray-500 mt-1.5">Pilih bidang dari list di atas untuk mengedit kapasitasnya.
-                    </p>
+                    <div>
+                        <h2 class="text-base font-bold text-[#1f2937]">Tambah Bidang / Sub Bagian Baru</h2>
+                        <p class="text-xs text-gray-500">Buat sub-bagian baru agar pilihan bidang menjadi dinamis.</p>
+                    </div>
                 </div>
 
-                {{-- Ditambahkan ID "formKapasitas" --}}
-                <form id="formKapasitas" action="{{ route('admin.kapasitas.update', $selectedBidang->id) }}" method="POST">
+                <form id="formTambahBidang" action="{{ route('admin.kapasitas.store') }}" method="POST">
                     @csrf
-                    @method('PUT')
-
-                    <h2 class="text-base font-bold text-[#1f2937] mb-5 border-b border-gray-100 pb-3">
-                        Detail Instansi & Bidang
-                    </h2>
-
-                    <!-- Kode SKPD (Readonly dari DB Relasi User) -->
-                    <div class="mb-5">
-                        <label class="block text-xs font-bold text-[#1f2937] mb-2">
-                            Kode SKPD
-                        </label>
-                        <input type="text" value="{{ $skpd->kode_skpd ?? 'SKPD-' . $skpd->id }}" disabled
-                            class="w-full bg-gray-100 border border-gray-200 text-gray-500 font-semibold rounded-lg px-4 py-2.5 text-sm cursor-not-allowed select-none outline-none">
-                        <p class="text-[11px] text-gray-400 mt-1.5">Kode unik instansi (Dikelola oleh Superadmin).</p>
-                    </div>
-
-                    <!-- Nama SKPD (Readonly dari DB Relasi User) -->
-                    <div class="mb-5">
-                        <label class="block text-xs font-bold text-[#1f2937] mb-2">
-                            Nama SKPD
-                        </label>
-                        <input type="text" value="{{ $skpd->nama_skpd }}" disabled
-                            class="w-full bg-gray-100 border border-gray-200 text-gray-500 font-semibold rounded-lg px-4 py-2.5 text-sm cursor-not-allowed select-none outline-none">
-                        <p class="text-[11px] text-gray-400 mt-1.5">Nama resmi instansi/dinas.</p>
-                    </div>
-
-                    <!-- Nama Sub Bagian / Bidang (Bisa Dikelola Admin SKPD) -->
-                    <div class="mb-5">
-                        <label class="block text-xs font-bold text-[#1f2937] mb-2">
-                            Nama Sub Bagian / Bidang <span class="text-[#00236F]">*</span>
-                        </label>
-                        <input type="text" name="nama_bidang"
-                            value="{{ old('nama_bidang', $selectedBidang->nama_bidang) }}"
-                            placeholder="Masukkan Nama Sub Bagian"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-[#1f2937] font-medium focus:ring-[#00236F] focus:border-[#00236F] outline-none transition"
-                            required>
-                        <p class="text-[11px] text-gray-500 mt-1.5">Nama resmi Sub Bagian/Bidang penempatan magang.</p>
-                    </div>
-
-                    <!-- Pengaturan Kuota (Total Kuota & Sisa Kuota) -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
-                        <!-- Total Kuota -->
-                        <div>
-                            <label class="block text-xs font-bold text-[#1f2937] mb-2">
-                                Total Kapasitas Kuota <span class="text-[#00236F]">*</span>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-[#1f2937] mb-1.5">
+                                Nama Sub Bagian / Bidang <span class="text-red-500">*</span>
                             </label>
-                            <div class="flex items-center gap-2">
-                                <input type="number" name="kuota_total"
-                                    value="{{ old('kuota_total', $selectedBidang->kuota_total) }}" min="0"
-                                    class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-[#1f2937] font-bold focus:ring-[#00236F] focus:border-[#00236F] outline-none transition"
-                                    required>
-                                <span class="text-xs font-semibold text-gray-500 shrink-0">Orang</span>
-                            </div>
-                            <p class="text-[11px] text-gray-500 mt-1.5">Target total kuota yang dialokasikan.</p>
+                            <input type="text" name="nama_bidang_baru" required
+                                placeholder="Contoh: Bidang Informatika"
+                                class="w-full border border-gray-300 rounded-lg px-3.5 py-2 text-sm text-[#1f2937] font-medium focus:ring-[#00236F] focus:border-[#00236F] outline-none transition">
                         </div>
-
-                        <!-- Sisa Kuota (Read-only, dihitung otomatis oleh sistem) -->
                         <div>
-                            <label class="block text-xs font-bold text-[#1f2937] mb-2">
-                                Sisa Kuota Tersedia
+                            <label class="block text-xs font-bold text-[#1f2937] mb-1.5">
+                                Kuota <span class="text-red-500">*</span>
                             </label>
                             <div class="flex items-center gap-2">
-                                <input type="text" value="{{ $selectedBidang->sisa_kuota }}" disabled
-                                    class="w-full bg-gray-100 border border-gray-200 text-gray-500 font-bold rounded-lg px-4 py-2.5 text-sm cursor-not-allowed select-none outline-none">
+                                <input type="number" name="kuota_baru" min="1" required placeholder="0"
+                                    class="w-full border border-gray-300 rounded-lg px-3.5 py-2 text-sm text-[#1f2937] font-bold focus:ring-[#00236F] focus:border-[#00236F] outline-none transition">
                                 <span class="text-xs font-semibold text-gray-500 shrink-0">Orang</span>
                             </div>
-                            <p class="text-[11px] text-gray-400 mt-1.5">Dihitung otomatis berdasarkan jumlah pengajuan yang
-                                sudah diterima. Menaikkan Total Kapasitas akan menambah sisa kuota secara proporsional.</p>
                         </div>
                     </div>
 
-                    <!-- Tombol Aksi Form -->
-                    <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
-                        {{-- Tombol Batal diganti type="button" dan ditambahkan ID "btnBatal" --}}
-                        <button type="button" id="btnBatal"
-                            class="px-6 py-2.5 border border-gray-300 text-[#00236F] font-bold text-xs rounded-lg hover:bg-gray-50 transition cursor-pointer">
-                            Batal
-                        </button>
-                        {{-- Tombol Simpan Perubahan ditambahkan ID "btnSimpan" --}}
-                        <button type="button" id="btnSimpan"
-                            class="px-6 py-2.5 bg-[#00236F] text-white font-bold text-xs rounded-lg hover:bg-blue-900 transition shadow-xs cursor-pointer">
-                            Simpan Perubahan
+                    <div class="flex justify-end">
+                        <button type="submit"
+                            class="px-5 py-2 bg-emerald-600 text-white font-bold text-xs rounded-lg hover:bg-emerald-700 transition shadow-xs cursor-pointer flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            Tambah Bidang Baru
                         </button>
                     </div>
-
                 </form>
             </div>
 
-            <!-- Bagian Kanan: Status & Info Cards -->
-            <div class="lg:col-span-1 flex flex-col gap-5">
+            @if ($selectedBidang)
+                <!-- CARD EDIT KAPASITAS & DETAIL BIDANG TERPILIH -->
+                <div class="bg-white border border-gray-200 rounded-xl shadow-xs p-6 lg:p-8">
 
+                    <!-- 📍 DROPDOWN PILIH BIDANG -->
+                    <div class="mb-6 p-4 bg-[#F8FAFC] border border-blue-100 rounded-xl">
+                        <label class="block text-xs font-bold text-[#00236F] uppercase tracking-wider mb-2">
+                            Pilih Sub Bagian / Bidang yang Dikelola
+                        </label>
+                        <div class="relative">
+                            <select onchange="window.location.href='?bidang_id=' + this.value"
+                                class="appearance-none w-full bg-white border border-gray-300 text-[#1f2937] font-bold rounded-lg pl-3 pr-8 py-2.5 text-sm focus:ring-[#00236F] focus:border-[#00236F] outline-none transition cursor-pointer">
+                                @foreach ($bidangs as $b)
+                                    <option value="{{ $b->id }}" {{ $b->id == $selectedBidang->id ? 'selected' : '' }}>
+                                        {{ $b->nama_bidang }} (Sisa Kuota: {{ $b->sisa_kuota }} / Total: {{ $b->kuota_total }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            <svg class="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-700"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
+                        <p class="text-[11px] text-gray-500 mt-1.5">Pilih bidang dari list di atas untuk mengedit kapasitasnya.</p>
+                    </div>
+
+                    <form id="formKapasitas" action="{{ route('admin.kapasitas.update', $selectedBidang->id) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+
+                        <h2 class="text-base font-bold text-[#1f2937] mb-5 border-b border-gray-100 pb-3">
+                            Detail Instansi & Bidang
+                        </h2>
+
+                        <!-- Kode SKPD -->
+                        <div class="mb-5">
+                            <label class="block text-xs font-bold text-[#1f2937] mb-2">
+                                Kode SKPD
+                            </label>
+                            <input type="text" value="{{ $skpd->kode_skpd ?? 'SKPD-' . $skpd->id }}" disabled
+                                class="w-full bg-gray-100 border border-gray-200 text-gray-500 font-semibold rounded-lg px-4 py-2.5 text-sm cursor-not-allowed select-none outline-none">
+                            <p class="text-[11px] text-gray-400 mt-1.5">Kode unik instansi (Dikelola oleh Superadmin).</p>
+                        </div>
+
+                        <!-- Nama SKPD -->
+                        <div class="mb-5">
+                            <label class="block text-xs font-bold text-[#1f2937] mb-2">
+                                Nama SKPD
+                            </label>
+                            <input type="text" value="{{ $skpd->nama_skpd }}" disabled
+                                class="w-full bg-gray-100 border border-gray-200 text-gray-500 font-semibold rounded-lg px-4 py-2.5 text-sm cursor-not-allowed select-none outline-none">
+                            <p class="text-[11px] text-gray-400 mt-1.5">Nama resmi instansi/dinas.</p>
+                        </div>
+
+                        <!-- Nama Sub Bagian / Bidang -->
+                        <div class="mb-5">
+                            <label class="block text-xs font-bold text-[#1f2937] mb-2">
+                                Nama Sub Bagian / Bidang <span class="text-[#00236F]">*</span>
+                            </label>
+                            <input type="text" name="nama_bidang"
+                                value="{{ old('nama_bidang', $selectedBidang->nama_bidang) }}"
+                                placeholder="Masukkan Nama Sub Bagian"
+                                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-[#1f2937] font-medium focus:ring-[#00236F] focus:border-[#00236F] outline-none transition"
+                                required>
+                            <p class="text-[11px] text-gray-500 mt-1.5">Nama resmi Sub Bagian/Bidang penempatan magang.</p>
+                        </div>
+
+                        <!-- Pengaturan Kuota -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+                            <!-- Total Kuota -->
+                            <div>
+                                <label class="block text-xs font-bold text-[#1f2937] mb-2">
+                                    Total Kapasitas Kuota <span class="text-[#00236F]">*</span>
+                                </label>
+                                <div class="flex items-center gap-2">
+                                    <input type="number" name="kuota_total"
+                                        value="{{ old('kuota_total', $selectedBidang->kuota_total) }}" min="0"
+                                        class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-[#1f2937] font-bold focus:ring-[#00236F] focus:border-[#00236F] outline-none transition"
+                                        required>
+                                    <span class="text-xs font-semibold text-gray-500 shrink-0">Orang</span>
+                                </div>
+                                <p class="text-[11px] text-gray-500 mt-1.5">Target total kuota yang dialokasikan.</p>
+                            </div>
+
+                            <!-- Sisa Kuota -->
+                            <div>
+                                <label class="block text-xs font-bold text-[#1f2937] mb-2">
+                                    Sisa Kuota Tersedia
+                                </label>
+                                <div class="flex items-center gap-2">
+                                    <input type="text" value="{{ $selectedBidang->sisa_kuota }}" disabled
+                                        class="w-full bg-gray-100 border border-gray-200 text-gray-500 font-bold rounded-lg px-4 py-2.5 text-sm cursor-not-allowed select-none outline-none">
+                                    <span class="text-xs font-semibold text-gray-500 shrink-0">Orang</span>
+                                </div>
+                                <p class="text-[11px] text-gray-400 mt-1.5">Dihitung otomatis berdasarkan jumlah pengajuan yang diterima.</p>
+                            </div>
+                        </div>
+
+                        <!-- Tombol Aksi Form -->
+                        <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                            <button type="button" id="btnBatal"
+                                class="px-6 py-2.5 border border-gray-300 text-[#00236F] font-bold text-xs rounded-lg hover:bg-gray-50 transition cursor-pointer">
+                                Batal
+                            </button>
+                            <button type="button" id="btnSimpan"
+                                class="px-6 py-2.5 bg-[#00236F] text-white font-bold text-xs rounded-lg hover:bg-blue-900 transition shadow-xs cursor-pointer">
+                                Simpan Perubahan
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            @else
+                <!-- Empty State Jika SKPD Belum Punya Bidang sama sekali -->
+                <div class="bg-white border border-gray-200 rounded-xl p-12 text-center shadow-xs">
+                    <div class="w-12 h-12 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-3">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-800 mb-1">Belum Ada Sub Bagian / Bidang</h3>
+                    <p class="text-xs text-gray-500">Gunakan form di atas untuk menambahkan bidang/sub-bagian pertama pada instansi Anda.</p>
+                </div>
+            @endif
+
+        </div>
+
+        <!-- Bagian Kanan: Status & Info Cards -->
+        <div class="lg:col-span-1 flex flex-col gap-5">
+
+            @if ($selectedBidang)
                 <!-- Card 1: Status Saat Ini & Statistik Bidang Terpilih -->
                 <div class="bg-[#F8FAFC] border border-blue-100 rounded-xl p-6 shadow-xs">
                     <div class="flex justify-between items-start mb-4">
@@ -209,8 +269,7 @@
                     <div class="grid grid-cols-2 gap-2 p-3 bg-white border border-gray-200 rounded-lg mb-4 text-center">
                         <div>
                             <span class="text-[10px] font-bold text-gray-400 block uppercase">Sisa Slot</span>
-                            <span
-                                class="text-base font-extrabold text-emerald-600">{{ $selectedBidang->sisa_kuota }}</span>
+                            <span class="text-base font-extrabold text-emerald-600">{{ $selectedBidang->sisa_kuota }}</span>
                         </div>
                         <div>
                             <span class="text-[10px] font-bold text-gray-400 block uppercase">Terisi</span>
@@ -230,42 +289,29 @@
                         </div>
                     </div>
                 </div>
+            @endif
 
-                <!-- Card 2: Pengingat Penting (Dark Box) -->
-                <div class="bg-[#1E293B] text-white rounded-xl p-6 shadow-xs">
-                    <div class="flex items-center gap-2.5 mb-3">
-                        <div class="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-amber-400">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
-                                </path>
-                            </svg>
-                        </div>
-                        <h3 class="font-bold text-sm">Penting</h3>
+            <!-- Card 2: Pengingat Penting (Dark Box) -->
+            <div class="bg-[#1E293B] text-white rounded-xl p-6 shadow-xs">
+                <div class="flex items-center gap-2.5 mb-3">
+                    <div class="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-amber-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
+                            </path>
+                        </svg>
                     </div>
-                    <p class="text-xs text-slate-300 leading-relaxed font-normal">
-                        Perubahan Sisa Kuota akan berdampak langsung pada formulir pendaftaran peserta di portal publik.
-                        Pastikan kuota selalu diperbarui sesuai kapasitas bimbingan riil di unit kerja Anda.
-                    </p>
+                    <h3 class="font-bold text-sm">Penting</h3>
                 </div>
-
+                <p class="text-xs text-slate-300 leading-relaxed font-normal">
+                    Perubahan Sisa Kuota dan penambahan bidang baru akan berdampak langsung pada formulir pendaftaran peserta di portal publik.
+                    Pastikan kuota selalu diperbarui sesuai kapasitas bimbingan riil di unit kerja Anda.
+                </p>
             </div>
 
         </div>
-    @else
-        <!-- Empty State Jika SKPD Belum Punya Bidang -->
-        <div class="bg-white border border-gray-200 rounded-xl p-12 text-center shadow-xs my-6">
-            <div class="w-12 h-12 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-3">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-            </div>
-            <h3 class="text-base font-bold text-gray-800 mb-1">Belum Ada Sub Bagian / Bidang</h3>
-            <p class="text-xs text-gray-500">Instansi Anda belum memiliki daftar bidang/sub-bagian yang terdaftar di
-                database.</p>
-        </div>
-    @endif
+
+    </div>
 
     {{-- Script SweetAlert2 --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -280,7 +326,6 @@
                 btnSimpan.addEventListener('click', function (e) {
                     e.preventDefault();
 
-                    // Cek validasi HTML bawaan form
                     if (!form.checkValidity()) {
                         form.reportValidity();
                         return;

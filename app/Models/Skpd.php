@@ -11,7 +11,14 @@ class Skpd extends Model
     public $timestamps = false;
     protected $fillable = ['kode_skpd', 'nama_skpd', 'banner_path'];
 
+    // Relasi tunggal (yang sudah ada)
     public function bidang(): HasMany
+    {
+        return $this->hasMany(Bidang::class, 'skpd_id');
+    }
+
+    // Tambahkan method jamak ini agar tidak error saat dipanggil sebagai 'bidangs'
+    public function bidangs(): HasMany
     {
         return $this->hasMany(Bidang::class, 'skpd_id');
     }
