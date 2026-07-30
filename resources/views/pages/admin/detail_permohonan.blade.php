@@ -348,25 +348,59 @@
         <!-- SCRIPT AKSI VERIFIKASI -->
         <script>
             function handleAction(statusTarget) {
-                const catatan = document.getElementById('catatanVerifikator').value.trim();
+                const catatanInput = document.getElementById('catatanVerifikator');
+                const catatan = catatanInput.value.trim();
                 const form = document.getElementById('formVerifikasi');
                 const inputStatus = document.getElementById('inputStatus');
 
-                if (statusTarget === 'Revisi' || statusTarget === 'Ditolak') {
-                    if (!catatan) {
-                        alert('Harap isi "Catatan Verifikator" untuk memberikan alasan/instruksi!');
-                        document.getElementById('catatanVerifikator').focus();
-                        return;
+                // Validasi catatan jika memilih Revisi atau Tolak
+                if ((statusTarget === 'Revisi' || statusTarget === 'Ditolak') && !catatan) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Catatan Wajib Diisi',
+                        text: 'Harap isi "Catatan Verifikator" untuk memberikan alasan atau instruksi!',
+                        confirmButtonColor: '#00236F'
+                    }).then(() => {
+                        catatanInput.focus();
+                    });
+                    return;
+                }
+
+                // Pengaturan modal SweetAlert2 berdasarkan status target
+                let swalConfig = {
+                    title: 'Konfirmasi Aksi',
+                    text: '',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Lanjutkan',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true
+                };
+
+                if (statusTarget === 'Diterima') {
+                    swalConfig.title = 'Setujui Permohonan?';
+                    swalConfig.text = 'Permohonan magang ini akan disetujui dan diproses lebih lanjut.';
+                    swalConfig.icon = 'success';
+                    swalConfig.confirmButtonColor = '#00236F';
+                } else if (statusTarget === 'Revisi') {
+                    swalConfig.title = 'Minta Revisi Permohonan?';
+                    swalConfig.text = 'Permohonan akan dikembalikan ke pemohon untuk diperbaiki sesuai catatan Anda.';
+                    swalConfig.icon = 'warning';
+                    swalConfig.confirmButtonColor = '#00236F';
+                } else if (statusTarget === 'Ditolak') {
+                    swalConfig.title = 'Tolak Permohonan?';
+                    swalConfig.text = 'Permohonan magang ini akan ditolak.';
+                    swalConfig.icon = 'error';
+                    swalConfig.confirmButtonColor = '#ef4444';
+                }
+
+                // Tampilkan SweetAlert
+                Swal.fire(swalConfig).then((result) => {
+                    if (result.isConfirmed) {
+                        inputStatus.value = statusTarget;
+                        form.submit();
                     }
-                }
-
-                const confirmMsg =
-                    `Apakah Anda yakin ingin memberikan status: ${statusTarget.toUpperCase()} pada permohonan ini?`;
-
-                if (confirm(confirmMsg)) {
-                    inputStatus.value = statusTarget;
-                    form.submit();
-                }
+                });
             }
         </script>
     @endif
