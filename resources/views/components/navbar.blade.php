@@ -15,7 +15,7 @@
                 @endif
 
                 <a href="/" class="flex items-center gap-2 sm:gap-3">
-                    <img src="{{ asset('images/logo-bjm.jpg') }}" alt="Logo Kota Banjarmasin"
+                    <img src="{{ asset('images/logo-bjm.png') }}" alt="Logo Kota Banjarmasin"
                         class="w-8 h-8 sm:w-10 sm:h-10 object-contain">
                     <span class="text-lg sm:text-xl font-bold text-[#00236F]">
                         SIMANGAT-<span class="text-[#FEA619]">BJM</span>

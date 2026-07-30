@@ -133,56 +133,33 @@
                         </svg>
                     </div>
 
-                    <!-- Dropdown Tahun -->
-                    <div class="relative">
-                        <select name="tahun" onchange="document.getElementById('filterForm').submit()"
-                            class="appearance-none border border-gray-300 rounded-lg text-xs font-medium py-2 pl-3 pr-8 bg-white text-[#1f2937] focus:ring-2 focus:ring-[#00236F] focus:border-[#00236F] outline-none cursor-pointer">
-                            <option value="">-- Semua Tahun --</option>
-                            @foreach ($tahunOptions ?? [date('Y'), date('Y') - 1, date('Y') - 2] as $year)
-                                <option value="{{ $year }}"
-                                    {{ (string) request('tahun', $tahunFilter ?? '') === (string) $year ? 'selected' : '' }}>
-                                    {{ $year }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <svg class="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-700"
-                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </div>
+            <!-- Dropdown Tahun -->
+            <select name="tahun" class="border border-gray-300 rounded-lg text-xs font-medium py-2 px-3 bg-white text-[#1f2937] focus:ring-2 focus:ring-[#00236F] focus:border-[#00236F] outline-none">
+                <option value="">-- Semua Tahun --</option>
+                @foreach ($tahunOptions as $year)
+                    <option value="{{ $year }}" {{ (string)request('tahun', $tahunFilter) === (string)$year ? 'selected' : '' }}>
+                        {{ $year }}
+                    </option>
+                @endforeach
+            </select>
 
-                    @if (request('bulan') || request('tahun'))
-                        <a href="{{ request()->url() }}?per_page={{ request('per_page', 10) }}"
-                            class="bg-gray-100 text-gray-600 text-xs font-semibold px-3 py-2 rounded-lg hover:bg-gray-200 transition">
-                            Reset
-                        </a>
-                    @endif
-                </form>
-            </div>
+            <!-- Tombol Filter & Reset -->
+            <button type="submit" class="bg-[#00236F] text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-blue-900 transition flex items-center gap-1 cursor-pointer">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                Filter
+            </button>
 
-            <!-- Kanan: Tombol Unduh CSV & PDF -->
-            <div class="flex items-center gap-2 shrink-0">
-                <a href="{{ route('superadmin.permohonan.export.csv', request()->only(['bulan', 'tahun'])) }}"
-                    class="text-xs font-bold text-emerald-700 border border-emerald-600 bg-white hover:bg-emerald-50 px-4 py-2 rounded-lg transition flex items-center gap-1.5 whitespace-nowrap">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                        </path>
-                    </svg>
-                    Unduh CSV
+            @if(request('bulan') || request('tahun'))
+                <a href="{{ route('superadmin.dashboard', ['per_page' => request('per_page', 10)]) }}" class="bg-gray-100 text-gray-600 text-xs font-semibold px-3 py-2 rounded-lg hover:bg-gray-200 transition">
+                    Reset
                 </a>
+            @endif
 
-                <a href="{{ route('superadmin.permohonan.export.pdf', request()->only(['bulan', 'tahun'])) }}"
-                    class="text-xs font-bold text-white bg-amber-500 hover:bg-amber-600 px-4 py-2 rounded-lg transition flex items-center gap-1.5 whitespace-nowrap">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                        </path>
-                    </svg>
-                    Unduh PDF
-                </a>
-            </div>
-        </div>
+            <button type="button" class="text-xs font-bold text-[#00236F] border border-[#00236F] bg-blue-50/50 hover:bg-blue-50 px-4 py-2 rounded-lg transition ml-auto md:ml-2 cursor-pointer">
+                Unduh CSV
+            </button>
+        </form>
+    </div>
 
         <!-- Table Body -->
         <div class="overflow-x-auto">
@@ -335,78 +312,75 @@
             const chartLabels = JSON.parse(document.getElementById('chart-labels-data').textContent);
             const chartValues = JSON.parse(document.getElementById('chart-values-data').textContent);
 
-            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-            gradient.addColorStop(0, 'rgba(0, 35, 111, 0.25)');
-            gradient.addColorStop(1, 'rgba(0, 35, 111, 0.0)');
+        // Gradasi warna lembut di bawah garis
+        const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+        gradient.addColorStop(0, 'rgba(0, 35, 111, 0.18)');
+        gradient.addColorStop(0.8, 'rgba(0, 35, 111, 0.01)');
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
 
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: chartLabels,
-                    datasets: [{
-                        label: 'Jumlah Permohonan',
-                        data: chartValues,
-                        borderColor: '#00236F',
-                        borderWidth: 2.5,
-                        backgroundColor: gradient,
-                        fill: true,
-                        tension: 0.35,
-                        pointBackgroundColor: '#00236F',
-                        pointBorderColor: '#ffffff',
-                        pointBorderWidth: 2,
-                        pointRadius: 4,
-                        pointHoverRadius: 6
-                    }]
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: 'Jumlah Permohonan',
+                    data: chartValues,
+                    borderColor: '#00236F',         // Warna garis utama (Biru Navy)
+                    borderWidth: 3,
+                    backgroundColor: gradient,
+                    fill: true,
+                    tension: 0.4,                   // Kelengkungan garis lebih natural
+
+                    // Settingan Titik / Buletan Oranye
+                    pointBackgroundColor: '#FEA619', // Warna oranye utama
+                    pointBorderColor: '#ffffff',    // Border putih agar terlihat timbul
+                    pointBorderWidth: 2.5,
+                    pointRadius: 5.5,               // Ukuran normal titik
+                    pointHoverRadius: 8,            // Ukuran saat kursor diarahkan ke titik
+                    pointHoverBackgroundColor: '#FEA619',
+                    pointHoverBorderColor: '#00236F', // Border biru saat hover
+                    pointHoverBorderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            backgroundColor: '#1f2937',
-                            titleFont: {
-                                size: 12,
-                                weight: 'bold'
-                            },
-                            bodyFont: {
-                                size: 12
-                            },
-                            padding: 10,
-                            cornerRadius: 8,
-                            displayColors: false
-                        }
-                    },
-                    scales: {
-                        x: {
-                            grid: {
-                                display: false
-                            },
-                            ticks: {
-                                font: {
-                                    size: 11
-                                },
-                                color: '#6b7280'
-                            }
-                        },
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                precision: 0,
-                                font: {
-                                    size: 11
-                                },
-                                color: '#6b7280'
-                            },
-                            grid: {
-                                color: '#f3f4f6'
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#1f2937',
+                        titleFont: { size: 12, weight: 'bold' },
+                        bodyFont: { size: 12 },
+                        padding: 12,
+                        cornerRadius: 10,
+                        displayColors: true,
+                        boxWidth: 8,
+                        boxHeight: 8,
+                        boxPadding: 4,
+                        callbacks: {
+                            label: function(context) {
+                                return ` Total: ${context.parsed.y} Permohonan`;
                             }
                         }
                     }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 11, weight: '500' }, color: '#6b7280' }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: { precision: 0, font: { size: 11, weight: '500' }, color: '#6b7280' },
+                        grid: { color: '#f3f4f6', strokeDashArray: [4, 4] }
+                    }
                 }
-            });
+            }
         });
-    </script>
+    });
+</script>
 @endsection

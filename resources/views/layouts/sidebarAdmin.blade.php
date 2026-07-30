@@ -33,7 +33,7 @@
             <!-- Logo & Title Horizontal -->
             <div class="flex items-center justify-between p-6 border-b border-gray-100">
                 <div class="flex items-center">
-                    <img src="{{ asset('images/logo-bjm.jpg') }}" alt="Logo Banjarmasin"
+                    <img src="{{ asset('images/logo-bjm.png') }}" alt="Logo Banjarmasin"
                         class="w-10 h-10 object-contain mr-3">
                     <div>
                         <h2 class="text-base font-bold text-[#00236F] leading-none mb-1">
@@ -164,7 +164,7 @@
         <header
             class="flex items-center justify-between bg-white px-4 py-3 border-b border-gray-200 lg:hidden sticky top-0 z-30 shadow-sm">
             <div class="flex items-center gap-2">
-                <img src="{{ asset('images/logo-bjm.jpg') }}" alt="Logo" class="w-8 h-8 object-contain">
+                <img src="{{ asset('images/logo-bjm.png') }}" alt="Logo" class="w-8 h-8 object-contain">
                 <span class="font-bold text-[#00236F] text-sm">SIMANGAT-BJM</span>
             </div>
             <!-- Tombol Hamburger -->

@@ -31,7 +31,7 @@
     <header
         class="lg:hidden bg-[#F8F9FF] border-b border-gray-200 px-4 py-3 flex items-center justify-between flex-shrink-0 z-30">
         <div class="flex items-center space-x-3">
-            <img src="{{ asset('images/logo-bjm.jpg') }}" alt="Logo Banjarmasin" class="w-8 h-8 object-contain">
+            <img src="{{ asset('images/logo-bjm.png') }}" alt="Logo Banjarmasin" class="w-8 h-8 object-contain">
             <span class="font-bold text-[#00236F] text-base">SIMANGAT-BJM</span>
         </div>
         <!-- Tombol Hamburger -->
@@ -66,7 +66,7 @@
                     </svg>
                 </button>
 
-                <img src="{{ asset('images/logo-bjm.jpg') }}" alt="Logo Banjarmasin"
+                <img src="{{ asset('images/logo-bjm.png') }}" alt="Logo Banjarmasin"
                     class="w-14 h-14 lg:w-16 lg:h-16 object-contain mb-3">
                 <h2 class="text-lg lg:text-xl font-bold text-[#00236F] leading-none">
                     SIMANGAT-BJM
