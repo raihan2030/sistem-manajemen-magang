@@ -1,11 +1,8 @@
-@extends('layouts.sidebarAdmin')
+@extends('layouts.sidebarSuperadmin')
 
 @section('title', 'Detail Permohonan Magang')
 
 @section('content')
-
-    <!-- SweetAlert2 CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     @php
         $ketua = $pengajuan->anggota->first();
@@ -13,11 +10,14 @@
 
         $tipe_permohonan = $jumlahAnggota > 1 ? 'Kelompok' : 'Individu';
 
-        // Tombol aksi & form catatan verifikator hanya relevan saat status "Diproses"
-        $bisaDiverifikasi = $pengajuan->status === 'Diproses';
+        $isSlaLewat =
+            in_array($pengajuan->status, ['Diajukan', 'Diproses']) &&
+            \Carbon\Carbon::parse($pengajuan->batas_verifikasi)->isPast();
+
+        $statusTampilan = $isSlaLewat ? 'Terlambat' : $pengajuan->status;
     @endphp
 
-    <!-- Header Page & Action Buttons -->
+    <!-- Header Page & Status Badge (Read-only untuk Superadmin) -->
     <div class="mb-6 border-b border-gray-200/80 pb-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
             <div class="flex items-center text-xs font-bold text-[#00236F] mb-1.5 uppercase tracking-wider">
@@ -28,72 +28,66 @@
             </div>
             <h1 class="text-2xl font-extrabold text-[#1f2937] tracking-tight">Detail Permohonan Magang</h1>
             <p class="text-sm text-[#1f2937]/70 mt-1">
-                Tinjau dan proses berkas permohonan yang masuk ke instansi Anda.
+                Pantau berkas permohonan yang masuk ke SKPD terkait.
             </p>
         </div>
 
-        @if ($bisaDiverifikasi)
-            <!-- Tombol Aksi Utama -->
-            <div class="flex items-center gap-3 self-start md:self-auto">
-                <button type="button" onclick="handleAction('Revisi')"
-                    class="px-5 py-2.5 bg-white border border-[#00236F] text-[#00236F] hover:bg-blue-50/50 text-xs font-bold rounded-lg transition shadow-xs cursor-pointer">
-                    Revisi
-                </button>
-                <button type="button" onclick="handleAction('Ditolak')"
-                    class="px-5 py-2.5 bg-white border border-red-500 text-red-600 hover:bg-red-50/50 text-xs font-bold rounded-lg transition shadow-xs cursor-pointer">
-                    Tolak
-                </button>
-                <button type="button" onclick="handleAction('Diterima')"
-                    class="px-5 py-2.5 bg-[#00236F] text-white hover:bg-blue-900 text-xs font-bold rounded-lg transition shadow-xs cursor-pointer">
-                    Setujui Permohonan
-                </button>
-            </div>
-        @else
-            @php
-                $statusBadge = match ($pengajuan->status) {
-                    'Diajukan' => [
-                        'bg' => 'bg-yellow-50',
-                        'text' => 'text-[#FEA619]',
-                        'border' => 'border-[#FEA619]/30',
-                        'label' => 'Menunggu Diproses',
-                    ],
-                    'Diterima' => [
-                        'bg' => 'bg-emerald-50',
-                        'text' => 'text-emerald-700',
-                        'border' => 'border-emerald-200',
-                        'label' => 'Diterima',
-                    ],
-                    'Ditolak' => [
-                        'bg' => 'bg-gray-100',
-                        'text' => 'text-gray-600',
-                        'border' => 'border-gray-300',
-                        'label' => 'Ditolak',
-                    ],
-                    'Revisi' => [
-                        'bg' => 'bg-purple-50',
-                        'text' => 'text-purple-700',
-                        'border' => 'border-purple-200',
-                        'label' => 'Menunggu Revisi dari Peserta',
-                    ],
-                    default => [
-                        'bg' => 'bg-gray-100',
-                        'text' => 'text-gray-600',
-                        'border' => 'border-gray-300',
-                        'label' => $pengajuan->status,
-                    ],
-                };
-            @endphp
-            <div class="self-start md:self-auto">
-                <span
-                    class="inline-flex items-center gap-2 px-4 py-2.5 {{ $statusBadge['bg'] }} {{ $statusBadge['text'] }} border {{ $statusBadge['border'] }} text-xs font-bold rounded-lg">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    {{ $statusBadge['label'] }}
-                </span>
-            </div>
-        @endif
+        @php
+            $statusBadge = match ($statusTampilan) {
+                'Terlambat' => [
+                    'bg' => 'bg-red-50',
+                    'text' => 'text-red-600',
+                    'border' => 'border-red-200',
+                    'label' => 'Terlambat Diverifikasi',
+                ],
+                'Diajukan' => [
+                    'bg' => 'bg-yellow-50',
+                    'text' => 'text-[#FEA619]',
+                    'border' => 'border-[#FEA619]/30',
+                    'label' => 'Menunggu Diproses',
+                ],
+                'Diproses' => [
+                    'bg' => 'bg-blue-50',
+                    'text' => 'text-[#00236F]',
+                    'border' => 'border-blue-200',
+                    'label' => 'Sedang Diproses SKPD',
+                ],
+                'Diterima' => [
+                    'bg' => 'bg-emerald-50',
+                    'text' => 'text-emerald-700',
+                    'border' => 'border-emerald-200',
+                    'label' => 'Diterima',
+                ],
+                'Ditolak' => [
+                    'bg' => 'bg-gray-100',
+                    'text' => 'text-gray-600',
+                    'border' => 'border-gray-300',
+                    'label' => 'Ditolak',
+                ],
+                'Revisi' => [
+                    'bg' => 'bg-purple-50',
+                    'text' => 'text-purple-700',
+                    'border' => 'border-purple-200',
+                    'label' => 'Menunggu Revisi dari Peserta',
+                ],
+                default => [
+                    'bg' => 'bg-gray-100',
+                    'text' => 'text-gray-600',
+                    'border' => 'border-gray-300',
+                    'label' => $statusTampilan,
+                ],
+            };
+        @endphp
+        <div class="self-start md:self-auto">
+            <span
+                class="inline-flex items-center gap-2 px-4 py-2.5 {{ $statusBadge['bg'] }} {{ $statusBadge['text'] }} border {{ $statusBadge['border'] }} text-xs font-bold rounded-lg">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                {{ $statusBadge['label'] }}
+            </span>
+        </div>
     </div>
 
     <!-- SECTION 1: PROFIL & INFORMASI AKADEMIK -->
@@ -102,7 +96,6 @@
         <!-- Kartu Profil Pemohon (Kiri) -->
         <div
             class="lg:col-span-1 bg-white border border-gray-200 rounded-xl p-6 shadow-xs flex flex-col items-center justify-center text-center">
-            <!-- Avatar Placeholder Circle -->
             <div
                 class="w-24 h-24 rounded-full bg-blue-50/60 border border-blue-100 flex items-center justify-center mb-4 text-[#00236F] shadow-inner">
                 <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
@@ -130,29 +123,24 @@
 
         <!-- Kartu Informasi Akademik & Permohonan (Kanan) -->
         <div class="lg:col-span-2 bg-white border border-gray-200 rounded-xl overflow-hidden shadow-xs flex flex-col">
-            <!-- Header Section -->
             <div class="bg-[#F4F7FF] px-6 py-3.5 border-b border-gray-200">
                 <h3 class="text-xs font-bold text-[#00236F] uppercase tracking-wider">Informasi Akademik & Permohonan</h3>
             </div>
 
-            <!-- Detail Grid -->
             <div class="p-6 flex-grow flex flex-col justify-between gap-6">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-5 gap-x-6">
-                    <!-- NISN / NIM -->
                     <div>
                         <span class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">NISN /
                             NIM (Ketua)</span>
                         <p class="text-sm font-bold text-[#1f2937]">{{ $ketua->nim_nisn ?? '-' }}</p>
                     </div>
 
-                    <!-- Jenjang Pendidikan -->
                     <div>
                         <span class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Jenjang
                             Pendidikan</span>
                         <p class="text-sm font-bold text-[#1f2937]">{{ $pengajuan->jenjang_pendidikan ?? '-' }}</p>
                     </div>
 
-                    <!-- Program Studi / Jurusan -->
                     <div>
                         <span class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Jurusan /
                             Program
@@ -160,7 +148,6 @@
                         <p class="text-sm font-bold text-[#1f2937]">{{ $ketua->jurusan_prodi ?? '-' }}</p>
                     </div>
 
-                    <!-- Tipe Permohonan -->
                     <div>
                         <span class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Tipe
                             Permohonan</span>
@@ -338,126 +325,18 @@
         </div>
     </div>
 
-    @if ($bisaDiverifikasi)
-        <!-- SECTION 4: CATATAN VERIFIKATOR & FORM -->
-        <div class="bg-[#F8FAFC] border border-dashed border-gray-300 rounded-xl p-5 mb-10">
-            <div class="flex items-center gap-2 mb-3 text-xs font-bold text-gray-700">
-                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7">
-                    </path>
-                </svg>
-                <span>Catatan Verifikator (Wajib diisi jika Revisi / Tolak)</span>
-            </div>
-
-            <!-- Form untuk memproses data -->
-            <form id="formVerifikasi" action="{{ route('admin.permohonan.update', $pengajuan->id) }}" method="POST"
-                enctype="multipart/form-data">
-                @csrf
-                @method('PATCH')
-                <input type="hidden" name="status" id="inputStatus">
-                <textarea name="komentar_revisi" id="catatanVerifikator" rows="3"
-                    placeholder="Masukkan catatan atau alasan penolakan/revisi di sini..."
-                    class="w-full bg-white border border-gray-200 rounded-xl p-3.5 text-xs text-gray-700 placeholder-gray-400 focus:ring-[#00236F] focus:border-[#00236F] outline-none transition resize-none">{{ old('komentar_revisi', $pengajuan->komentar_revisi) }}</textarea>
-
-                <div class="mt-4">
-                    <label for="suratBalasan" class="block text-xs font-bold text-gray-700 mb-2">
-                        Surat Balasan Resmi (PDF, maks. 5MB) — wajib diunggah saat menyetujui permohonan
-                    </label>
-                    <input type="file" name="surat_balasan" id="suratBalasan" accept="application/pdf"
-                        class="w-full text-xs text-gray-600 border border-gray-200 rounded-xl bg-white file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-[#00236F] hover:file:bg-blue-100 cursor-pointer p-1.5">
-                    @error('surat_balasan')
-                        <p class="text-[11px] text-red-600 font-semibold mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-            </form>
-        </div>
-    @elseif ($pengajuan->komentar_revisi)
-        <!-- Riwayat catatan verifikator sebelumnya (read-only), kalau ada -->
+    <!-- SECTION 4: CATATAN VERIFIKATOR (Read-only, Superadmin tidak memverifikasi) -->
+    @if ($pengajuan->komentar_revisi)
         <div class="bg-[#F8FAFC] border border-gray-200 rounded-xl p-5 mb-10">
             <div class="flex items-center gap-2 mb-3 text-xs font-bold text-gray-700">
                 <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7">
                     </path>
                 </svg>
-                <span>Catatan Verifikator (Riwayat)</span>
+                <span>Catatan Verifikator SKPD</span>
             </div>
             <p class="text-xs text-gray-600 leading-relaxed">{{ $pengajuan->komentar_revisi }}</p>
         </div>
-    @endif
-
-    @if ($bisaDiverifikasi)
-        <!-- SCRIPT AKSI VERIFIKASI -->
-        <script>
-            function handleAction(statusTarget) {
-                const catatanInput = document.getElementById('catatanVerifikator');
-                const catatan = catatanInput.value.trim();
-                const form = document.getElementById('formVerifikasi');
-                const inputStatus = document.getElementById('inputStatus');
-                const suratBalasanInput = document.getElementById('suratBalasan');
-
-                // Validasi catatan jika memilih Revisi atau Tolak
-                if ((statusTarget === 'Revisi' || statusTarget === 'Ditolak') && !catatan) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Catatan Wajib Diisi',
-                        text: 'Harap isi "Catatan Verifikator" untuk memberikan alasan atau instruksi!',
-                        confirmButtonColor: '#00236F'
-                    }).then(() => {
-                        catatanInput.focus();
-                    });
-                    return;
-                }
-
-                // Validasi surat balasan wajib diunggah jika Setujui
-                if (statusTarget === 'Diterima' && suratBalasanInput.files.length === 0) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Surat Balasan Wajib Diunggah',
-                        text: 'Harap unggah surat balasan resmi (PDF) sebelum menyetujui permohonan!',
-                        confirmButtonColor: '#00236F'
-                    }).then(() => {
-                        suratBalasanInput.focus();
-                    });
-                    return;
-                }
-
-                // Pengaturan modal SweetAlert2 berdasarkan status target
-                let swalConfig = {
-                    title: 'Konfirmasi Aksi',
-                    text: '',
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'Ya, Lanjutkan',
-                    cancelButtonText: 'Batal',
-                    reverseButtons: true
-                };
-
-                if (statusTarget === 'Diterima') {
-                    swalConfig.title = 'Setujui Permohonan?';
-                    swalConfig.text = 'Permohonan magang ini akan disetujui dan diproses lebih lanjut.';
-                    swalConfig.icon = 'success';
-                    swalConfig.confirmButtonColor = '#00236F';
-                } else if (statusTarget === 'Revisi') {
-                    swalConfig.title = 'Minta Revisi Permohonan?';
-                    swalConfig.text = 'Permohonan akan dikembalikan ke pemohon untuk diperbaiki sesuai catatan Anda.';
-                    swalConfig.icon = 'warning';
-                    swalConfig.confirmButtonColor = '#00236F';
-                } else if (statusTarget === 'Ditolak') {
-                    swalConfig.title = 'Tolak Permohonan?';
-                    swalConfig.text = 'Permohonan magang ini akan ditolak.';
-                    swalConfig.icon = 'error';
-                    swalConfig.confirmButtonColor = '#ef4444';
-                }
-
-                // Tampilkan SweetAlert
-                Swal.fire(swalConfig).then((result) => {
-                    if (result.isConfirmed) {
-                        inputStatus.value = statusTarget;
-                        form.submit();
-                    }
-                });
-            }
-        </script>
     @endif
 
 @endsection

@@ -56,6 +56,7 @@
                         <option value="baru">Permohonan Baru</option>
                         <option value="mendesak">Mendesak</option>
                         <option value="terlambat">Terlambat</option>
+                        <option value="manual">Peringatan Superadmin</option>
                     </select>
                 </div>
             </div>
@@ -136,6 +137,13 @@
                             {{ $summary['terlambat'] }}
                         </span>
                     </div>
+                    <div class="flex items-center justify-between py-3 border-b border-gray-50 last:border-0">
+                        <span class="text-sm font-medium text-gray-600">Peringatan Superadmin</span>
+                        <span
+                            class="bg-orange-100 text-orange-700 text-[10px] font-bold px-2 py-0.5 rounded-full min-w-[24px] text-center">
+                            {{ $summary['manual'] }}
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -150,16 +158,21 @@
                     $badgeText = match ($notif->type) {
                         'mendesak' => 'Mendesak',
                         'terlambat' => 'Waktu Habis',
+                        'manual' => 'Peringatan',
                         default => null,
                     };
 
-                    $timeAlert = in_array($notif->type, ['mendesak', 'terlambat']);
+                    $timeAlert = in_array($notif->type, ['mendesak', 'terlambat', 'manual']);
 
                     $cardStyle = match (true) {
-                        !$isRead && in_array($notif->type, ['mendesak', 'terlambat'])
-                            => 'bg-white border border-blue-100 border-l-4 border-l-red-600',
-                        !$isRead && $notif->type === 'baru' 
-                            => 'bg-white border border-blue-100 border-l-4 border-l-navy',
+                        !$isRead && $notif->type === 'mendesak'
+                            => 'bg-white border border-blue-100 border-l-4 border-l-amber-500', // ⬅️ kuning-oranye
+                        !$isRead && $notif->type === 'terlambat'
+                            => 'bg-white border border-blue-100 border-l-4 border-l-red-600', // tetap merah
+                        !$isRead && $notif->type === 'manual'
+                            => 'bg-white border border-blue-100 border-l-4 border-l-gray-800', // ⬅️ hitam/gray gelap
+                        !$isRead && $notif->type === 'baru'
+                            => 'bg-white border border-blue-100 border-l-4 border-l-blue-500',
                         default => 'bg-gray-50 border border-gray-200 opacity-70',
                     };
                 @endphp
@@ -182,8 +195,20 @@
 
                     <div class="flex items-start gap-4 mt-2 {{ $isRead ? '' : 'pl-3' }}">
                         <div class="flex-shrink-0 mt-0.5">
-                            @if (in_array($notif->type, ['mendesak', 'terlambat']))
-                                <div class="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-500">
+                            @if ($notif->type === 'manual')
+                                <!-- Ikon Lonceng untuk peringatan superadmin -->
+                                <div
+                                    class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-700">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+                                        </path>
+                                    </svg>
+                                </div>
+                            @elseif (in_array($notif->type, ['mendesak', 'terlambat']))
+                                <!-- Ikon Jam untuk mendesak/terlambat -->
+                                <div
+                                    class="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-500">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>

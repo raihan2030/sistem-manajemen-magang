@@ -20,8 +20,9 @@ class NotifikasiController extends Controller
             ->paginate(10);
 
         $summary = [
+            // Butuh tindakan segera: gabungan mendesak + terlambat + peringatan manual yang belum dibaca
             'urgent_count' => Notifikasi::forSkpd($user->skpd_id)
-                ->whereIn('type', ['mendesak', 'terlambat'])
+                ->whereIn('type', ['mendesak', 'terlambat', 'manual'])
                 ->belumDibaca()
                 ->count(),
 
@@ -31,6 +32,7 @@ class NotifikasiController extends Controller
             'permohonan_baru' => Notifikasi::forSkpd($user->skpd_id)->where('type', 'baru')->belumDibaca()->count(),
             'mendesak'        => Notifikasi::forSkpd($user->skpd_id)->where('type', 'mendesak')->belumDibaca()->count(),
             'terlambat'       => Notifikasi::forSkpd($user->skpd_id)->where('type', 'terlambat')->belumDibaca()->count(),
+            'manual'          => Notifikasi::forSkpd($user->skpd_id)->where('type', 'manual')->belumDibaca()->count(),
         ];
 
         return view('pages.admin.notifikasi', compact('notifikasis', 'summary'));

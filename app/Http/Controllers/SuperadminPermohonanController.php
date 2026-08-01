@@ -43,6 +43,20 @@ class SuperadminPermohonanController extends Controller
         ]);
     }
 
+    public function show($id): View
+    {
+        $pengajuan = PengajuanMagang::with(['bidang.skpd', 'anggota'])
+            ->where('id', $id)
+            ->firstOrFail();
+
+        $current_skpd = [
+            'kode_skpd' => $pengajuan->bidang->skpd->kode_skpd ?? 'SKPD-000',
+            'nama_skpd' => $pengajuan->bidang->skpd->nama_skpd ?? 'Nama SKPD Tidak Ditemukan',
+        ];
+
+        return view('pages.superadmin.detail_permohonan', compact('pengajuan', 'current_skpd'));
+    }
+
     /**
      * Query untuk export, pakai filter bulan/tahun yang sama seperti index(),
      * tanpa paginate karena export butuh semua data yang cocok filter.
@@ -89,13 +103,14 @@ class SuperadminPermohonanController extends Controller
 
         $callback = function () use ($antreans) {
             $file = fopen('php://output', 'w');
-            fputcsv($file, ['ID Permohonan', 'Nama SKPD', 'Pemohon', 'Tanggal Pengajuan', 'Tenggat Waktu', 'Status']);
+            fputcsv($file, ['No', 'Nama SKPD', 'Pemohon', 'Tanggal Pengajuan', 'Tenggat Waktu', 'Status']);
 
+            $no = 1;
             foreach ($antreans as $row) {
                 $ketua = $row->anggota->first();
 
                 fputcsv($file, [
-                    'PRM-' . str_pad($row->id, 3, '0', STR_PAD_LEFT),
+                    $no++,
                     $row->bidang->skpd->nama_skpd ?? '-',
                     $ketua->nama_lengkap ?? '-',
                     \Carbon\Carbon::parse($row->tanggal_pengajuan)->translatedFormat('d M Y'),

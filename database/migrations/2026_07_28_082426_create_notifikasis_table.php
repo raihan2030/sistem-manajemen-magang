@@ -13,13 +13,13 @@ return new class extends Migration
             $table->foreignId('skpd_id')->constrained('skpd')->cascadeOnDelete();
             $table->foreignId('pengajuan_id')->nullable()->constrained('pengajuan_magang')->cascadeOnDelete();
 
-            $table->enum('type', ['baru', 'mendesak', 'terlambat']);
+            $table->enum('type', ['baru', 'mendesak', 'terlambat', 'manual']);
             $table->string('judul', 150);
             $table->text('pesan');
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
 
-            $table->unique(['pengajuan_id', 'type']);
+            $table->index(['pengajuan_id', 'type']);
         });
     }
 

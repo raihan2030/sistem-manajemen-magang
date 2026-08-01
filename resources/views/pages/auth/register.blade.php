@@ -84,7 +84,8 @@
                             <!-- Toggle Show/Hide Password -->
                             <div class="absolute inset-y-0 right-0 pr-3.5 flex items-center cursor-pointer"
                                 onclick="togglePasswordVisibility('inputPassword', 'eyeIconPath')">
-                                <svg class="h-5 w-5 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="h-5 w-5 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
                                     <!-- ID ditambahkan di path ini -->
                                     <path id="eyeIconPath" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                         d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
@@ -108,9 +109,22 @@
                                     </path>
                                 </svg>
                             </div>
-                            <input type="password" name="password_confirmation" placeholder="Ulangi kata sandi"
-                                class="w-full pl-11 pr-4 py-3 border @error('password_confirmation') border-red-500 @else border-gray-300 @enderror rounded-lg focus:ring-2 focus:ring-[#00236F]/20 focus:border-[#00236F] text-sm transition outline-none tracking-widest"
+                            <input type="password" id="inputPasswordConfirmation" name="password_confirmation"
+                                placeholder="Ulangi kata sandi"
+                                class="w-full pl-11 pr-10 py-3 border @error('password_confirmation') border-red-500 @else border-gray-300 @enderror rounded-lg focus:ring-2 focus:ring-[#00236F]/20 focus:border-[#00236F] text-sm transition outline-none tracking-widest"
                                 required autocomplete="new-password">
+
+                            <!-- Toggle Show/Hide Password -->
+                            <div class="absolute inset-y-0 right-0 pr-3.5 flex items-center cursor-pointer"
+                                onclick="togglePasswordVisibility('inputPasswordConfirmation', 'eyeIconPathConfirmation')">
+                                <svg class="h-5 w-5 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path id="eyeIconPathConfirmation" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="1.5"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                    </path>
+                                </svg>
+                            </div>
                         </div>
                         @error('password_confirmation')
                             <p class="text-xs text-red-600 mt-1 font-semibold">{{ $message }}</p>
@@ -150,23 +164,25 @@
     </div>
 
     <script>
-    function togglePasswordVisibility(inputId, pathId) {
-        const input = document.getElementById(inputId);
-        const path = document.getElementById(pathId);
+        function togglePasswordVisibility(inputId, pathId) {
+            const input = document.getElementById(inputId);
+            const path = document.getElementById(pathId);
 
-        // Path SVG untuk mata terbuka biasa
-        const eyeOpenPath = "M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z";
-        
-        // Path SVG untuk mata dicoret (eye-off)
-        const eyeClosedPath = "M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858-5.908a10.12 10.12 0 013.122-.363c4.478 0 8.268 2.943 9.542 7a10.035 10.035 0 01-2.112 3.826M3 3l18 18M9.88 9.88a3 3 0 104.24 4.24";
+            // Path SVG untuk mata terbuka biasa
+            const eyeOpenPath =
+                "M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z";
 
-        if (input.type === 'password') {
-            input.type = 'text';
-            path.setAttribute('d', eyeClosedPath); // Ganti ke bentuk mata dicoret
-        } else {
-            input.type = 'password';
-            path.setAttribute('d', eyeOpenPath);   // Kembalikan ke mata biasa
+            // Path SVG untuk mata dicoret (eye-off)
+            const eyeClosedPath =
+                "M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858-5.908a10.12 10.12 0 013.122-.363c4.478 0 8.268 2.943 9.542 7a10.035 10.035 0 01-2.112 3.826M3 3l18 18M9.88 9.88a3 3 0 104.24 4.24";
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                path.setAttribute('d', eyeClosedPath); // Ganti ke bentuk mata dicoret
+            } else {
+                input.type = 'password';
+                path.setAttribute('d', eyeOpenPath); // Kembalikan ke mata biasa
+            }
         }
-    }
     </script>
 @endsection

@@ -8,11 +8,12 @@ use App\Http\Controllers\PengajuanMagangController;
 use App\Http\Controllers\PesertaMagangController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SkpdController;
+use App\Http\Controllers\SuperadminAktivitasController;
 use App\Http\Controllers\SuperadminDashboardController;
-use App\Http\Controllers\SuperadminPermohonanController;
-use App\Http\Controllers\UploadSertifikatController;
 use App\Http\Controllers\SuperadminKelolaAkunController;
+use App\Http\Controllers\SuperadminPermohonanController;
 use App\Http\Controllers\SuperadminSkpdController;
+use App\Http\Controllers\UploadSertifikatController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -50,15 +51,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/permohonan', [SuperadminPermohonanController::class, 'index'])->name('permohonan');
 
+        Route::get('/permohonan/detail/{id}', [SuperadminPermohonanController::class, 'show'])->name('permohonan.detail');
+
         Route::get('/permohonan/export/csv', [SuperadminPermohonanController::class, 'exportCsv'])
             ->name('permohonan.export.csv');
 
         Route::get('/permohonan/export/pdf', [SuperadminPermohonanController::class, 'exportPdf'])
             ->name('permohonan.export.pdf');
         
-        Route::get('/aktivitas', function () {
-            return view('pages.superadmin.aktivitas');
-        })->name('aktivitas');
+        Route::get('/aktivitas', [SuperadminAktivitasController::class, 'index'])->name('aktivitas');
+        Route::post('/aktivitas/{pengajuanId}/kirim-notifikasi', [SuperadminAktivitasController::class, 'kirimNotifikasi'])
+            ->name('aktivitas.kirim-notifikasi');
 
         Route::get('/kelola_akun', [SuperadminKelolaAkunController::class, 'index'])->name('kelola_akun');
         Route::post('/kelola_akun', [SuperadminKelolaAkunController::class, 'store'])->name('kelola_akun.store');

@@ -53,7 +53,7 @@
     <table>
         <thead>
             <tr>
-                <th>ID Permohonan</th>
+                <th style="width: 40px; text-align: center;">No</th>
                 <th>Nama SKPD</th>
                 <th>Pemohon</th>
                 <th>Tanggal Pengajuan</th>
@@ -65,7 +65,7 @@
             @forelse ($antreans as $row)
                 @php $ketua = $row->anggota->first(); @endphp
                 <tr>
-                    <td>PRM-{{ str_pad($row->id, 3, '0', STR_PAD_LEFT) }}</td>
+                    <td style="text-align: center;">{{ $loop->iteration }}</td>
                     <td>{{ $row->bidang->skpd->nama_skpd ?? '-' }}</td>
                     <td>{{ $ketua->nama_lengkap ?? '-' }}</td>
                     <td>{{ \Carbon\Carbon::parse($row->tanggal_pengajuan)->translatedFormat('d M Y') }}</td>

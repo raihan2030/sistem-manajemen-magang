@@ -21,6 +21,7 @@ class PengajuanMagang extends Model
         'status',
         'komentar_revisi',
         'surat_permohonan',
+        'surat_balasan',
         'tanggal_mulai',
         'tanggal_selesai',
         'nama_pembimbing',

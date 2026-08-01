@@ -26,6 +26,26 @@ class NotifikasiService
     }
 
     /**
+     * Dipanggil superadmin untuk mengirim notifikasi manual (reminder) ke admin SKPD
+     * terkait sebuah pengajuan yang masih menunggu tindak lanjut.
+     * Tidak pakai firstOrCreate — sengaja boleh dikirim berkali-kali sebagai reminder.
+     */
+    public function kirimNotifikasiManual(PengajuanMagang $pengajuan, ?string $pesanKustom = null): Notifikasi
+    {
+        $ketua = $pengajuan->anggota->first();
+
+        return Notifikasi::create([
+            'skpd_id'      => $pengajuan->bidang->skpd_id,
+            'pengajuan_id' => $pengajuan->id,
+            'type'         => 'manual',
+            'judul'        => 'Peringatan dari Superadmin',
+            'pesan'        => $pesanKustom
+                ?? 'Segera tindak lanjuti permohonan dari ' . ($ketua->nama_lengkap ?? 'peserta')
+                    . ' yang masih berstatus "' . $pengajuan->status . '".',
+        ]);
+    }
+
+    /**
      * Dipanggil secara berkala (scheduled command) untuk mengecek pengajuan
      * yang statusnya berubah jadi Mendesak atau Terlambat karena berjalannya waktu.
      */

@@ -115,7 +115,7 @@
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-gray-50 text-xs text-[#1f2937]/60 font-semibold border-b border-gray-200">
-                        <th class="px-5 py-4 w-32">ID Permohonan</th>
+                        <th class="px-5 py-4 w-16 text-center">No</th>
                         <th class="px-5 py-4">Nama SKPD</th>
                         <th class="px-5 py-4 w-40">Pemohon</th>
                         <th class="px-5 py-4 w-32">Tanggal Pengajuan</th>
@@ -169,8 +169,8 @@
                         <tr
                             class="border-b border-gray-100 transition hover:bg-gray-50 {{ $rowHighlight }} {{ $isMuted ? 'opacity-60' : '' }}">
                             <td
-                                class="px-5 py-4 font-semibold {{ $statusTampilan === 'Terlambat' ? 'text-red-600' : 'text-[#1f2937]/70' }}">
-                                PRM-{{ str_pad($row->id, 3, '0', STR_PAD_LEFT) }}
+                                class="px-5 py-4 font-semibold text-center {{ $statusTampilan === 'Terlambat' ? 'text-red-600' : 'text-[#1f2937]/70' }}">
+                                {{ $antreans->firstItem() + $loop->index }}
                             </td>
                             <td
                                 class="px-5 py-4 font-medium {{ $statusTampilan === 'Terlambat' ? 'text-red-700' : 'text-[#1f2937]' }}">
@@ -195,7 +195,7 @@
                                 </span>
                             </td>
                             <td class="px-5 py-4 text-center">
-                                <a href="#"
+                                <a href="{{ route('superadmin.permohonan.detail', $row->id) }}"
                                     class="{{ $statusTampilan === 'Terlambat' ? 'text-red-600 hover:text-red-800' : 'text-[#00236F] hover:opacity-70' }} transition inline-block"
                                     title="Lihat Detail">
                                     <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">

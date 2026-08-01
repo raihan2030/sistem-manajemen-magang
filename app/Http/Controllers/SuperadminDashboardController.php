@@ -72,10 +72,9 @@ class SuperadminDashboardController extends Controller
             $chartValues[] = $found ? $found->total : 0;
         }
 
-        // === Filter & Tabel Antrean Permohonan ===
+        // === Filter & Tabel Antrean Permohonan (Dashboard: hanya 7 data teratas) ===
         $bulanFilter = $request->query('bulan');
         $tahunFilter = $request->query('tahun');
-        $perPage     = $request->query('per_page', 10);
 
         $query = PengajuanMagang::with(['bidang.skpd', 'anggota']);
 
@@ -88,11 +87,14 @@ class SuperadminDashboardController extends Controller
         }
 
         $antreans = $query->orderBy('tanggal_pengajuan', 'desc')
-            ->paginate($perPage)
-            ->withQueryString();
+            ->take(7)
+            ->get();
 
-        // Opsi Tahun untuk Dropdown Filter (5 Tahun ke belakang dari tahun sekarang)
-        $tahunOptions = range(now()->year, now()->year - 4);
+        // Opsi Tahun untuk Dropdown Filter — hanya tahun yang benar-benar ada datanya
+        $tahunOptions = PengajuanMagang::selectRaw('YEAR(tanggal_pengajuan) as tahun')
+            ->distinct()
+            ->orderByDesc('tahun')
+            ->pluck('tahun');
 
         return view('pages.superadmin.dashboard', compact(
             'stats',

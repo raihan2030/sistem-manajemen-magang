@@ -159,7 +159,7 @@
 
                 <!-- KARTU INFORMASI PENEMPATAN MAGANG -->
                 <div class="bg-white border border-gray-200 rounded-2xl p-6 md:p-8 shadow-xs">
-                    <h3 class="text-xs font-bold text-[#1f2937] border-b border-gray-100 pb-4 mb-6">Informasi
+                    <h3 class="text-sm font-bold text-[#1f2937] border-b border-gray-100 pb-4 mb-6">Informasi
                         Penempatan Magang</h3>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-8">
@@ -241,6 +241,67 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- KARTU DOKUMEN PENGAJUAN -->
+                @if ($pengajuan && ($pengajuan->surat_permohonan || $pengajuan->surat_balasan))
+                    <div class="bg-white border border-gray-200 rounded-2xl p-6 md:p-8 shadow-xs">
+                        <h3 class="text-sm font-bold text-[#1f2937] border-b border-gray-100 pb-4 mb-5">
+                            Dokumen Pengajuan Magang
+                        </h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            @if ($pengajuan->surat_permohonan)
+                                <div class="border border-gray-200 rounded-xl p-4 flex items-center justify-between bg-white hover:border-blue-200 transition">
+                                    <div class="flex items-center gap-3.5">
+                                        <div class="w-10 h-10 rounded-lg bg-red-50 text-red-500 border border-red-100 flex items-center justify-center flex-shrink-0 font-bold text-[10px]">
+                                            PDF
+                                        </div>
+                                        <div>
+                                            <h4 class="text-xs font-bold text-[#1f2937]">Surat Permohonan</h4>
+                                            <p class="text-[11px] text-gray-400 font-medium mt-0.5">Dokumen yang Anda unggah</p>
+                                        </div>
+                                    </div>
+
+                                    <a href="{{ asset('storage/' . $pengajuan->surat_permohonan) }}" target="_blank"
+                                        class="text-xs font-bold text-[#00236F] hover:underline flex items-center gap-1 shrink-0">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                        Lihat / Unduh
+                                    </a>
+                                </div>
+                            @endif
+
+                            @if ($pengajuan->surat_balasan)
+                                <div class="border border-gray-200 rounded-xl p-4 flex items-center justify-between bg-white hover:border-blue-200 transition">
+                                    <div class="flex items-center gap-3.5">
+                                        <div class="w-10 h-10 rounded-lg bg-red-50 text-red-500 border border-emerald-100 flex items-center justify-center flex-shrink-0 font-bold text-[10px]">
+                                            PDF
+                                        </div>
+                                        <div>
+                                            <h4 class="text-xs font-bold text-[#1f2937]">Surat Balasan Resmi</h4>
+                                            <p class="text-[11px] text-gray-400 font-medium mt-0.5">Dari Instansi Terkait</p>
+                                        </div>
+                                    </div>
+
+                                    <a href="{{ asset('storage/' . $pengajuan->surat_balasan) }}" target="_blank"
+                                        class="text-xs font-bold text-[#00236F] hover:underline flex items-center gap-1 shrink-0">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                        Lihat / Unduh
+                                    </a>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                @endif
 
                 <!-- KARTU TABEL ANGGOTA TIM -->
                 @if ($isKelompok)

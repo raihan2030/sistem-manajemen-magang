@@ -92,6 +92,11 @@ class AdminPermohonanController extends Controller
             $updateData['batas_verifikasi'] = PengajuanMagang::hitungBatasVerifikasi();
         }
 
+        // Simpan surat balasan hanya saat admin menyetujui & file diunggah
+        if ($request->status === 'Diterima' && $request->hasFile('surat_balasan')) {
+            $updateData['surat_balasan'] = $request->file('surat_balasan')->store('surat_balasan', 'public');
+        }
+
         try {
             DB::transaction(function () use ($pengajuan, $updateData, $request, $statusSebelumnya) {
 

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->enum('status', ['Diajukan', 'Diproses', 'Diterima', 'Ditolak', 'Revisi'])->default('Diajukan');
             $table->text('komentar_revisi')->nullable();
             $table->string('surat_permohonan', 255);
+            $table->string('surat_balasan', 255)->nullable();
             $table->date('tanggal_mulai');
             $table->date('tanggal_selesai');
             $table->string('nama_pembimbing', 150)->nullable();

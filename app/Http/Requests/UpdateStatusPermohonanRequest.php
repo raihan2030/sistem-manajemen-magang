@@ -16,6 +16,7 @@ class UpdateStatusPermohonanRequest extends FormRequest
         return [
             'status' => ['required', 'in:Diterima,Ditolak,Revisi'],
             'komentar_revisi' => ['nullable', 'string'],
+            'surat_balasan' => ['required_if:status,Diterima', 'nullable', 'file', 'mimes:pdf', 'max:5120'],
         ];
     }
 }
