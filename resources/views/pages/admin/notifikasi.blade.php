@@ -140,7 +140,7 @@
                     <div class="flex items-center justify-between py-3 border-b border-gray-50 last:border-0">
                         <span class="text-sm font-medium text-gray-600">Peringatan Superadmin</span>
                         <span
-                            class="bg-orange-100 text-orange-700 text-[10px] font-bold px-2 py-0.5 rounded-full min-w-[24px] text-center">
+                            class="bg-black text-white text-[10px] font-bold px-2 py-0.5 rounded-full min-w-[24px] text-center">
                             {{ $summary['manual'] }}
                         </span>
                     </div>

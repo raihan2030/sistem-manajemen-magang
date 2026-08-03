@@ -361,10 +361,21 @@
 
                 <div class="mt-4">
                     <label for="suratBalasan" class="block text-xs font-bold text-gray-700 mb-2">
-                        Surat Balasan Resmi (PDF, maks. 5MB) — wajib diunggah saat menyetujui permohonan
+                        Surat Balasan Resmi (PDF, maks. 5MB) - wajib diunggah saat menyetujui permohonan <span class="text-red-600">*</span>
                     </label>
-                    <input type="file" name="surat_balasan" id="suratBalasan" accept="application/pdf"
-                        class="w-full text-xs text-gray-600 border border-gray-200 rounded-xl bg-white file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-[#00236F] hover:file:bg-blue-100 cursor-pointer p-1.5">
+                    
+                    <div class="flex items-center gap-2">
+                        <input type="file" name="surat_balasan" id="suratBalasan" accept="application/pdf" required
+                            class="w-full text-xs text-gray-600 border border-gray-200 rounded-xl bg-white file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-[#00236F] hover:file:bg-blue-100 cursor-pointer p-1.5">
+                        
+                        <!-- Tombol Batal (Tersembunyi secara default) -->
+                        <button type="button" id="btnBatalUpload" class="hidden text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded-xl px-3 py-2.5 transition whitespace-nowrap flex items-center gap-1 cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Batal
+                        </button>
+                    </div>
                     @error('surat_balasan')
                         <p class="text-[11px] text-red-600 font-semibold mt-1">{{ $message }}</p>
                     @enderror
@@ -457,7 +468,28 @@
                     }
                 });
             }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                const fileInput = document.getElementById('suratBalasan');
+                const btnBatal = document.getElementById('btnBatalUpload');
+
+                if (fileInput && btnBatal) {
+                    // Tampilkan tombol Batal saat file dipilih
+                    fileInput.addEventListener('change', function () {
+                        if (this.files && this.files.length > 0) {
+                            btnBatal.classList.remove('hidden');
+                        } else {
+                            btnBatal.classList.add('hidden');
+                        }
+                    });
+
+                    // Kosongkan file input saat tombol Batal diklik
+                    btnBatal.addEventListener('click', function () {
+                        fileInput.value = '';
+                        btnBatal.classList.add('hidden');
+                    });
+                }
+            });
         </script>
     @endif
-
 @endsection

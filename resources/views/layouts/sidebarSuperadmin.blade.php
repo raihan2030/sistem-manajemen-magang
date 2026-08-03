@@ -70,7 +70,7 @@
                     SIMANGAT-BJM
                 </h2>
                 <p class="text-xs text-[#1f2937]/60 font-medium mt-1.5">
-                    Kota Banjarmasin
+                    Pemerintah Kota Banjarmasin
                 </p>
             </div>
 

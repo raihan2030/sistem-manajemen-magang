@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UpdateKapasitasRequest;
 use App\Models\Bidang;
 use App\Models\Skpd;
 use Illuminate\Http\RedirectResponse;
@@ -30,50 +29,57 @@ class AdminKapasitasController extends Controller
 
     /**
      * Menambahkan bidang/sub-bagian baru.
+     * Kuota awal diset 0 agar tidak langsung terbuka di portal user sebelum dikonfigurasi.
      */
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
             'nama_bidang_baru' => 'required|string|max:255',
-            'kuota_baru'       => 'required|integer|min:1',
         ], [
             'nama_bidang_baru.required' => 'Nama bidang/sub bagian wajib diisi.',
-            'kuota_baru.required'       => 'Kuota awal wajib diisi.',
-            'kuota_baru.min'            => 'Kuota minimal harus 1 orang.',
         ]);
 
         $user = Auth::user();
 
-        // Simpan bidang baru
         $bidang = Bidang::create([
             'skpd_id'     => $user->skpd_id,
             'nama_bidang' => $request->nama_bidang_baru,
-            'kuota_total' => $request->kuota_baru,
-            'sisa_kuota'  => $request->kuota_baru, // Sisa kuota awal disamakan dengan total kuota
+            'kuota_total' => 0, // Kuota awal 0
+            'sisa_kuota'  => 0, // Kuota awal 0
         ]);
 
-        // Redirect kembali dengan memilih bidang yang baru dibuat pada dropdown
         return redirect()
             ->route('admin.kapasitas.index', ['bidang_id' => $bidang->id])
-            ->with('success', 'Sub bagian/bidang "' . $bidang->nama_bidang . '" berhasil ditambahkan!');
+            ->with('success', 'Sub bagian "' . $bidang->nama_bidang . '" berhasil ditambahkan! Silakan atur kuotanya.');
     }
 
     /**
-     * Memperbarui data bidang & kuota di database.
+     * Memperbarui data bidang dan menghitung otomatis selisih sisa kuota.
      */
-    public function update(UpdateKapasitasRequest $request, $id): RedirectResponse
+    public function update(Request $request, $id): RedirectResponse
     {
+        $request->validate([
+            'nama_bidang' => 'required|string|max:255',
+            'kuota_total' => 'required|integer|min:0',
+        ], [
+            'nama_bidang.required' => 'Nama bidang wajib diisi.',
+            'kuota_total.required' => 'Total kuota wajib diisi.',
+        ]);
+
         $bidang = Bidang::where('id', $id)
             ->where('skpd_id', Auth::user()->skpd_id)
             ->firstOrFail();
 
-        $kuotaTotalBaru = $request->validated('kuota_total');
+        $kuotaTotalBaru = (int) $request->kuota_total;
+        
+        // Hitung selisih perubahan total kuota
         $selisih = $kuotaTotalBaru - $bidang->kuota_total;
 
+        // Terapkan selisih secara otomatis ke sisa_kuota
         $sisaKuotaBaru = max(0, $bidang->sisa_kuota + $selisih);
 
         $bidang->update([
-            'nama_bidang' => $request->validated('nama_bidang'),
+            'nama_bidang' => $request->nama_bidang,
             'kuota_total' => $kuotaTotalBaru,
             'sisa_kuota'  => $sisaKuotaBaru,
         ]);
@@ -81,5 +87,22 @@ class AdminKapasitasController extends Controller
         return redirect()
             ->route('admin.kapasitas.index', ['bidang_id' => $bidang->id])
             ->with('success', 'Kapasitas bidang ' . $bidang->nama_bidang . ' berhasil diperbarui!');
+    }
+
+    /**
+     * Menghapus sub bagian / bidang.
+     */
+    public function destroy($id): RedirectResponse
+    {
+        $bidang = Bidang::where('id', $id)
+            ->where('skpd_id', Auth::user()->skpd_id)
+            ->firstOrFail();
+
+        $nama = $bidang->nama_bidang;
+        $bidang->delete();
+
+        return redirect()
+            ->route('admin.kapasitas.index')
+            ->with('success', 'Sub bagian "' . $nama . '" berhasil dihapus.');
     }
 }

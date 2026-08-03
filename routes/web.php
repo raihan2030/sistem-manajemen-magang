@@ -97,7 +97,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/kapasitas', [AdminKapasitasController::class, 'index'])->name('kapasitas.index');
         Route::post('/kapasitas', [AdminKapasitasController::class, 'store'])->name('kapasitas.store');
         Route::put('/kapasitas/{id}', [AdminKapasitasController::class, 'update'])->name('kapasitas.update');
-
+        Route::delete('/kapasitas/{id}', [AdminKapasitasController::class, 'destroy'])->name('kapasitas.destroy');
+        
         Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi');
         Route::patch('/notifikasi/{id}/dibaca', [NotifikasiController::class, 'tandaiDibaca'])->name('notifikasi.dibaca');
         Route::patch('/notifikasi/dibaca-semua', [NotifikasiController::class, 'tandaiSemuaDibaca'])->name('notifikasi.dibaca-semua');
