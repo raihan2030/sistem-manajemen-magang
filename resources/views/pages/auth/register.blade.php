@@ -79,14 +79,13 @@
                             </div>
                             <input type="password" id="inputPassword" name="password" placeholder="••••••••"
                                 class="w-full pl-11 pr-10 py-3 border @error('password') border-red-500 @else border-gray-300 @enderror rounded-lg focus:ring-2 focus:ring-[#00236F]/20 focus:border-[#00236F] text-sm transition outline-none tracking-widest"
-                                required autocomplete="current-password">
+                                required autocomplete="new-password">
 
                             <!-- Toggle Show/Hide Password -->
                             <div class="absolute inset-y-0 right-0 pr-3.5 flex items-center cursor-pointer"
                                 onclick="togglePasswordVisibility('inputPassword', 'eyeIconPath')">
                                 <svg class="h-5 w-5 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
-                                    <!-- ID ditambahkan di path ini -->
                                     <path id="eyeIconPath" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                         d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
                                     </path>
@@ -98,7 +97,7 @@
                         @enderror
                     </div>
 
-                    <!-- Input Konfirmasi Password (Wajib untuk Laravel Breeze) -->
+                    <!-- Input Konfirmasi Password -->
                     <div>
                         <label class="block text-sm font-semibold text-[#1f2937] mb-2">Konfirmasi Kata Sandi</label>
                         <div class="relative">
@@ -131,9 +130,9 @@
                         @enderror
                     </div>
 
-                    <!-- Tombol Submit -->
+                    <!-- Tombol Submit Register -->
                     <button type="submit"
-                        class="w-full bg-[#00236F] text-white py-3 rounded-lg text-sm font-semibold hover:bg-opacity-90 transition flex justify-center items-center shadow-sm !mt-6">
+                        class="w-full bg-[#00236F] text-white py-3 rounded-lg text-sm font-semibold hover:bg-opacity-90 transition flex justify-center items-center shadow-sm !mt-6 cursor-pointer">
                         Daftar
                         <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -141,6 +140,28 @@
                         </svg>
                     </button>
                 </form>
+
+                <!-- Divider "Atau" -->
+                <div class="relative my-6">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-200"></div>
+                    </div>
+                    <div class="relative flex justify-center text-xs uppercase">
+                        <span class="bg-white px-3 text-gray-400 font-semibold">Atau daftar dengan</span>
+                    </div>
+                </div>
+
+                <!-- Tombol Register dengan Google -->
+                <a href="#" onclick="alert('Fitur Login Google sedang disiapkan oleh Backend!'); return false;"
+                    class="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 text-gray-700 py-3 rounded-lg text-sm font-semibold hover:bg-gray-50 transition shadow-xs cursor-pointer">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.18 1-.78 1.85-1.63 2.45v2.01h2.64c1.55-1.42 2.45-3.52 2.45-6.47z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-2.64-2.01c-.98.66-2.23 1.06-3.64 1.06-2.86 0-5.29-1.93-6.16-4.53H4.18v2.06A11.996 11.996 0 0 0 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.86c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V8.62H4.18C3.43 10.08 3 11.97 3 14s.43 3.92 1.18 5.38l2.66-2.06z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.46 1 3.6 3.58 1.77 7.37l2.75 2.13c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    <span>Masuk dengan Google</span>
+                </a>
 
                 <!-- Tautan Login -->
                 <div class="mt-6 text-center text-sm text-[#1f2937]/70">
@@ -150,7 +171,7 @@
             </div>
 
             <!-- Footer Form -->
-            <div class="text-[10px] text-gray-400 font-bold tracking-wider mt-12">
+            <div class="text-[10px] text-gray-400 font-bold tracking-wider mt-10 md:mt-12">
                 &copy; 2026 PEMERINTAH KOTA BANJARMASIN
             </div>
         </div>
@@ -168,20 +189,17 @@
             const input = document.getElementById(inputId);
             const path = document.getElementById(pathId);
 
-            // Path SVG untuk mata terbuka biasa
             const eyeOpenPath =
                 "M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z";
-
-            // Path SVG untuk mata dicoret (eye-off)
             const eyeClosedPath =
                 "M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858-5.908a10.12 10.12 0 013.122-.363c4.478 0 8.268 2.943 9.542 7a10.035 10.035 0 01-2.112 3.826M3 3l18 18M9.88 9.88a3 3 0 104.24 4.24";
 
             if (input.type === 'password') {
                 input.type = 'text';
-                path.setAttribute('d', eyeClosedPath); // Ganti ke bentuk mata dicoret
+                path.setAttribute('d', eyeClosedPath);
             } else {
                 input.type = 'password';
-                path.setAttribute('d', eyeOpenPath); // Kembalikan ke mata biasa
+                path.setAttribute('d', eyeOpenPath);
             }
         }
     </script>

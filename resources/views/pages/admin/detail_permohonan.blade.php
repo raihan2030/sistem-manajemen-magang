@@ -361,21 +361,35 @@
 
                 <div class="mt-4">
                     <label for="suratBalasan" class="block text-xs font-bold text-gray-700 mb-2">
-                        Surat Balasan Resmi (PDF, maks. 5MB) - wajib diunggah saat menyetujui permohonan <span class="text-red-600">*</span>
+                        Surat Balasan Resmi (PDF, maks. 5MB) - <span class="text-red-600">Wajib diunggah jika menyetujui permohonan</span>
                     </label>
                     
                     <div class="flex items-center gap-2">
-                        <input type="file" name="surat_balasan" id="suratBalasan" accept="application/pdf" required
+                        <!-- ATRIBUT required DIHAPUS DI SINI -->
+                        <input type="file" name="surat_balasan" id="suratBalasan" accept="application/pdf"
+                            onchange="handleSuratBalasanSelect(this)"
                             class="w-full text-xs text-gray-600 border border-gray-200 rounded-xl bg-white file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-[#00236F] hover:file:bg-blue-100 cursor-pointer p-1.5">
                         
-                        <!-- Tombol Batal (Tersembunyi secara default) -->
-                        <button type="button" id="btnBatalUpload" class="hidden text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded-xl px-3 py-2.5 transition whitespace-nowrap flex items-center gap-1 cursor-pointer">
+                        <!-- Tombol Batal -->
+                        <button type="button" id="btnBatalUpload" onclick="cancelSuratBalasan()" class="hidden text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded-xl px-3 py-2.5 transition whitespace-nowrap flex items-center gap-1 cursor-pointer">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
                             Batal
                         </button>
                     </div>
+
+                    <p id="error_surat_balasan_js" class="text-[11px] text-red-600 font-semibold mt-1 hidden"></p>
+
+                    @error('surat_balasan')
+                        <p class="text-[11px] text-red-600 font-semibold mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                    <!-- Pesan Peringatan Validasi Instan Client-Side -->
+                    <p id="error_surat_balasan_js" class="text-[11px] text-red-600 font-semibold mt-1 hidden"></p>
+
+                    <!-- Pesan Error Server-Side (Laravel) -->
                     @error('surat_balasan')
                         <p class="text-[11px] text-red-600 font-semibold mt-1">{{ $message }}</p>
                     @enderror
@@ -399,97 +413,150 @@
     @if ($bisaDiverifikasi)
         <!-- SCRIPT AKSI VERIFIKASI -->
         <script>
-            function handleAction(statusTarget) {
-                const catatanInput = document.getElementById('catatanVerifikator');
-                const catatan = catatanInput.value.trim();
-                const form = document.getElementById('formVerifikasi');
-                const inputStatus = document.getElementById('inputStatus');
-                const suratBalasanInput = document.getElementById('suratBalasan');
+        function handleAction(statusTarget) {
+            const catatanInput = document.getElementById('catatanVerifikator');
+            const catatan = catatanInput ? catatanInput.value.trim() : '';
+            const form = document.getElementById('formVerifikasi');
+            const inputStatus = document.getElementById('inputStatus');
+            const suratBalasanInput = document.getElementById('suratBalasan');
 
-                // Validasi catatan jika memilih Revisi atau Tolak
-                if ((statusTarget === 'Revisi' || statusTarget === 'Ditolak') && !catatan) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Catatan Wajib Diisi',
-                        text: 'Harap isi "Catatan Verifikator" untuk memberikan alasan atau instruksi!',
-                        confirmButtonColor: '#00236F'
-                    }).then(() => {
-                        catatanInput.focus();
-                    });
-                    return;
-                }
-
-                // Validasi surat balasan wajib diunggah jika Setujui
-                if (statusTarget === 'Diterima' && suratBalasanInput.files.length === 0) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Surat Balasan Wajib Diunggah',
-                        text: 'Harap unggah surat balasan resmi (PDF) sebelum menyetujui permohonan!',
-                        confirmButtonColor: '#00236F'
-                    }).then(() => {
-                        suratBalasanInput.focus();
-                    });
-                    return;
-                }
-
-                // Pengaturan modal SweetAlert2 berdasarkan status target
-                let swalConfig = {
-                    title: 'Konfirmasi Aksi',
-                    text: '',
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'Ya, Lanjutkan',
-                    cancelButtonText: 'Batal',
-                    reverseButtons: true
-                };
-
-                if (statusTarget === 'Diterima') {
-                    swalConfig.title = 'Setujui Permohonan?';
-                    swalConfig.text = 'Permohonan magang ini akan disetujui dan diproses lebih lanjut.';
-                    swalConfig.icon = 'success';
-                    swalConfig.confirmButtonColor = '#00236F';
-                } else if (statusTarget === 'Revisi') {
-                    swalConfig.title = 'Minta Revisi Permohonan?';
-                    swalConfig.text = 'Permohonan akan dikembalikan ke pemohon untuk diperbaiki sesuai catatan Anda.';
-                    swalConfig.icon = 'warning';
-                    swalConfig.confirmButtonColor = '#00236F';
-                } else if (statusTarget === 'Ditolak') {
-                    swalConfig.title = 'Tolak Permohonan?';
-                    swalConfig.text = 'Permohonan magang ini akan ditolak.';
-                    swalConfig.icon = 'error';
-                    swalConfig.confirmButtonColor = '#ef4444';
-                }
-
-                // Tampilkan SweetAlert
-                Swal.fire(swalConfig).then((result) => {
-                    if (result.isConfirmed) {
-                        inputStatus.value = statusTarget;
-                        form.submit();
-                    }
+            // Validasi catatan jika memilih Revisi atau Tolak
+            if ((statusTarget === 'Revisi' || statusTarget === 'Ditolak') && !catatan) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Catatan Wajib Diisi',
+                    text: 'Harap isi "Catatan Verifikator" untuk memberikan alasan atau instruksi!',
+                    confirmButtonColor: '#00236F'
+                }).then(() => {
+                    if (catatanInput) catatanInput.focus();
                 });
+                return;
             }
 
-            document.addEventListener('DOMContentLoaded', function () {
-                const fileInput = document.getElementById('suratBalasan');
-                const btnBatal = document.getElementById('btnBatalUpload');
+            // Validasi surat balasan wajib diunggah jika Setujui
+            if (statusTarget === 'Diterima' && (!suratBalasanInput || suratBalasanInput.files.length === 0)) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Surat Balasan Wajib Diunggah',
+                    text: 'Harap unggah surat balasan resmi (PDF) sebelum menyetujui permohonan!',
+                    confirmButtonColor: '#00236F'
+                }).then(() => {
+                    if (suratBalasanInput) suratBalasanInput.focus();
+                });
+                return;
+            }
 
-                if (fileInput && btnBatal) {
-                    // Tampilkan tombol Batal saat file dipilih
-                    fileInput.addEventListener('change', function () {
-                        if (this.files && this.files.length > 0) {
-                            btnBatal.classList.remove('hidden');
-                        } else {
-                            btnBatal.classList.add('hidden');
-                        }
-                    });
+            // Pengaturan modal SweetAlert2 berdasarkan status target
+            let swalConfig = {
+                title: 'Konfirmasi Aksi',
+                text: '',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Lanjutkan',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            };
 
-                    // Kosongkan file input saat tombol Batal diklik
-                    btnBatal.addEventListener('click', function () {
-                        fileInput.value = '';
-                        btnBatal.classList.add('hidden');
-                    });
+            if (statusTarget === 'Diterima') {
+                swalConfig.title = 'Setujui Permohonan?';
+                swalConfig.text = 'Permohonan magang ini akan disetujui dan diproses lebih lanjut.';
+                swalConfig.icon = 'success';
+                swalConfig.confirmButtonColor = '#00236F';
+            } else if (statusTarget === 'Revisi') {
+                swalConfig.title = 'Minta Revisi Permohonan?';
+                swalConfig.text = 'Permohonan akan dikembalikan ke pemohon untuk diperbaiki sesuai catatan Anda.';
+                swalConfig.icon = 'warning';
+                swalConfig.confirmButtonColor = '#00236F';
+            } else if (statusTarget === 'Ditolak') {
+                swalConfig.title = 'Tolak Permohonan?';
+                swalConfig.text = 'Permohonan magang ini akan ditolak.';
+                swalConfig.icon = 'error';
+                swalConfig.confirmButtonColor = '#ef4444';
+            }
+
+            // Tampilkan SweetAlert
+            Swal.fire(swalConfig).then((result) => {
+                if (result.isConfirmed) {
+                    inputStatus.value = statusTarget;
+                    form.submit();
                 }
             });
-        </script>
+        }
+
+        // --- HANDLER UPLOAD SURAT BALASAN ---
+        function handleSuratBalasanSelect(input) {
+            const btnBatal = document.getElementById('btnBatalUpload');
+            const errorElement = document.getElementById('error_surat_balasan_js');
+            const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // Batas Maksimal 5 MB
+
+            // Reset pesan error
+            if (errorElement) {
+                errorElement.innerText = '';
+                errorElement.classList.add('hidden');
+            }
+
+            if (!input.files || !input.files[0]) {
+                if (btnBatal) btnBatal.classList.add('hidden');
+                return;
+            }
+
+            const file = input.files[0];
+            const fileName = file.name;
+            const fileSize = file.size;
+            const isPdf = fileName.toLowerCase().endsWith('.pdf') || file.type === 'application/pdf';
+
+            // 1. Validasi Ekstensi PDF
+            if (!isPdf) {
+                input.value = ''; // KOSONGKAN FILE AGAR INPUT TIDAK DITERIMA
+                if (btnBatal) btnBatal.classList.add('hidden');
+                if (errorElement) {
+                    errorElement.innerText = 'Format berkas tidak sesuai. Hanya dokumen bertipe PDF yang diperbolehkan.';
+                    errorElement.classList.remove('hidden');
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Format Berkas Tidak Sesuai',
+                    text: 'Hanya dokumen dalam format PDF yang diperbolehkan.',
+                    confirmButtonColor: '#00236F'
+                });
+                return;
+            }
+
+            // 2. Validasi Ukuran Maksimal 5MB
+            if (fileSize > MAX_FILE_SIZE_BYTES) {
+                input.value = ''; // KOSONGKAN FILE AGAR INPUT TIDAK DITERIMA
+                if (btnBatal) btnBatal.classList.add('hidden');
+                if (errorElement) {
+                    errorElement.innerText = 'Ukuran berkas melebihi batas (maksimal 5 MB). File dibatalkan.';
+                    errorElement.classList.remove('hidden');
+                }
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Ukuran Berkas Terlalu Besar',
+                    text: 'Ukuran file yang dipilih melebihi 5 MB. Silakan kompres atau pilih file yang lebih kecil.',
+                    confirmButtonColor: '#00236F'
+                });
+                return;
+            }
+
+            // Jika lolos validasi, tampilkan tombol Batal
+            if (btnBatal) {
+                btnBatal.classList.remove('hidden');
+            }
+        }
+
+        function cancelSuratBalasan() {
+            const input = document.getElementById('suratBalasan');
+            const btnBatal = document.getElementById('btnBatalUpload');
+            const errorElement = document.getElementById('error_surat_balasan_js');
+
+            if (input) input.value = '';
+            if (btnBatal) btnBatal.classList.add('hidden');
+            if (errorElement) {
+                errorElement.innerText = '';
+                errorElement.classList.add('hidden');
+            }
+        }
+    </script>
     @endif
 @endsection

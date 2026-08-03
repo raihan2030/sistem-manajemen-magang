@@ -78,16 +78,17 @@
                     </div>
                 </div>
 
-                <form action="{{ route('admin.kapasitas.store') }}" method="POST" class="flex flex-col md:flex-row gap-3 items-end">
+                <form id="formTambahBidang" action="{{ route('admin.kapasitas.store') }}" method="POST" class="flex flex-col md:flex-row gap-3 items-end">
                     @csrf
                     <div class="w-full">
                         <label class="block text-xs font-bold text-[#1f2937] mb-1.5">
                             Nama Sub Bagian / Bidang <span class="text-red-500">*</span>
                         </label>
-                        <input type="text" name="nama_bidang_baru" required placeholder="Contoh: Bidang Informatika & Persandian"
+                        <input type="text" name="nama_bidang_baru" id="nama_bidang_baru" required placeholder="Contoh: Bidang Informatika & Persandian"
+                            minlength="3" maxlength="100" oninput="cleanBidangInput(this)"
                             class="w-full border border-gray-300 rounded-lg px-3.5 py-2 text-sm text-[#1f2937] font-medium focus:ring-[#00236F] focus:border-[#00236F] outline-none transition">
                     </div>
-                    <button type="submit"
+                    <button type="button" id="btnTambahBidang"
                         class="w-full md:w-auto px-5 py-2 bg-emerald-600 text-white font-bold text-xs rounded-lg hover:bg-emerald-700 transition shadow-xs cursor-pointer flex items-center justify-center gap-1.5 shrink-0 h-[38px]">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -139,6 +140,7 @@
                             </label>
                             <input type="text" name="nama_bidang"
                                 value="{{ old('nama_bidang', $selectedBidang->nama_bidang) }}"
+                                minlength="3" maxlength="100" oninput="cleanBidangInput(this)"
                                 class="w-full border border-gray-300 rounded-lg px-3.5 py-2 text-sm text-[#1f2937] font-medium focus:ring-[#00236F] focus:border-[#00236F] outline-none transition"
                                 required>
                         </div>
@@ -148,10 +150,10 @@
                             <label class="block text-xs font-bold text-[#1f2937] mb-1">
                                 Total Kapasitas Kuota <span class="text-red-500">*</span>
                             </label>
-                            <p class="text-[11px] text-gray-500 mb-2">Jumlah total kuota yang dialokasikan untuk bidang ini.</p>
+                            <p class="text-[11px] text-gray-500 mb-2">Jumlah total kuota yang dialokasikan untuk bidang ini (Maksimal 50 Orang).</p>
                             <div class="flex items-center gap-2">
                                 <input type="number" name="kuota_total"
-                                    value="{{ old('kuota_total', $selectedBidang->kuota_total) }}" min="0"
+                                    value="{{ old('kuota_total', $selectedBidang->kuota_total) }}" min="0" max="50"
                                     class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm font-bold text-[#1f2937] focus:ring-[#00236F] focus:border-[#00236F] outline-none"
                                     required>
                                 <span class="text-xs font-semibold text-gray-500 shrink-0">Orang</span>
@@ -327,22 +329,95 @@
     {{-- Script SweetAlert2 & Handling --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        // 🧼 Sanitasi Input Nama Bidang secara Real-time
+        function cleanBidangInput(input) {
+            input.value = input.value.replace(/[^a-zA-Z0-9\s()\/.,&\-]/g, '');
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
-            const form = document.getElementById('formKapasitas');
+            // --- 1. KONFIRMASI TAMBAH BIDANG BARU ---
+            const formTambah = document.getElementById('formTambahBidang');
+            const btnTambah = document.getElementById('btnTambahBidang');
+
+            if (btnTambah && formTambah) {
+                btnTambah.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    const inputNama = document.getElementById('nama_bidang_baru');
+                    const namaVal = inputNama ? inputNama.value.trim() : '';
+
+                    if (!formTambah.checkValidity()) {
+                        formTambah.reportValidity();
+                        return;
+                    }
+
+                    if (namaVal.length < 3) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Nama Bidang Terlalu Pendek',
+                            text: 'Nama sub bagian / bidang minimal terdiri dari 3 karakter.',
+                            confirmButtonColor: '#00236F'
+                        });
+                        return;
+                    }
+
+                    Swal.fire({
+                        title: 'Tambah Sub Bagian Baru?',
+                        text: `Apakah Anda yakin ingin menambahkan "${namaVal}"?`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#059669',
+                        cancelButtonColor: '#6B7280',
+                        confirmButtonText: 'Ya, Tambahkan',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            formTambah.submit();
+                        }
+                    });
+                });
+            }
+
+            // --- 2. KONFIRMASI SIMPAN PERUBAHAN KUOTA / NAMA BIDANG ---
+            const formKapasitas = document.getElementById('formKapasitas');
             const btnSimpan = document.getElementById('btnSimpan');
             const btnBatal = document.getElementById('btnBatal');
 
-            if (btnSimpan) {
+            if (btnSimpan && formKapasitas) {
                 btnSimpan.addEventListener('click', function (e) {
                     e.preventDefault();
-                    if (!form.checkValidity()) {
-                        form.reportValidity();
+
+                    const inputNamaEdit = formKapasitas.querySelector('input[name="nama_bidang"]');
+                    const inputKuotaEdit = formKapasitas.querySelector('input[name="kuota_total"]');
+
+                    if (!formKapasitas.checkValidity()) {
+                        formKapasitas.reportValidity();
+                        return;
+                    }
+
+                    if (inputNamaEdit && inputNamaEdit.value.trim().length < 3) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Nama Bidang Terlalu Pendek',
+                            text: 'Nama sub bagian / bidang minimal terdiri dari 3 karakter.',
+                            confirmButtonColor: '#00236F'
+                        });
+                        return;
+                    }
+
+                    if (inputKuotaEdit && parseInt(inputKuotaEdit.value) > 50) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Kuota Melebihi Batas',
+                            text: 'Total kapasitas kuota maksimal adalah 50 orang.',
+                            confirmButtonColor: '#00236F'
+                        });
                         return;
                     }
 
                     Swal.fire({
                         title: 'Simpan Perubahan?',
-                        text: "Konfigurasi kuota bidang ini akan diperbarui.",
+                        text: "Konfigurasi kuota dan nama bidang ini akan diperbarui.",
                         icon: 'question',
                         showCancelButton: true,
                         confirmButtonColor: '#00236F',
@@ -351,7 +426,7 @@
                         cancelButtonText: 'Batal'
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            form.submit();
+                            formKapasitas.submit();
                         }
                     });
                 });
@@ -364,7 +439,7 @@
             }
         });
 
-        // Konfirmasi Hapus Bidang
+        // --- 3. KONFIRMASI HAPUS BIDANG ---
         function confirmDelete(id, nama) {
             Swal.fire({
                 title: 'Hapus Sub Bagian?',

@@ -68,7 +68,7 @@
             </p>
         </div>
 
-        {{-- BANNER ERROR VALIDASI --}}
+        {{-- BANNER ERROR VALIDASI DARI SERVER --}}
         @if ($errors->any())
             <div class="bg-red-50 border border-red-200 rounded-2xl p-5 mb-8 shadow-xs">
                 <div class="flex items-start gap-3">
@@ -268,13 +268,14 @@
                         <div>
                             <label class="block text-xs font-bold text-[#1f2937] mb-2">
                                 Upload KTM / Kartu Pelajar 
-                                <span class="text-gray-400 font-normal">({{ $is_edit_mode ? 'Opsional: Abaikan jika tidak diubah' : 'Opsional' }})</span>
+                                <span class="text-gray-400 font-normal">({{ $is_edit_mode ? 'Opsional: Abaikan jika tidak diubah - Maks 5 Mb' : 'Opsional' }})</span>
                             </label>
                             
                             <input type="file" id="ktm_ketua" name="anggota[0][kartu_identitas]" accept=".pdf"
                                 {{ $is_locked ? 'disabled' : '' }}
                                 onchange="handleKtmSelect(this, 'preview_ktm_ketua', 'filename_ktm_ketua')"
                                 class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 bg-white file:mr-4 file:py-1.5 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-[#00236F] hover:file:bg-blue-100 cursor-pointer">
+                            <p id="error_ktm_ketua" class="text-[11px] text-red-600 font-semibold mt-1 hidden"></p>
 
                             <!-- Preview Berkas & Tombol Batal -->
                             <div id="preview_ktm_ketua" class="hidden mt-2 p-2.5 bg-blue-50/60 border border-blue-200 rounded-lg flex items-center justify-between shadow-2xs">
@@ -364,6 +365,7 @@
                                             <input type="file" id="ktm_member_{{ $memberId }}" name="anggota[{{ $memberIndex }}][kartu_identitas]" accept=".pdf" 
                                                 onchange="handleKtmSelect(this, 'preview_ktm_{{ $memberId }}', 'filename_ktm_{{ $memberId }}')" 
                                                 class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 bg-white file:mr-4 file:py-1.5 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-[#00236F] hover:file:bg-blue-100 cursor-pointer">
+                                            <p id="error_ktm_member_{{ $memberId }}" class="text-[11px] text-red-600 font-semibold mt-1 hidden"></p>
 
                                             <div id="preview_ktm_{{ $memberId }}" class="hidden mt-2 p-2.5 bg-blue-50/60 border border-blue-200 rounded-lg flex items-center justify-between shadow-2xs">
                                                 <div class="flex items-center gap-2 overflow-hidden pr-2">
@@ -445,12 +447,14 @@
                     
                     <div class="border-2 border-dashed border-gray-300 rounded-xl bg-[#FAFBFF] p-6 flex flex-col items-center justify-center text-center hover:border-blue-300 transition relative">
                         
-                        <!-- Input File -->
+                        <!-- Input File Surat Permohonan -->
                         <input type="file" id="surat_permohonan" name="surat_permohonan" accept=".pdf"
                             {{ $is_locked ? 'disabled' : '' }}
                             onchange="handleFileSelect(this)"
                             class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-[#00236F] hover:file:bg-blue-100 cursor-pointer"
                             {{ $is_edit_mode ? '' : 'required' }}>
+
+                        <p id="error_surat_permohonan" class="text-[11px] text-red-600 font-semibold mt-2 hidden"></p>
 
                         <!-- Preview Berkas & Tombol Batal/Hapus -->
                         <div id="file_preview_container" class="hidden mt-4 w-full p-3 bg-white border border-gray-200 rounded-lg flex items-center justify-between shadow-2xs">
@@ -499,6 +503,7 @@
         let memberCount = {{ isset($pengajuan) ? max(0, $pengajuan->anggota->count() - 1) : 0 }};
         const SISA_KUOTA = {{ $sisa_kuota }};
         const MAX_MEMBERS = {{ $max_anggota_tambahan }};
+        const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // Batas Maksimal 5MB
         let isFormSubmitted = false;
         let currentType = 'individu';
         const STORAGE_KEY = 'simangat_pendaftaran_draft';
@@ -729,6 +734,7 @@
                             <input type="file" id="ktm_member_${memberId}" name="anggota[${memberIndex}][kartu_identitas]" accept=".pdf" 
                                 onchange="handleKtmSelect(this, 'preview_ktm_${memberId}', 'filename_ktm_${memberId}')" 
                                 class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 bg-white file:mr-4 file:py-1.5 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-[#00236F] hover:file:bg-blue-100 cursor-pointer">
+                            <p id="error_ktm_member_${memberId}" class="text-[11px] text-red-600 font-semibold mt-1 hidden"></p>
 
                             <div id="preview_ktm_${memberId}" class="hidden mt-2 p-2.5 bg-blue-50/60 border border-blue-200 rounded-lg flex items-center justify-between shadow-2xs">
                                 <div class="flex items-center gap-2 overflow-hidden pr-2">
@@ -796,12 +802,65 @@
             }
         }
 
+        // 🔍 HELPER VALIDASI BERKAS INSTAN (UKURAN & EXTENSION)
+        function validateUploadedFile(input, errorElementId) {
+            const errorElement = document.getElementById(errorElementId);
+            if (errorElement) {
+                errorElement.innerText = '';
+                errorElement.classList.add('hidden');
+            }
+
+            if (!input.files || !input.files[0]) return true;
+
+            const file = input.files[0];
+            const fileName = file.name;
+            const fileSize = file.size; // in bytes
+            const isPdf = fileName.toLowerCase().endsWith('.pdf') || file.type === 'application/pdf';
+
+            // 1. Cek ekstensi harus PDF
+            if (!isPdf) {
+                input.value = ''; // Kosongkan file
+                if (errorElement) {
+                    errorElement.innerText = 'Format berkas tidak sesuai. Hanya dokumen bertipe PDF yang diperbolehkan.';
+                    errorElement.classList.remove('hidden');
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Format Berkas Tidak Sesuai',
+                    text: 'Hanya dokumen dalam format PDF yang diperbolehkan.',
+                    confirmButtonColor: '#00236F'
+                });
+                return false;
+            }
+
+            // 2. Cek ukuran file max 5MB
+            if (fileSize > MAX_FILE_SIZE_BYTES) {
+                input.value = ''; // Kosongkan file
+                if (errorElement) {
+                    errorElement.innerText = 'Ukuran berkas melebihi batas (maksimal 5 MB). Silakan unggah berkas yang lebih kecil.';
+                    errorElement.classList.remove('hidden');
+                }
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Ukuran Berkas Terlalu Besar',
+                    text: 'Ukuran file yang dipilih melebihi 5 MB. Silakan kompres atau pilih file yang lebih kecil.',
+                    confirmButtonColor: '#00236F'
+                });
+                return false;
+            }
+
+            return true;
+        }
+
         // 6. UPLOAD SURAT PERMOHONAN & KTM HANDLERS
         function handleFileSelect(input) {
             const previewContainer = document.getElementById('file_preview_container');
             const fileNameSpan = document.getElementById('selected_file_name');
 
-            if (input.files && input.files[0]) {
+            // Jalankan Validasi Instan
+            const isValid = validateUploadedFile(input, 'error_surat_permohonan');
+
+            if (isValid && input.files && input.files[0]) {
                 fileNameSpan.innerText = input.files[0].name;
                 previewContainer.classList.remove('hidden');
             } else {
@@ -812,16 +871,25 @@
         function cancelSelectedFile() {
             const input = document.getElementById('surat_permohonan');
             const previewContainer = document.getElementById('file_preview_container');
+            const errorElement = document.getElementById('error_surat_permohonan');
             
             input.value = '';
             previewContainer.classList.add('hidden');
+            if (errorElement) {
+                errorElement.innerText = '';
+                errorElement.classList.add('hidden');
+            }
         }
 
         function handleKtmSelect(input, previewId, filenameId) {
             const previewContainer = document.getElementById(previewId);
             const fileNameSpan = document.getElementById(filenameId);
+            const errorElementId = input.id ? 'error_' + input.id : '';
 
-            if (input.files && input.files[0]) {
+            // Jalankan Validasi Instan
+            const isValid = validateUploadedFile(input, errorElementId);
+
+            if (isValid && input.files && input.files[0]) {
                 fileNameSpan.innerText = input.files[0].name;
                 previewContainer.classList.remove('hidden');
             } else {
@@ -832,9 +900,14 @@
         function cancelKtmFile(inputId, previewId) {
             const input = document.getElementById(inputId);
             const previewContainer = document.getElementById(previewId);
+            const errorElement = document.getElementById('error_' + inputId);
 
             if (input) input.value = '';
             if (previewContainer) previewContainer.classList.add('hidden');
+            if (errorElement) {
+                errorElement.innerText = '';
+                errorElement.classList.add('hidden');
+            }
         }
 
         // 7. VALIDASI KEPENCET TOMBOL BATAL & NAVIGATION BACK
@@ -875,7 +948,7 @@
 
         // 8. VALIDASI TOMBOL SUBMIT / PENGAJUAN
         function handleFormSubmit(event) {
-            event.preventDefault(); // Tahan submit form terlebih dahulu
+            event.preventDefault(); 
 
             const form = event.target;
             const tglMulai = document.getElementById('tanggal_mulai').value;
@@ -903,9 +976,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     isFormSubmitted = true;
-                    clearFormData(); // Bersihkan draft lokal karena form sudah berhasil disubmit
-                    
-                    // Ubah button state menjadi loading
+                    clearFormData(); 
                     const btnSubmit = document.getElementById('btnSubmitForm');
                     const btnText = document.getElementById('btnSubmitText');
                     if (btnSubmit && btnText) {
@@ -914,12 +985,61 @@
                         btnText.innerText = 'Memproses permohonan...';
                     }
 
-                    form.submit(); // Jalankan submit asli setelah dikonfirmasi
+                    form.submit(); 
                 }
             });
 
             return false;
         }
+
+        function validateUploadedFile(input, errorElementId) {
+            const errorElement = document.getElementById(errorElementId);
+            if (errorElement) {
+                errorElement.innerText = '';
+                errorElement.classList.add('hidden');
+            }
+
+            if (!input.files || !input.files[0]) return true;
+
+            const file = input.files[0];
+            const fileName = file.name;
+            const fileSize = file.size; // bytes
+            const isPdf = fileName.toLowerCase().endsWith('.pdf') || file.type === 'application/pdf';
+
+            // 1. Cek ekstensi (wajib PDF)
+            if (!isPdf) {
+                input.value = ''; // Reset input file agar tidak terunggah
+                if (errorElement) {
+                    errorElement.innerText = 'Format berkas tidak sesuai. Hanya dokumen bertipe PDF yang diperbolehkan.';
+                    errorElement.classList.remove('hidden');
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Format Berkas Tidak Sesuai',
+                    text: 'Hanya dokumen dalam format PDF yang diperbolehkan.',
+                    confirmButtonColor: '#00236F'
+                });
+                return false;
+            }
+
+            // 2. Cek ukuran file (Maksimal 5 MB)
+            if (fileSize > MAX_FILE_SIZE_BYTES) {
+                input.value = ''; // Reset input file agar tidak terunggah
+                if (errorElement) {
+                    errorElement.innerText = 'Ukuran berkas melebihi batas (maksimal 5 MB). File dibatalkan.';
+                    errorElement.classList.remove('hidden');
+                }
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Ukuran Berkas Terlalu Besar',
+                    text: 'Ukuran file KTM melebihi 5 MB. File dibatalkan, silakan pilih file yang lebih kecil.',
+                    confirmButtonColor: '#00236F'
+                });
+                return false;
+            }
+
+            return true;
+            }
     </script>
 </body>
 </html>
