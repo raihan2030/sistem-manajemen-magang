@@ -90,7 +90,7 @@ class PengajuanMagangController extends Controller
 
         try {
             DB::transaction(function () use ($request, $bidang, $userId, $notifikasiService) {
-                $suratPath = $request->file('surat_permohonan')->store('surat_permohonan', 'public');
+                $suratPath = $request->file('surat_permohonan')->store('surat_permohonan', 'minio');
 
                 $batasVerifikasi = PengajuanMagang::hitungBatasVerifikasi();
 
@@ -165,7 +165,7 @@ class PengajuanMagangController extends Controller
             DB::transaction(function () use ($request, $pengajuan) {
                 // Update Surat Permohonan jika peserta mengupload file baru
                 if ($request->hasFile('surat_permohonan')) {
-                    $pengajuan->surat_permohonan = $request->file('surat_permohonan')->store('surat_permohonan', 'public');
+                    $pengajuan->surat_permohonan = $request->file('surat_permohonan')->store('surat_permohonan', 'minio');
                 }
 
                 $batasVerifikasi = PengajuanMagang::hitungBatasVerifikasi();
@@ -228,7 +228,7 @@ class PengajuanMagangController extends Controller
 
             if ($request->hasFile("anggota.{$index}.kartu_identitas")) {
                 $identitasPath = $request->file("anggota.{$index}.kartu_identitas")
-                    ->store('kartu_identitas', 'public');
+                    ->store('kartu_identitas', 'minio');
             } elseif ($oldMembers) {
                 $identitasPath = $oldMembers->get($dataAnggota['nim_nisn'])?->kartu_identitas;
             }

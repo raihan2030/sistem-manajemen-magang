@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Storage;
 
 class AnggotaMagang extends Model
 {
@@ -13,7 +14,7 @@ class AnggotaMagang extends Model
 
     protected $table = 'anggota_magang';
     public $timestamps = false;
-    
+
     protected $fillable = ['pengajuan_id', 'nim_nisn', 'nama_lengkap', 'jurusan_prodi', 'kartu_identitas'];
 
     public function pengajuan(): BelongsTo
@@ -24,5 +25,12 @@ class AnggotaMagang extends Model
     public function sertifikat(): HasOne
     {
         return $this->hasOne(Sertifikat::class, 'anggota_id');
+    }
+
+    public function getKartuIdentitasUrlAttribute(): ?string
+    {
+        return $this->kartu_identitas
+            ? Storage::disk('minio')->url($this->kartu_identitas)
+            : null;
     }
 }

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Storage;
 
 class PengajuanMagang extends Model
 {
@@ -86,5 +87,19 @@ class PengajuanMagang extends Model
     {
         return $query->whereIn('status', ['Diajukan', 'Diproses'])
             ->where('batas_verifikasi', '<', now());
+    }
+
+    public function getSuratPermohonanUrlAttribute(): ?string
+    {
+        return $this->surat_permohonan
+            ? Storage::disk('minio')->url($this->surat_permohonan)
+            : null;
+    }
+
+    public function getSuratBalasanUrlAttribute(): ?string
+    {
+        return $this->surat_balasan
+            ? Storage::disk('minio')->url($this->surat_balasan)
+            : null;
     }
 }

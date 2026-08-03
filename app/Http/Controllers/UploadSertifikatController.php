@@ -94,7 +94,7 @@ class UploadSertifikatController extends Controller
                 $file = $request->file("sertifikat.$anggotaId");
                 if (! $file) continue;
 
-                $path = $file->store('sertifikat', 'public');
+                $path = $file->store('sertifikat', 'minio');
 
                 Sertifikat::updateOrCreate(
                     ['anggota_id' => $anggotaId],

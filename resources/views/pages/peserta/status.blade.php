@@ -144,7 +144,7 @@
                                             jadwal kegiatan.</span>
 
                                         @if ($item->surat_balasan)
-                                            <a href="{{ asset('storage/' . $item->surat_balasan) }}" target="_blank"
+                                            <a href="{{ $item->surat_balasan_url }}" target="_blank"
                                                 class="inline-flex items-center gap-1.5 mt-2.5 text-emerald-800 font-bold underline hover:text-emerald-900">
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">

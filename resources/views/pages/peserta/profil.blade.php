@@ -262,7 +262,7 @@
                                         </div>
                                     </div>
 
-                                    <a href="{{ asset('storage/' . $pengajuan->surat_permohonan) }}" target="_blank"
+                                    <a href="{{ $pengajuan->surat_permohonan_url }}" target="_blank"
                                         class="text-xs font-bold text-[#00236F] hover:underline flex items-center gap-1 shrink-0">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -287,7 +287,7 @@
                                         </div>
                                     </div>
 
-                                    <a href="{{ asset('storage/' . $pengajuan->surat_balasan) }}" target="_blank"
+                                    <a href="{{ $pengajuan->surat_balasan_url }}" target="_blank"
                                         class="text-xs font-bold text-[#00236F] hover:underline flex items-center gap-1 shrink-0">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -335,8 +335,7 @@
                                             <td class="px-6 py-4">{{ $member->nim_nisn }}</td>
                                             <td class="px-6 py-4">
                                                 @if ($member->kartu_identitas)
-                                                    <a href="{{ asset('storage/' . $member->kartu_identitas) }}"
-                                                        target="_blank"
+                                                    <a href="{{ $member->kartu_identitas_url }}" target="_blank"
                                                         class="text-[#00236F] hover:underline font-bold flex items-center gap-1">
                                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
                                                             viewBox="0 0 24 24">
@@ -410,8 +409,7 @@
                                         </div>
 
                                         @if ($member->sertifikat && $member->sertifikat->file_path)
-                                            <a href="{{ asset('storage/' . $member->sertifikat->file_path) }}"
-                                                target="_blank"
+                                            <a href="{{ $member->sertifikat->file_path_url }}" target="_blank"
                                                 class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold rounded-lg transition shadow-xs flex items-center justify-center gap-1.5 mt-2">
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">

@@ -230,7 +230,7 @@
                                 <td class="px-6 py-4 text-gray-600">{{ $member->jurusan_prodi }}</td>
                                 <td class="px-6 py-4 text-center">
                                     @if ($member->kartu_identitas)
-                                        <a href="{{ asset('storage/' . $member->kartu_identitas) }}" target="_blank"
+                                        <a href="{{ $member->kartu_identitas_url }}" target="_blank"
                                             class="inline-flex items-center gap-1 text-[#00236F] hover:underline font-bold">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
@@ -275,7 +275,7 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-3 text-xs font-bold text-[#00236F]">
-                        <a href="{{ asset('storage/' . $pengajuan->surat_permohonan) }}" target="_blank"
+                        <a href="{{ $pengajuan->surat_permohonan_url }}" target="_blank"
                             class="hover:underline flex items-center gap-1">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -304,7 +304,7 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-3 text-xs font-bold text-[#00236F]">
-                        <a href="{{ asset('storage/' . $pengajuan->surat_balasan) }}" target="_blank"
+                        <a href="{{ $pengajuan->surat_balasan_url }}" target="_blank"
                             class="hover:underline flex items-center gap-1">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

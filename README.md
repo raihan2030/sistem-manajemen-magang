@@ -80,13 +80,19 @@ Bangun dan jalankan semua ekosistem container di latar belakang:
 sail up -d
 ```
 
-### 6. Generate Application Key
+### 6. Generate Application Key (Cukup Sekali Saat Pertama Kali Pull)
 
 ```bash
 sail artisan key:generate
 ```
 
-### 7. Jalankan Migrasi Database
+### 7. Hubungkan ke storage (Cukup Sekali Saat Pertama Kali Pull)
+
+```bash
+sail artisan storage:link
+```
+
+### 8. Jalankan Migrasi Database
 
 ```bash
 sail artisan migrate:fresh
@@ -96,7 +102,7 @@ Atau dengan `--seed` untuk menjalankan seeder sekaligus
 sail artisan migrate:fresh --seed
 ```
 
-### 8. Jalankan scheduler
+### 9. Jalankan scheduler
 ```bash
 sail artisan schedule:work
 ```

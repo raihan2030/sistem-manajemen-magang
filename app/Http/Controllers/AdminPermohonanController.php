@@ -94,7 +94,7 @@ class AdminPermohonanController extends Controller
 
         // Simpan surat balasan hanya saat admin menyetujui & file diunggah
         if ($request->status === 'Diterima' && $request->hasFile('surat_balasan')) {
-            $updateData['surat_balasan'] = $request->file('surat_balasan')->store('surat_balasan', 'public');
+            $updateData['surat_balasan'] = $request->file('surat_balasan')->store('surat_balasan', 'minio');
         }
 
         try {

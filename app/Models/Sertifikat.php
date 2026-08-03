@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class Sertifikat extends Model
 {
@@ -16,4 +17,11 @@ class Sertifikat extends Model
     {
         return $this->belongsTo(AnggotaMagang::class, 'anggota_id');
     }
+
+    public function getFilePathUrlAttribute(): ?string
+{
+    return $this->file_path
+        ? Storage::disk('minio')->url($this->file_path)
+        : null;
+}
 }
