@@ -11,6 +11,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+    <!-- CDN SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
@@ -133,8 +136,7 @@
                     </div>
                     <div>
                         <span
-                            class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Institusi
-                            Asal</span>
+                            class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Institusi / Sekolah</span>
                         <p class="text-xs font-bold text-[#1f2937]">{{ $pengajuan->institusi_asal ?? '-' }}</p>
                     </div>
                     <div>
@@ -222,7 +224,7 @@
                                     <!-- Tombol Action Edit / Save -->
                                     <button id="btnEditPembimbing" onclick="toggleEditPembimbing({{ $pengajuan->id }})"
                                         type="button"
-                                        class="absolute right-2 text-gray-400 hover:text-[#00236F] p-1 transition"
+                                        class="absolute right-2 text-gray-400 hover:text-[#00236F] p-1 transition cursor-pointer"
                                         title="Edit Pembimbing">
                                         <svg id="iconPensil" class="w-4 h-4" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
@@ -447,7 +449,7 @@
 
     </main>
 
-    <!-- SCRIPT EDIT & SIMPAN PEMBIMBING LAPANGAN (AJAX) -->
+    <!-- SCRIPT EDIT & SIMPAN PEMBIMBING LAPANGAN (AJAX + SWEETALERT2) -->
     <script>
         let isEditingPembimbing = false;
 
@@ -489,12 +491,48 @@
                         iconPensil.classList.remove('hidden');
 
                         if (data.status === 'success') {
-                            alert(data.message);
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil Disimpan!',
+                                text: data.message || 'Nama pembimbing lapangan berhasil diperbarui.',
+                                confirmButtonColor: '#00236F',
+                                customClass: {
+                                    popup: 'rounded-2xl',
+                                    confirmButton: 'rounded-xl text-xs font-bold px-5 py-2.5'
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal Menyimpan',
+                                text: data.message || 'Terjadi kesalahan saat menyimpan data.',
+                                confirmButtonColor: '#00236F',
+                                customClass: {
+                                    popup: 'rounded-2xl',
+                                    confirmButton: 'rounded-xl text-xs font-bold px-5 py-2.5'
+                                }
+                            });
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        alert('Gagal menyimpan nama pembimbing.');
+                        isEditingPembimbing = false;
+                        input.disabled = true;
+                        input.classList.add('disabled:bg-white', 'disabled:border-gray-200');
+
+                        iconCentang.classList.add('hidden');
+                        iconPensil.classList.remove('hidden');
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal Menyimpan',
+                            text: 'Gagal terhubung ke server. Silakan coba lagi nanti.',
+                            confirmButtonColor: '#00236F',
+                            customClass: {
+                                popup: 'rounded-2xl',
+                                confirmButton: 'rounded-xl text-xs font-bold px-5 py-2.5'
+                            }
+                        });
                     });
             }
         }

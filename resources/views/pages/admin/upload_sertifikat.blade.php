@@ -153,9 +153,6 @@
                             </svg>
                             Terbitkan Sertifikat
                         </button>
-                        <p class="text-[11px] text-gray-500 text-center mt-2">
-                            Anggota yang belum diunggah filenya akan dilewati (bisa diunggah menyusul di kemudian hari).
-                        </p>
                     </form>
 
                 </div>
@@ -173,6 +170,56 @@
 
         // Template URL submit per data_magang
         const storeUrlTemplate = "{{ route('admin.upload_sertifikat.store', ['dataMagang' => '__ID__']) }}";
+        const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // Batas Maksimal 5 MB
+
+        // Helper Fungsi Validasi Ukuran & Format File
+        function validateSertifikatFile(input, memberId) {
+            const errorElement = document.getElementById(`error_sertifikat_${memberId}`);
+            
+            if (errorElement) {
+                errorElement.innerText = '';
+                errorElement.classList.add('hidden');
+            }
+
+            if (!input.files || !input.files[0]) return;
+
+            const file = input.files[0];
+            const fileName = file.name;
+            const fileSize = file.size;
+            const isPdf = fileName.toLowerCase().endsWith('.pdf') || file.type === 'application/pdf';
+
+            // 1. Validasi Format PDF
+            if (!isPdf) {
+                input.value = ''; // Reset nilai input
+                if (errorElement) {
+                    errorElement.innerText = 'Format berkas tidak sesuai. Hanya dokumen bertipe PDF yang diperbolehkan.';
+                    errorElement.classList.remove('hidden');
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Format Berkas Tidak Sesuai',
+                    text: 'Hanya dokumen dalam format PDF yang diperbolehkan.',
+                    confirmButtonColor: '#00236F'
+                });
+                return;
+            }
+
+            // 2. Validasi Ukuran File Maksimal 5 MB
+            if (fileSize > MAX_FILE_SIZE_BYTES) {
+                input.value = ''; // Reset nilai input agar batal diunggah
+                if (errorElement) {
+                    errorElement.innerText = 'Ukuran berkas melebihi batas (maksimal 5 MB). File dibatalkan.';
+                    errorElement.classList.remove('hidden');
+                }
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Ukuran Berkas Terlalu Besar',
+                    text: 'Ukuran file sertifikat yang dipilih melebihi 5 MB. Silakan kompres atau pilih file yang lebih kecil.',
+                    confirmButtonColor: '#00236F'
+                });
+                return;
+            }
+        }
 
         function selectParticipant(id) {
             const data = participants.find(p => p.id === id);
@@ -187,8 +234,10 @@
                 card.classList.add('bg-[#F8FAFC]', 'border-transparent');
             });
             const activeCard = document.getElementById(`card-${id}`);
-            activeCard.classList.remove('bg-[#F8FAFC]', 'border-transparent');
-            activeCard.classList.add('bg-[#EEF2F9]', 'border-[#00236F]');
+            if (activeCard) {
+                activeCard.classList.remove('bg-[#F8FAFC]', 'border-transparent');
+                activeCard.classList.add('bg-[#EEF2F9]', 'border-[#00236F]');
+            }
 
             // Update Kop Detail
             const isKetua = data.tipe === 'Kelompok' ? ' (Ketua)' : '';
@@ -239,11 +288,14 @@
                         </div>
 
                         <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">
-                            ${member.sudah_terbit ? 'Ganti File Sertifikat (Opsional)' : 'Upload Sertifikat (PDF)'}
+                            ${member.sudah_terbit ? 'Ganti File Sertifikat (PDF, Maks 5 MB)' : 'Upload Sertifikat (PDF, Maks 5 MB)'}
                         </label>
                         <input type="file" name="sertifikat[${member.anggota_id}]" accept=".pdf"
                             ${isSelesai ? '' : 'disabled'}
-                            class="sertifikat-input w-full text-xs text-gray-500 mb-3 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-[11px] file:font-semibold file:bg-blue-50 file:text-[#00236F] hover:file:bg-blue-100 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:hover:file:bg-gray-200 disabled:file:text-gray-500">
+                            onchange="validateSertifikatFile(this, '${member.anggota_id}')"
+                            class="sertifikat-input w-full text-xs text-gray-500 mb-1 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-[11px] file:font-semibold file:bg-blue-50 file:text-[#00236F] hover:file:bg-blue-100 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:hover:file:bg-gray-200 disabled:file:text-gray-500">
+                        
+                        <p id="error_sertifikat_${member.anggota_id}" class="text-[11px] text-red-600 font-semibold mb-3 hidden"></p>
 
                         <label class="block text-[11px] font-semibold text-gray-500 mb-1.5">Catatan (Opsional)</label>
                         <input type="text" name="catatan[${member.anggota_id}]" placeholder="Contoh: Predikat sangat baik"
