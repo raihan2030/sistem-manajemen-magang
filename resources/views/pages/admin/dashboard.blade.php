@@ -277,8 +277,7 @@
                                             @method('PATCH')
                                             <button type="submit"
                                                 class="px-3.5 py-1.5 bg-navy hover:bg-blue-900 text-white text-xs font-bold rounded-lg transition shadow-2xs inline-flex items-center justify-center gap-1.5 cursor-pointer">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                         d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z">
                                                     </path>
@@ -289,15 +288,18 @@
                                             </button>
                                         </form>
                                     @else
+                                        <!-- TOMBOL TINJAU -->
                                         <a href="{{ route('admin.permohonan.detail', ['id' => $row->id]) }}"
-                                            class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 border border-amber-200 inline-flex items-center justify-center hover:bg-amber-100 hover:scale-105 transition shadow-2xs"
-                                            title="Beri Catatan & Tinjau Permohonan">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
+                                            class="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-lg transition shadow-2xs inline-flex items-center justify-center gap-1.5 cursor-pointer"
+                                            title="Tinjau & Verifikasi Permohonan">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
                                                 </path>
                                             </svg>
+                                            Tinjau
                                         </a>
                                     @endif
                                 </div>

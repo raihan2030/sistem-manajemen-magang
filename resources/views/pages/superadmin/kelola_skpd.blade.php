@@ -77,7 +77,8 @@
                         <th class="px-6 py-4 w-16 text-center">No</th>
                         <th class="px-6 py-4 w-48">Kode SKPD</th>
                         <th class="px-6 py-4">Nama SKPD</th>
-                        <th class="px-6 py-4 w-32 text-center">Aksi</th>
+                        <th class="px-6 py-4 w-24 text-center">Edit</th>
+                        <th class="px-6 py-4 w-24 text-center">Hapus</th>
                     </tr>
                 </thead>
                 <tbody class="text-sm divide-y divide-gray-100 font-medium text-gray-700">
@@ -92,34 +93,35 @@
                             <td class="px-6 py-4 font-bold text-[#1f2937]">
                                 {{ $item->nama_skpd }}
                             </td>
+
+                            <!-- KOLOM EDIT TERPISAH -->
                             <td class="px-6 py-4 text-center">
-                                <div class="flex items-center justify-center gap-2">
-                                    <!-- Edit Button -->
-                                    <button type="button" onclick="openEditModal('{{ $item->id }}', '{{ $item->kode_skpd }}', '{{ addslashes($item->nama_skpd) }}')"
-                                        class="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition cursor-pointer" title="Edit SKPD">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                        </svg>
-                                    </button>
+                                <button type="button" onclick="openEditModal('{{ $item->id }}', '{{ $item->kode_skpd }}', '{{ addslashes($item->nama_skpd) }}')"
+                                    class="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition cursor-pointer" title="Edit SKPD">
+                                    <svg class="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </button>
+                            </td>
 
-                                    <!-- Delete Button -->
-                                    <button type="button" onclick="confirmDelete('{{ $item->id }}', '{{ addslashes($item->nama_skpd) }}')"
-                                        class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition cursor-pointer" title="Hapus SKPD">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                        </svg>
-                                    </button>
+                            <!-- KOLOM HAPUS TERPISAH -->
+                            <td class="px-6 py-4 text-center">
+                                <button type="button" onclick="confirmDelete('{{ $item->id }}', '{{ addslashes($item->nama_skpd) }}')"
+                                    class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition cursor-pointer" title="Hapus SKPD">
+                                    <svg class="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
 
-                                    <form id="delete-form-{{ $item->id }}" action="{{ route('superadmin.kelola_skpd.destroy', $item->id) }}" method="POST" class="hidden">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
-                                </div>
+                                <form id="delete-form-{{ $item->id }}" action="{{ route('superadmin.kelola_skpd.destroy', $item->id) }}" method="POST" class="hidden">
+                                    @csrf
+                                    @method('DELETE')
+                                </form>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="px-6 py-12 text-center text-gray-500 font-medium">
+                            <td colspan="5" class="px-6 py-12 text-center text-gray-500 font-medium">
                                 Belum ada SKPD yang terdaftar.
                             </td>
                         </tr>
@@ -146,24 +148,24 @@
                 </button>
             </div>
 
-            <form action="{{ route('superadmin.kelola_skpd.store') }}" method="POST">
+            <form id="addSKPDForm" action="{{ route('superadmin.kelola_skpd.store') }}" method="POST" onsubmit="return confirmAddSKPD(event)">
                 @csrf
                 <div class="space-y-4 mb-6">
                     <div>
                         <label class="block text-xs font-bold text-[#1f2937] mb-2">Kode SKPD <span class="text-red-500">*</span></label>
-                        <input type="text" name="kode_skpd" required placeholder="Masukkan Kode SKPD"
+                        <input type="text" id="add_kode_skpd" name="kode_skpd" required placeholder="Masukkan Kode SKPD"
                             class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-xs text-[#1f2937] font-semibold focus:ring-[#00236F] focus:border-[#00236F] outline-none">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-[#1f2937] mb-2">Nama SKPD <span class="text-red-500">*</span></label>
-                        <input type="text" name="nama_skpd" required placeholder="Contoh: Dinas Komunikasi, Informatika dan Statistik"
+                        <input type="text" id="add_nama_skpd" name="nama_skpd" required placeholder="Contoh: Dinas Komunikasi, Informatika dan Statistik"
                             class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-xs text-[#1f2937] font-semibold focus:ring-[#00236F] focus:border-[#00236F] outline-none">
                     </div>
                 </div>
 
                 <div class="flex justify-end gap-3 pt-3 border-t border-gray-100">
-                    <button type="button" onclick="closeAddModal()" class="px-4 py-2 border border-gray-300 text-gray-700 text-xs font-bold rounded-lg hover:bg-gray-50 transition">Batal</button>
-                    <button type="submit" class="px-5 py-2 bg-[#00236F] text-white text-xs font-bold rounded-lg hover:bg-blue-900 transition">Simpan SKPD</button>
+                    <button type="button" onclick="closeAddModal()" class="px-4 py-2 border border-gray-300 text-gray-700 text-xs font-bold rounded-lg hover:bg-gray-50 transition cursor-pointer">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-[#00236F] text-white text-xs font-bold rounded-lg hover:bg-blue-900 transition cursor-pointer">Simpan SKPD</button>
                 </div>
             </form>
         </div>
@@ -198,21 +200,48 @@
                 </div>
 
                 <div class="flex justify-end gap-3 pt-3 border-t border-gray-100">
-                    <button type="button" onclick="closeEditModal()" class="px-4 py-2 border border-gray-300 text-gray-700 text-xs font-bold rounded-lg hover:bg-gray-50 transition">Batal</button>
-                    <button type="submit" class="px-5 py-2 bg-[#00236F] text-white text-xs font-bold rounded-lg hover:bg-blue-900 transition">Update SKPD</button>
+                    <button type="button" onclick="closeEditModal()" class="px-4 py-2 border border-gray-300 text-gray-700 text-xs font-bold rounded-lg hover:bg-gray-50 transition cursor-pointer">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-[#00236F] text-white text-xs font-bold rounded-lg hover:bg-blue-900 transition cursor-pointer">Update SKPD</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- SCRIPT MODAL & DELETE -->
+    <!-- SCRIPT MODAL, KONFIRMASI & DELETE -->
     <script>
         function openAddModal() {
+            document.getElementById('addSKPDForm').reset();
             document.getElementById('addModal').classList.remove('hidden');
         }
 
         function closeAddModal() {
             document.getElementById('addModal').classList.add('hidden');
+        }
+
+        // KONFIRMASI SWEETALERT SAAT SIMPAN SKPD BARU
+        function confirmAddSKPD(event) {
+            event.preventDefault();
+            const form = event.target;
+            const namaSkpd = document.getElementById('add_nama_skpd').value.trim();
+
+            if (!namaSkpd) return false;
+
+            Swal.fire({
+                title: 'Simpan SKPD Baru?',
+                text: `Apakah Anda yakin ingin menambahkan SKPD "${namaSkpd}" ke dalam sistem?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#00236F',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Ya, Simpan',
+                cancelButtonText: 'Cek Kembali'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+
+            return false;
         }
 
         function openEditModal(id, kode, nama) {
