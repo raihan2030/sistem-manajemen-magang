@@ -14,12 +14,20 @@
                     </button>
                 @endif
 
-                <a href="/" class="flex items-center gap-2 sm:gap-3">
+                <a href="/" class="flex items-center gap-2.5 sm:gap-3.5 group">
+                    <!-- Logo -->
                     <img src="{{ asset('images/logo-bjm.png') }}" alt="Logo Kota Banjarmasin"
-                        class="w-8 h-8 sm:w-10 sm:h-10 object-contain">
-                    <span class="text-lg sm:text-xl font-bold text-[#00236F]">
-                        SIMANGAT-<span class="text-[#FEA619]">BJM</span>
-                    </span>
+                        class="w-9 h-9 sm:w-11 sm:h-11 object-contain transition-transform duration-300 group-hover:scale-105">
+                    
+                    <!-- Kontainer Teks -->
+                    <div class="flex flex-col justify-center">
+                        <span class="text-lg sm:text-xl font-extrabold tracking-tight leading-none mb-1">
+                            <span class="text-[#00236F]">SIMANGAT-</span><span class="text-transparent bg-clip-text bg-gradient-to-r from-[#FEA619] to-amber-300">BJM</span>
+                        </span>
+                        <span class="text-[9px] sm:text-[10px] font-semi-bold text-gray-500 tracking-widest uppercase leading-none">
+                            Sistem Informasi Magang
+                        </span>
+                    </div>
                 </a>
             </div>
 
