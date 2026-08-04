@@ -650,25 +650,54 @@
 
             if (type === 'individu') {
                 if (memberCount > 0 && !isInitialLoad) {
-                    const yakin = confirm("Mengubah ke mode 'Individu' akan menghapus semua daftar anggota tambahan yang sudah dimasukkan. Lanjutkan?");
-                    if (!yakin) return;
+                    // Cek apakah ada form anggota tambahan yang sudah diisi
+                    const listAnggota = document.getElementById('list-anggota');
+                    const inputs = listAnggota.querySelectorAll('input[type="text"], input[type="file"]');
+                    let isFilled = false;
+
+                    inputs.forEach(input => {
+                        if (input.type === 'file') {
+                            if (input.files && input.files.length > 0) isFilled = true;
+                        } else if (input.value.trim() !== '') {
+                            isFilled = true;
+                        }
+                    });
+
+                    // Jika ada data yang terisi, tampilkan SweetAlert
+                    if (isFilled) {
+                        Swal.fire({
+                            title: 'Ubah ke Mode Individu?',
+                            text: "Mengubah ke mode 'Individu' akan menghapus semua daftar anggota tambahan yang sudah dimasukkan. Lanjutkan?",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#00236F',
+                            cancelButtonColor: '#6B7280',
+                            confirmButtonText: 'Ya, Lanjutkan',
+                            cancelButtonText: 'Batal'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                eksekusiModeIndividu();
+                            } else {
+                                // Kembalikan state ke kelompok jika batal
+                                currentType = 'kelompok';
+                            }
+                        });
+                        return; // Hentikan eksekusi, tunggu user klik tombol
+                    }
                 }
 
-                cardIndividu.className =
-                    "cursor-pointer border-2 border-black bg-[#F4F7FF] rounded-xl p-4 flex items-start gap-4 transition-all duration-200 shadow-xs";
-                iconIndividu.className = "mt-0.5 text-[#00236F]";
-                cardKelompok.className =
-                    "cursor-pointer border-2 border-gray-200 bg-white hover:border-gray-400 rounded-xl p-4 flex items-start gap-4 transition-all duration-200 shadow-xs";
-                iconKelompok.className = "mt-0.5 text-gray-400";
+                // Jika member kosong atau member ada tapi belum ada yang diisi
+                eksekusiModeIndividu();
 
-                titlePemohon.innerText = 'Data Pemohon';
-                sectionAnggota.classList.add('hidden');
-
-                document.getElementById('list-anggota').innerHTML = '';
-                memberCount = 0;
             } else {
                 if (SISA_KUOTA <= 1 && !isInitialLoad) {
-                    alert(`Sisa kuota untuk bidang ini hanya tersisa ${SISA_KUOTA} slot. Pendaftaran kelompok tidak dapat dilakukan.`);
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Kuota Tidak Mencukupi',
+                        text: `Sisa kuota untuk bidang ini hanya tersisa ${SISA_KUOTA} slot. Pendaftaran kelompok tidak dapat dilakukan.`,
+                        confirmButtonColor: '#00236F'
+                    });
+                    currentType = 'individu'; // Kembalikan state
                     return;
                 }
 
@@ -685,10 +714,34 @@
                 if (memberCount === 0 && !isInitialLoad) {
                     tambahAnggota();
                 }
+                saveFormData();
             }
-            saveFormData();
         }
 
+        // Fungsi bantuan untuk membersihkan dan mengubah tampilan ke mode Individu
+        function eksekusiModeIndividu() {
+            const cardIndividu = document.getElementById('card-individu');
+            const cardKelompok = document.getElementById('card-kelompok');
+            const iconIndividu = document.getElementById('icon-individu');
+            const iconKelompok = document.getElementById('icon-kelompok');
+            const sectionAnggota = document.getElementById('section-anggota');
+            const titlePemohon = document.getElementById('title-pemohon');
+
+            cardIndividu.className =
+                "cursor-pointer border-2 border-black bg-[#F4F7FF] rounded-xl p-4 flex items-start gap-4 transition-all duration-200 shadow-xs";
+            iconIndividu.className = "mt-0.5 text-[#00236F]";
+            cardKelompok.className =
+                "cursor-pointer border-2 border-gray-200 bg-white hover:border-gray-400 rounded-xl p-4 flex items-start gap-4 transition-all duration-200 shadow-xs";
+            iconKelompok.className = "mt-0.5 text-gray-400";
+
+            titlePemohon.innerText = 'Data Pemohon';
+            sectionAnggota.classList.add('hidden');
+
+            document.getElementById('list-anggota').innerHTML = '';
+            memberCount = 0;
+            saveFormData();
+        }
+        
         // 4. TAMBAH ANGGOTA KELOMPOK
         function tambahAnggota(skipSave = false) {
             if (MAX_MEMBERS <= 0) {

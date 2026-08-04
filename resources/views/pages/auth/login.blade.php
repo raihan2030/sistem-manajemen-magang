@@ -10,10 +10,10 @@
                 <div class="flex items-center space-x-3 mb-10">
                     <img src="{{ asset('images/logo-bjm.jpg') }}" alt="Logo Banjarmasin" class="w-11 h-11 object-contain">
                     <div>
-                        <h2 class="text-3xl font-bold text-[#00236F] leading-none mb-1">
-                            SIMANGAT-<span class="text-[#FEA619]">BJM</span>
+                        <h2 class="text-lg sm:text-xl font-extrabold tracking-tight leading-none mb-1">
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#00236F] to-blue-500">SIMANGAT</span><span class="text-[#00236F]">-</span><span class="text-transparent bg-clip-text bg-gradient-to-r from-[#FEA619] to-amber-300">BJM</span>
                         </h2>
-                        <p class="text-[10px] text-gray-500 font-medium tracking-wide uppercase">
+                        <p class="text-[9px] sm:text-[10px] font-bold text-gray-400 tracking-widest uppercase leading-none">
                             Sistem Informasi Magang
                         </p>
                     </div>
@@ -48,7 +48,7 @@
                                 </svg>
                             </div>
                             <input type="email" name="email" value="{{ old('email') }}"
-                                placeholder="nama@instansi.go.id"
+                                placeholder="Masukkan Email Aktif"
                                 class="w-full pl-11 pr-4 py-3 border @error('email') border-red-500 @else border-gray-300 @enderror rounded-lg focus:ring-2 focus:ring-[#00236F]/20 focus:border-[#00236F] text-sm transition outline-none"
                                 required autofocus autocomplete="username">
                         </div>
