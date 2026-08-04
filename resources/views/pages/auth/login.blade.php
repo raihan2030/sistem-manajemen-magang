@@ -128,7 +128,7 @@
                 </div>
 
                 <!-- Tombol Login dengan Google -->
-                <a href="#" onclick="alert('Fitur Login Google sedang disiapkan oleh Backend!'); return false;"
+                <a href="{{ route('auth.google.redirect') }}"
                     class="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 text-gray-700 py-3 rounded-lg text-sm font-semibold hover:bg-gray-50 transition shadow-xs cursor-pointer">
                     <svg class="w-5 h-5" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.18 1-.78 1.85-1.63 2.45v2.01h2.64c1.55-1.42 2.45-3.52 2.45-6.47z"/>

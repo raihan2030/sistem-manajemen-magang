@@ -35,8 +35,11 @@ return new class extends Migration
             $table->foreignId('skpd_id')->nullable()->constrained('skpd');
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('google_id')->nullable()->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('password')->nullable();
+            $table->string('otp_code')->nullable();
+            $table->timestamp('otp_expires_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

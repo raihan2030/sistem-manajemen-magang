@@ -4,10 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
+use App\Services\OtpService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
@@ -28,7 +27,7 @@ class RegisteredUserController extends Controller
      *
      * @throws ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, OtpService $otpService): RedirectResponse
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -40,13 +39,16 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role_id' => 3
+            'role_id' => 3,
         ]);
 
-        event(new Registered($user));
+        // Jangan login langsung — kirim OTP dulu untuk verifikasi email
+        $otpService->generateAndSend($user, 'register');
 
-        Auth::login($user);
+        $request->session()->put('otp_user_id', $user->id);
+        $request->session()->put('otp_remember', false);
+        $request->session()->put('email', $user->email);
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect()->route('otp.verify');
     }
 }

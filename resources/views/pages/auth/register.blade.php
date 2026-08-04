@@ -152,7 +152,7 @@
                 </div>
 
                 <!-- Tombol Register dengan Google -->
-                <a href="#" onclick="alert('Fitur Login Google sedang disiapkan oleh Backend!'); return false;"
+                <a href="{{ route('auth.google.redirect') }}"
                     class="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 text-gray-700 py-3 rounded-lg text-sm font-semibold hover:bg-gray-50 transition shadow-xs cursor-pointer">
                     <svg class="w-5 h-5" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.18 1-.78 1.85-1.63 2.45v2.01h2.64c1.55-1.42 2.45-3.52 2.45-6.47z"/>
@@ -160,7 +160,7 @@
                         <path fill="#FBBC05" d="M5.84 14.86c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V8.62H4.18C3.43 10.08 3 11.97 3 14s.43 3.92 1.18 5.38l2.66-2.06z"/>
                         <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.46 1 3.6 3.58 1.77 7.37l2.75 2.13c.87-2.6 3.3-4.53 6.16-4.53z"/>
                     </svg>
-                    <span>Masuk dengan Google</span>
+                    <span>Daftar dengan Google</span>
                 </a>
 
                 <!-- Tautan Login -->
