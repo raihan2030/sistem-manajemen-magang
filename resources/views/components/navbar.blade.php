@@ -24,9 +24,6 @@
                         <span class="text-lg sm:text-xl font-extrabold tracking-tight leading-none mb-1">
                             <span class="text-[#00236F]">SIMANGAT-</span><span class="text-transparent bg-clip-text bg-gradient-to-r from-[#FEA619] to-amber-300">BJM</span>
                         </span>
-                        <span class="text-[9px] sm:text-[10px] font-semi-bold text-gray-500 tracking-widest uppercase leading-none">
-                            Sistem Informasi Magang
-                        </span>
                     </div>
                 </a>
             </div>
