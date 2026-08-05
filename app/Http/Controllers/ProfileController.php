@@ -20,8 +20,7 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
-        // Ambil data pengajuan magang aktif/terakhir milik user beserta relasi bidang, skpd, dan anggota
-        $pengajuan = PengajuanMagang::with(['bidang.skpd', 'anggota'])
+        $pengajuan = PengajuanMagang::with(['bidang.skpd', 'anggota', 'dataMagang'])
             ->where('perwakilan_user_id', $user->id)
             ->latest('tanggal_pengajuan')
             ->first();

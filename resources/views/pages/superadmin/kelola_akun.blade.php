@@ -105,11 +105,22 @@
                             <label class="block text-sm font-bold text-[#1f2937] mb-2">Email Dinas (Username) <span
                                     class="text-[#00236F]">*</span></label>
                             <input type="email" name="email" id="inputEmail"
-                                placeholder="admin@skpd.banjarmasinkota.go.id"
+                                placeholder="admin@banjarmasinkota.go.id"
+                                autocomplete="off"
                                 class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-[#00236F] focus:border-[#00236F] outline-none transition"
                                 required>
                             <p class="text-[11px] text-gray-500 mt-1.5 leading-relaxed">Email ini akan digunakan untuk login
                                 sistem.</p>
+                        </div>
+
+                        <!-- No. HP / WhatsApp -->
+                        <div>
+                            <label class="block text-sm font-bold text-[#1f2937] mb-2">No. HP / WhatsApp Admin</label>
+                            <input type="text" name="no_hp" id="inputNoHp" placeholder="0812xxxxxxxx"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-[#00236F] focus:border-[#00236F] outline-none transition">
+                            <p class="text-[11px] text-gray-500 mt-1.5 leading-relaxed">Digunakan untuk mengirim notifikasi
+                                WhatsApp ke admin SKPD.</p>
                         </div>
 
                         <!-- Kata Sandi -->
@@ -118,6 +129,7 @@
                                     class="text-[#00236F]">*</span></label>
                             <div class="relative">
                                 <input type="password" name="password" id="inputPassword" placeholder="••••••••"
+                                    autocomplete="new-password"
                                     class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-[#00236F] focus:border-[#00236F] outline-none transition tracking-widest">
                                 <button type="button" onclick="togglePassword()"
                                     class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 cursor-pointer">
@@ -220,6 +232,7 @@
                         <th class="px-6 py-5 w-[15%]">Kode SKPD</th>
                         <th class="px-6 py-5 w-[35%]">Nama SKPD</th>
                         <th class="px-6 py-5 w-[20%] text-center">Email</th>
+                        <th class="px-6 py-5 w-[13%] text-center">No. HP</th>
                         <th class="px-6 py-5 w-[15%] text-center">Kredensial</th>
                         <th class="px-6 py-5 w-[15%] text-center">Aksi</th>
                     </tr>
@@ -238,6 +251,9 @@
                             <td class="px-6 py-5 align-middle text-center text-gray-600 font-medium row-email">
                                 {{ $item->email }}
                             </td>
+                            <td class="px-6 py-5 align-middle text-center text-gray-600 font-medium">
+                                {{ $item->no_hp ?? '-' }}
+                            </td>
                             <td class="px-6 py-5 align-middle text-center text-gray-800 tracking-widest font-bold row-password"
                                 data-raw="{{ $item->plain_password ?? 'Sandi Terenkripsi' }}">
                                 ********
@@ -246,11 +262,14 @@
                                 <div class="flex items-center justify-center gap-3">
                                     <!-- Tombol Edit -->
                                     <button type="button"
-                                        onclick="actionEdit('{{ $item->id }}', '{{ $item->skpd_id }}', '{{ $item->email }}')"
+                                        onclick="actionEdit('{{ $item->id }}', '{{ $item->skpd_id }}', '{{ $item->email }}', '{{ $item->no_hp }}')"
                                         class="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center hover:bg-amber-200 transition cursor-pointer"
                                         title="Edit Akun">
-                                        <svg class="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        <svg class="w-4 h-4 mx-auto" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                            </path>
                                         </svg>
                                     </button>
 
@@ -259,8 +278,11 @@
                                         onclick="confirmDelete('{{ $item->id }}', '{{ addslashes($item->skpd->nama_skpd ?? $item->name) }}')"
                                         class="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center hover:bg-red-200 transition cursor-pointer"
                                         title="Hapus Akun">
-                                        <svg class="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        <svg class="w-4 h-4 mx-auto" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                            </path>
                                         </svg>
                                     </button>
 
@@ -306,13 +328,14 @@
             }
         }
 
-        function actionEdit(id, skpdId, email) {
+        function actionEdit(id, skpdId, email, noHp) { // <-- tambahkan noHp di sini
             const form = document.getElementById('skpdForm');
             form.action = `/superadmin/kelola_akun/${id}`;
             document.getElementById('formMethod').value = 'PUT';
 
             document.getElementById('selectSkpd').value = skpdId;
             document.getElementById('inputEmail').value = email;
+            document.getElementById('inputNoHp').value = noHp || '';
             document.getElementById('inputPassword').value = '';
             document.getElementById('inputPassword').required = false;
 

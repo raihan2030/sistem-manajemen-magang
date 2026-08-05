@@ -189,6 +189,32 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Pembimbing Lapangan (Read-only, Superadmin tidak bisa edit) -->
+                <div class="pt-5 mt-1 border-t border-gray-100">
+                    <span class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Pembimbing
+                        Lapangan</span>
+                    @if ($pengajuan->dataMagang && $pengajuan->dataMagang->nama_pembimbing)
+                        <div class="flex items-center gap-2.5">
+                            <p class="text-sm font-bold text-[#1f2937]">
+                                {{ $pengajuan->dataMagang->nama_pembimbing }}</p>
+                            @if ($pengajuan->dataMagang->whatsapp_pembimbing_url)
+                                <a href="{{ $pengajuan->dataMagang->whatsapp_pembimbing_url }}" target="_blank"
+                                    class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-md border border-emerald-200 flex items-center gap-1 hover:bg-emerald-100 transition cursor-pointer">
+                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01a1.05 1.05 0 00-.768.357c-.264.286-1.006.985-1.006 2.404s1.03 2.785 1.173 2.984c.143.198 2.03 3.102 4.922 4.352.691.298 1.23.477 1.65.61.693.22 1.324.189 1.821.114.558-.084 1.715-.7 1.956-1.376.241-.676.241-1.255.168-1.376-.073-.121-.272-.196-.57-.345z" />
+                                        <path
+                                            d="M12 2C6.477 2 2 6.477 2 12c0 1.763.456 3.42 1.258 4.861L2 22l5.312-1.218C8.715 21.542 10.315 22 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18.25c-1.48 0-2.921-.383-4.182-1.11l-.3-.178-3.111.712.727-3.036-.195-.311A8.204 8.204 0 013.75 12c0-4.551 3.7-8.25 8.25-8.25s8.25 3.699 8.25 8.25-3.7 8.25-8.25 8.25z" />
+                                    </svg>
+                                    {{ $pengajuan->dataMagang->no_hp_pembimbing }}
+                                </a>
+                            @endif
+                        </div>
+                    @else
+                        <p class="text-sm font-bold text-gray-400 italic">Pembimbing belum ditentukan</p>
+                    @endif
+                </div>
             </div>
         </div>
     </div>

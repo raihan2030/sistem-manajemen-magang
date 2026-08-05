@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\PengajuanMagang;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateStatusPermohonanRequest extends FormRequest
@@ -13,6 +14,9 @@ class UpdateStatusPermohonanRequest extends FormRequest
 
     public function rules(): array
     {
+        $pengajuan = PengajuanMagang::find($this->route('id'));
+        $statusSaatIni = $pengajuan?->status;
+
         return [
             'status' => ['required', 'in:Diterima,Ditolak,Revisi'],
 
@@ -24,14 +28,18 @@ class UpdateStatusPermohonanRequest extends FormRequest
                 'max:1000'
             ],
 
-            // 2. Surat Balasan WAJIB jika status Diterima, PDF, max 5 MB
+            // 2. Surat Balasan WAJIB hanya saat PERTAMA KALI disetujui
+            // (bukan saat sudah Diterima lalu cuma edit data pembimbing)
             'surat_balasan' => [
-                'required_if:status,Diterima',
+                $statusSaatIni !== 'Diterima' ? 'required_if:status,Diterima' : 'nullable',
                 'nullable',
                 'file',
                 'mimes:pdf',
                 'max:5120'
             ],
+
+            'nama_pembimbing' => ['nullable', 'string', 'max:150'],
+            'no_wa_pembimbing' => ['nullable', 'string', 'max:20', 'regex:/^[0-9]+$/'],
         ];
     }
 

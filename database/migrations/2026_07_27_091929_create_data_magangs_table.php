@@ -17,6 +17,8 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             $table->enum('status', ['Terdaftar', 'Berlangsung', 'Selesai'])->default('Terdaftar');
+            $table->string('nama_pembimbing', 150)->nullable();
+            $table->string('no_hp_pembimbing', 20)->nullable();
             $table->date('tanggal_selesai_aktual')->nullable();
             $table->text('catatan')->nullable();
             $table->timestamps();

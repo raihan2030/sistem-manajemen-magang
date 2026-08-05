@@ -25,7 +25,6 @@ class PengajuanMagang extends Model
         'surat_balasan',
         'tanggal_mulai',
         'tanggal_selesai',
-        'nama_pembimbing',
         'tanggal_pengajuan',
         'batas_verifikasi',
         'is_warned',

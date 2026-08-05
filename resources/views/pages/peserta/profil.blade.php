@@ -110,11 +110,14 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
 
             <!-- KARTU PROFIL KIRI -->
-            <div class="lg:col-span-1 bg-white border border-gray-200 rounded-xl p-6 shadow-xs flex flex-col items-center justify-center text-center">
+            <div
+                class="lg:col-span-1 bg-white border border-gray-200 rounded-xl p-6 shadow-xs flex flex-col items-center justify-center text-center">
                 <!-- Avatar Placeholder Circle -->
-                <div class="w-24 h-24 rounded-full bg-blue-50/60 border border-blue-100 flex items-center justify-center mb-4 text-[#00236F] shadow-inner">
+                <div
+                    class="w-24 h-24 rounded-full bg-blue-50/60 border border-blue-100 flex items-center justify-center mb-4 text-[#00236F] shadow-inner">
                     <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                     </svg>
                 </div>
 
@@ -136,7 +139,8 @@
                     </div>
                     <div>
                         <span
-                            class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Institusi / Sekolah</span>
+                            class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Institusi
+                            / Sekolah</span>
                         <p class="text-xs font-bold text-[#1f2937]">{{ $pengajuan->institusi_asal ?? '-' }}</p>
                     </div>
                     <div>
@@ -212,18 +216,22 @@
 
                         <!-- Pembimbing Lapangan (Read Only + Tombol WhatsApp) -->
                         <div>
-                            <span class="block text-[11px] font-semibold text-gray-400 mb-1.5">Pembimbing Lapangan</span>
-                            
-                            @if ($pengajuan && $pengajuan->nama_pembimbing)
+                            <span class="block text-[11px] font-semibold text-gray-400 mb-1.5">Pembimbing
+                                Lapangan</span>
+
+                            @if ($pengajuan && $pengajuan->dataMagang && $pengajuan->dataMagang->nama_pembimbing)
                                 <div class="flex flex-col gap-2.5">
-                                    <span class="text-sm font-bold text-[#1f2937]">{{ $pengajuan->nama_pembimbing }}</span>
-                                    
-                                    @if ($pengajuan->no_wa_pembimbing)
-                                        <a href="https://wa.me/{{ preg_replace('/^0/', '62', $pengajuan->no_wa_pembimbing) }}" target="_blank"
-                                           class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition rounded-lg text-xs font-bold w-fit shadow-xs">
+                                    <span
+                                        class="text-sm font-bold text-[#1f2937]">{{ $pengajuan->dataMagang->nama_pembimbing }}</span>
+
+                                    @if ($pengajuan->dataMagang->whatsapp_pembimbing_url)
+                                        <a href="{{ $pengajuan->dataMagang->whatsapp_pembimbing_url }}" target="_blank"
+                                            class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition rounded-lg text-xs font-bold w-fit shadow-xs">
                                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01a1.05 1.05 0 00-.768.357c-.264.286-1.006.985-1.006 2.404s1.03 2.785 1.173 2.984c.143.198 2.03 3.102 4.922 4.352.691.298 1.23.477 1.65.61.693.22 1.324.189 1.821.114.558-.084 1.715-.7 1.956-1.376.241-.676.241-1.255.168-1.376-.073-.121-.272-.196-.57-.345z"/>
-                                                <path d="M12 2C6.477 2 2 6.477 2 12c0 1.763.456 3.42 1.258 4.861L2 22l5.312-1.218C8.715 21.542 10.315 22 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18.25c-1.48 0-2.921-.383-4.182-1.11l-.3-.178-3.111.712.727-3.036-.195-.311A8.204 8.204 0 013.75 12c0-4.551 3.7-8.25 8.25-8.25s8.25 3.699 8.25 8.25-3.7 8.25-8.25 8.25z"/>
+                                                <path
+                                                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01a1.05 1.05 0 00-.768.357c-.264.286-1.006.985-1.006 2.404s1.03 2.785 1.173 2.984c.143.198 2.03 3.102 4.922 4.352.691.298 1.23.477 1.65.61.693.22 1.324.189 1.821.114.558-.084 1.715-.7 1.956-1.376.241-.676.241-1.255.168-1.376-.073-.121-.272-.196-.57-.345z" />
+                                                <path
+                                                    d="M12 2C6.477 2 2 6.477 2 12c0 1.763.456 3.42 1.258 4.861L2 22l5.312-1.218C8.715 21.542 10.315 22 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18.25c-1.48 0-2.921-.383-4.182-1.11l-.3-.178-3.111.712.727-3.036-.195-.311A8.204 8.204 0 013.75 12c0-4.551 3.7-8.25 8.25-8.25s8.25 3.699 8.25 8.25-3.7 8.25-8.25 8.25z" />
                                             </svg>
                                             Hubungi via WhatsApp
                                         </a>
@@ -245,24 +253,29 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             @if ($pengajuan->surat_permohonan)
-                                <div class="border border-gray-200 rounded-xl p-4 flex items-center justify-between bg-white hover:border-blue-200 transition">
+                                <div
+                                    class="border border-gray-200 rounded-xl p-4 flex items-center justify-between bg-white hover:border-blue-200 transition">
                                     <div class="flex items-center gap-3.5">
-                                        <div class="w-10 h-10 rounded-lg bg-red-50 text-red-500 border border-red-100 flex items-center justify-center flex-shrink-0 font-bold text-[10px]">
+                                        <div
+                                            class="w-10 h-10 rounded-lg bg-red-50 text-red-500 border border-red-100 flex items-center justify-center flex-shrink-0 font-bold text-[10px]">
                                             PDF
                                         </div>
                                         <div>
                                             <h4 class="text-xs font-bold text-[#1f2937]">Surat Permohonan</h4>
-                                            <p class="text-[11px] text-gray-400 font-medium mt-0.5">Dokumen yang Anda unggah</p>
+                                            <p class="text-[11px] text-gray-400 font-medium mt-0.5">Dokumen yang Anda
+                                                unggah</p>
                                         </div>
                                     </div>
 
                                     <a href="{{ $pengajuan->surat_permohonan_url }}" target="_blank"
                                         class="text-xs font-bold text-[#00236F] hover:underline flex items-center gap-1 shrink-0">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                            </path>
                                         </svg>
                                         Lihat / Unduh
                                     </a>
@@ -270,24 +283,29 @@
                             @endif
 
                             @if ($pengajuan->surat_balasan)
-                                <div class="border border-gray-200 rounded-xl p-4 flex items-center justify-between bg-white hover:border-blue-200 transition">
+                                <div
+                                    class="border border-gray-200 rounded-xl p-4 flex items-center justify-between bg-white hover:border-blue-200 transition">
                                     <div class="flex items-center gap-3.5">
-                                        <div class="w-10 h-10 rounded-lg bg-red-50 text-red-500 border border-emerald-100 flex items-center justify-center flex-shrink-0 font-bold text-[10px]">
+                                        <div
+                                            class="w-10 h-10 rounded-lg bg-red-50 text-red-500 border border-emerald-100 flex items-center justify-center flex-shrink-0 font-bold text-[10px]">
                                             PDF
                                         </div>
                                         <div>
                                             <h4 class="text-xs font-bold text-[#1f2937]">Surat Balasan Resmi</h4>
-                                            <p class="text-[11px] text-gray-400 font-medium mt-0.5">Dari Instansi Terkait</p>
+                                            <p class="text-[11px] text-gray-400 font-medium mt-0.5">Dari Instansi
+                                                Terkait</p>
                                         </div>
                                     </div>
 
                                     <a href="{{ $pengajuan->surat_balasan_url }}" target="_blank"
                                         class="text-xs font-bold text-[#00236F] hover:underline flex items-center gap-1 shrink-0">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                            </path>
                                         </svg>
                                         Lihat / Unduh
                                     </a>

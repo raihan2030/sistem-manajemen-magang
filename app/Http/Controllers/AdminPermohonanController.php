@@ -75,8 +75,6 @@ class AdminPermohonanController extends Controller
 
     public function updateStatus(UpdateStatusPermohonanRequest $request, $id): RedirectResponse
     {
-        $user = Auth::user();
-
         $pengajuan = PengajuanMagang::forSkpd(Auth::user()->skpd_id)
             ->where('id', $id)
             ->firstOrFail();
@@ -85,14 +83,13 @@ class AdminPermohonanController extends Controller
 
         $updateData = [
             'status' => $request->status,
-            'komentar_revisi' => $request->komentar_revisi
+            'komentar_revisi' => $request->komentar_revisi,
         ];
 
         if ($request->status === 'Revisi') {
             $updateData['batas_verifikasi'] = PengajuanMagang::hitungBatasVerifikasi();
         }
 
-        // Simpan surat balasan hanya saat admin menyetujui & file diunggah
         if ($request->status === 'Diterima' && $request->hasFile('surat_balasan')) {
             $updateData['surat_balasan'] = $request->file('surat_balasan')->store('surat_balasan', 'minio');
         }
@@ -102,18 +99,34 @@ class AdminPermohonanController extends Controller
 
                 $pengajuan->update($updateData);
 
-                if ($request->status === 'Diterima' && $statusSebelumnya !== 'Diterima') {
-
-                    DataMagang::firstOrCreate(
+                if ($request->status === 'Diterima') {
+                    $dataMagang = DataMagang::firstOrCreate(
                         ['pengajuan_id' => $pengajuan->id],
                         ['status' => 'Terdaftar']
                     );
 
-                    $jumlahAnggota = $pengajuan->anggota->count();
+                    if ($statusSebelumnya !== 'Diterima') {
+                        $jumlahAnggota = $pengajuan->anggota->count();
+                        $pengajuan->bidang()->decrement('sisa_kuota', $jumlahAnggota);
+                    }
 
-                    $pengajuan->bidang()->decrement('sisa_kuota', $jumlahAnggota);
+                    if ($request->filled('nama_pembimbing') || $request->filled('no_wa_pembimbing')) {
+                        $dataMagang->update([
+                            'nama_pembimbing' => $request->nama_pembimbing,
+                            'no_hp_pembimbing' => $request->no_wa_pembimbing,
+                        ]);
+                    }
                 }
             });
+
+            // Kalau statusnya TIDAK berubah (edit pembimbing setelah Diterima),
+            // tetap di halaman detail yang sama. Kalau ini aksi approve/tolak/revisi
+            // baru (status berubah), kembali ke daftar permohonan seperti biasa.
+            if ($statusSebelumnya === $request->status) {
+                return redirect()
+                    ->route('admin.permohonan.detail', $pengajuan->id)
+                    ->with('success', 'Data pembimbing lapangan berhasil diperbarui!');
+            }
 
             return redirect()
                 ->route('admin.permohonan')

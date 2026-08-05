@@ -23,7 +23,6 @@ return new class extends Migration
             $table->string('surat_balasan', 255)->nullable();
             $table->date('tanggal_mulai');
             $table->date('tanggal_selesai');
-            $table->string('nama_pembimbing', 150)->nullable();
             $table->timestamp('tanggal_pengajuan')->useCurrent();
             $table->timestamp('batas_verifikasi');
             $table->boolean('is_warned')->default(false);

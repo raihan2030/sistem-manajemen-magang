@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PengajuanMagang;
+use App\Models\User;
 use App\Services\NotifikasiService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -11,17 +12,21 @@ class SuperadminAktivitasController extends Controller
 {
     public function index(): View
     {
-        // Ambil pengajuan yang masih menunggu tindak lanjut (belum Diterima/Ditolak/Revisi)
         $pengajuans = PengajuanMagang::with(['bidang.skpd', 'anggota'])
-            ->whereIn('status', ['Diajukan', 'Diproses'])
-            ->orderBy('tanggal_pengajuan', 'desc')
-            ->take(20)
-            ->get();
+        ->whereIn('status', ['Diajukan', 'Diproses'])
+        ->orderBy('tanggal_pengajuan', 'desc')
+        ->take(20)
+        ->get();
 
-        // Bentuk jadi struktur $logs yang dipakai blade (menggantikan dummy)
-        $logs = $pengajuans->map(function ($pengajuan) {
+        // Ambil nomor HP admin per SKPD sekali saja (hindari N+1 query di loop bawah)
+        $noHpPerSkpd = User::where('role_id', 2)
+            ->whereNotNull('skpd_id')
+            ->pluck('no_hp', 'skpd_id');
+
+        $logs = $pengajuans->map(function ($pengajuan) use ($noHpPerSkpd) {
             $ketua = $pengajuan->anggota->first();
             $isSlaLewat = \Carbon\Carbon::parse($pengajuan->batas_verifikasi)->isPast();
+            $skpdId = $pengajuan->bidang->skpd_id ?? null;
 
             return (object) [
                 'pengajuan_id' => $pengajuan->id,
@@ -33,6 +38,7 @@ class SuperadminAktivitasController extends Controller
                 'status'       => $isSlaLewat ? 'TERLAMBAT' : 'MENUNGGU',
                 'status_color' => $isSlaLewat ? 'red' : 'yellow',
                 'action'       => 'notifikasi',
+                'no_wa_skpd'   => $skpdId ? ($noHpPerSkpd->get($skpdId)) : null,
             ];
         });
 

@@ -9,15 +9,10 @@ use Illuminate\Support\Facades\Hash;
 
 class SuperadminKelolaAkunController extends Controller
 {
-    /**
-     * Menampilkan halaman kelola akun beserta daftar SKPD untuk dropdown & daftar akun terdaftar.
-     */
     public function index()
     {
-        // 1. Ambil daftar SKPD untuk dropdown pilihan
         $listSkpd = Skpd::orderBy('nama_skpd', 'asc')->get();
 
-        // 2. Ambil daftar akun Admin SKPD (role_id = 2) beserta relasi SKPD-nya
         $akunSkpds = User::with('skpd')
             ->where('role_id', 2)
             ->orderBy('created_at', 'desc')
@@ -26,15 +21,13 @@ class SuperadminKelolaAkunController extends Controller
         return view('pages.superadmin.kelola_akun', compact('listSkpd', 'akunSkpds'));
     }
 
-    /**
-     * Membuat akun Admin SKPD baru.
-     */
     public function store(Request $request)
     {
         $request->validate([
             'skpd_id'  => 'required|exists:skpd,id',
             'email'    => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
+            'no_hp'    => 'nullable|string|max:20|regex:/^[0-9]+$/',
         ], [
             'skpd_id.required'  => 'Pilih SKPD terlebih dahulu.',
             'skpd_id.exists'    => 'SKPD yang dipilih tidak valid.',
@@ -42,6 +35,7 @@ class SuperadminKelolaAkunController extends Controller
             'email.unique'      => 'Email ini sudah digunakan oleh akun lain.',
             'password.required' => 'Kata sandi wajib diisi.',
             'password.min'      => 'Kata sandi minimal 6 karakter.',
+            'no_hp.regex'       => 'Nomor HP hanya boleh berisi angka.',
         ]);
 
         $skpd = Skpd::findOrFail($request->skpd_id);
@@ -50,9 +44,10 @@ class SuperadminKelolaAkunController extends Controller
             'name'             => $skpd->nama_skpd,
             'email'            => trim($request->email),
             'password'         => Hash::make($request->password),
-            'role_id'          => 2, // Role 2 = Admin SKPD
+            'role_id'          => 2,
             'skpd_id'          => $skpd->id,
-            'plain_password'   => $request->password, // Disimpan jika sistem Anda mencatat password asli
+            'no_hp'            => $request->no_hp,
+            'plain_password'   => $request->password,
         ]);
 
         return redirect()
@@ -60,9 +55,6 @@ class SuperadminKelolaAkunController extends Controller
             ->with('success', 'Akun SKPD untuk ' . $skpd->nama_skpd . ' berhasil dibuat!');
     }
 
-    /**
-     * Memperbarui data/kredensial akun SKPD.
-     */
     public function update(Request $request, $id)
     {
         $user = User::where('role_id', 2)->findOrFail($id);
@@ -71,8 +63,10 @@ class SuperadminKelolaAkunController extends Controller
             'skpd_id'  => 'required|exists:skpd,id',
             'email'    => 'required|email|unique:users,email,' . $id,
             'password' => 'nullable|string|min:6',
+            'no_hp'    => 'nullable|string|max:20|regex:/^[0-9]+$/',
         ], [
             'email.unique' => 'Email ini sudah digunakan akun lain.',
+            'no_hp.regex'  => 'Nomor HP hanya boleh berisi angka.',
         ]);
 
         $skpd = Skpd::findOrFail($request->skpd_id);
@@ -81,6 +75,7 @@ class SuperadminKelolaAkunController extends Controller
             'name'    => $skpd->nama_skpd,
             'email'   => trim($request->email),
             'skpd_id' => $skpd->id,
+            'no_hp'   => $request->no_hp,
         ];
 
         if ($request->filled('password')) {
@@ -95,9 +90,6 @@ class SuperadminKelolaAkunController extends Controller
             ->with('success', 'Akun SKPD ' . $skpd->nama_skpd . ' berhasil diperbarui!');
     }
 
-    /**
-     * Menghapus akun SKPD.
-     */
     public function destroy($id)
     {
         $user = User::where('role_id', 2)->findOrFail($id);

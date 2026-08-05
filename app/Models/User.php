@@ -20,6 +20,7 @@ class User extends Authenticatable
         'google_id',
         'role_id',
         'skpd_id',
+        'no_hp',
         'otp_code',
         'otp_expires_at',
     ];
@@ -52,5 +53,20 @@ class User extends Authenticatable
     public function pengajuanPerwakilan(): HasMany
     {
         return $this->hasMany(PengajuanMagang::class, 'perwakilan_user_id');
+    }
+
+    public function getWhatsappUrlAttribute(): ?string
+    {
+        if (!$this->no_hp) {
+            return null;
+        }
+
+        $nomor = preg_replace('/\D/', '', $this->no_hp);
+
+        if (str_starts_with($nomor, '0')) {
+            $nomor = '62' . substr($nomor, 1);
+        }
+
+        return "https://wa.me/{$nomor}";
     }
 }

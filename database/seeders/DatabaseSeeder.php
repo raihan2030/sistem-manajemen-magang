@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
         User::factory()->adminSkpd(1)->create([
             'name' => 'Admin Diskominfotik',
             'email' => 'admin.kominfo@banjarmasin.go.id',
+            'no_hp' => '081952925293'
         ]);
         User::factory()->create([
             'name' => 'Muhammad Raihan',
