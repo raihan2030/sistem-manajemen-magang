@@ -205,12 +205,23 @@ class PengajuanMagangController extends Controller
      */
     public function status(): View
     {
+        // Ambil pengajuan beserta relasi skpd agar kita bisa mengakses aturan_kerja
         $pengajuans = PengajuanMagang::with(['bidang.skpd', 'anggota'])
             ->where('perwakilan_user_id', Auth::id())
             ->orderBy('tanggal_pengajuan', 'desc')
             ->get();
 
-        return view('pages.peserta.status', compact('pengajuans'));
+        $aturan_kerja = '';
+
+        // Jika ada pengajuan, ambil aturan kerjanya dari relasi SKPD di pengajuan pertama (terbaru)
+        if ($pengajuans->isNotEmpty()) {
+            $pengajuanPertama = $pengajuans->first();
+            if ($pengajuanPertama->bidang && $pengajuanPertama->bidang->skpd) {
+                $aturan_kerja = $pengajuanPertama->bidang->skpd->aturan_kerja ?? '';
+            }
+        }
+
+        return view('pages.peserta.status', compact('pengajuans', 'aturan_kerja'));
     }
 
     /**

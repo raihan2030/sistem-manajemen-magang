@@ -14,6 +14,7 @@ use App\Http\Controllers\SuperadminKelolaAkunController;
 use App\Http\Controllers\SuperadminPermohonanController;
 use App\Http\Controllers\SuperadminSkpdController;
 use App\Http\Controllers\UploadSertifikatController;
+use App\Http\Controllers\AdminAturanKerjaController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -116,6 +117,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/peserta/export/pdf', [PesertaMagangController::class, 'exportPdf'])
             ->name('peserta.export.pdf');
+
+        Route::get('/aturan-kerja', [AdminAturanKerjaController::class, 'index'])->name('aturan.index');
+        Route::post('/aturan-kerja', [AdminAturanKerjaController::class, 'store'])->name('aturan.store');
 
     });
 

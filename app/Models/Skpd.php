@@ -9,7 +9,7 @@ class Skpd extends Model
 {
     protected $table = 'skpd';
     public $timestamps = false;
-    protected $fillable = ['kode_skpd', 'nama_skpd', 'banner_path'];
+    protected $fillable = ['kode_skpd', 'nama_skpd', 'banner_path', 'aturan_kerja'];
 
     // Relasi tunggal (yang sudah ada)
     public function bidang(): HasMany

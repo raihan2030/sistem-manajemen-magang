@@ -18,6 +18,9 @@ return new class extends Migration
             $table->string('kode_skpd', 50)->unique();
             $table->string('nama_skpd', 150);
             $table->string('banner_path', 255)->nullable();
+            
+            // Field aturan kerja ditambahkan di sini
+            $table->text('aturan_kerja')->nullable();
         });
 
         Schema::create('bidang', function (Blueprint $table) {
