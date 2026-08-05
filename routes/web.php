@@ -15,6 +15,7 @@ use App\Http\Controllers\SuperadminPermohonanController;
 use App\Http\Controllers\SuperadminSkpdController;
 use App\Http\Controllers\UploadSertifikatController;
 use App\Http\Controllers\AdminAturanKerjaController;
+use App\Http\Controllers\TwoFactorController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -45,6 +46,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
             default => abort(403),
         };
     })->name('dashboard');
+
+    Route::get('/2fa/setup', [TwoFactorController::class, 'setup'])->name('2fa.setup');
+    Route::post('/2fa/setup', [TwoFactorController::class, 'setupPost'])->name('2fa.setup.post');
+
+    // Halaman dan Proses Verifikasi 2FA (Setiap kali login rutin)
+    Route::get('/2fa/verify', [TwoFactorController::class, 'verify'])->name('2fa.verify');
+    Route::post('/2fa/verify', [TwoFactorController::class, 'verifyPost'])->name('2fa.verify.post');
 
     // === KHUSUS SUPERADMIN (Role 1) ===
     Route::middleware(['role:1'])->prefix('superadmin')->name('superadmin.')->group(function () {

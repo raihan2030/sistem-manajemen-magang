@@ -109,58 +109,94 @@
         <!-- MAIN GRID LAYOUT -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
 
-            <!-- KARTU PROFIL KIRI -->
-            <div
-                class="lg:col-span-1 bg-white border border-gray-200 rounded-xl p-6 shadow-xs flex flex-col items-center justify-center text-center">
-                <!-- Avatar Placeholder Circle -->
-                <div
-                    class="w-24 h-24 rounded-full bg-blue-50/60 border border-blue-100 flex items-center justify-center mb-4 text-[#00236F] shadow-inner">
-                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                    </svg>
+            <!-- ================= KOLOM KIRI ================= -->
+            <div class="lg:col-span-1 flex flex-col gap-6">
+                
+                <!-- KARTU PROFIL IDENTITAS -->
+                <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-xs flex flex-col items-center justify-center text-center">
+                    <!-- Avatar Placeholder Circle -->
+                    <div class="w-24 h-24 rounded-full bg-blue-50/60 border border-blue-100 flex items-center justify-center mb-4 text-[#00236F] shadow-inner">
+                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                        </svg>
+                    </div>
+
+                    <h2 class="text-xl font-bold text-[#1f2937] mb-0.5">{{ $ketua->nama_lengkap ?? $user->name }}</h2>
+                    <p class="text-xs font-semibold text-gray-500 mb-6">NIM/NISN: {{ $ketua->nim_nisn ?? '-' }}</p>
+
+                    <div class="w-full border-t border-gray-100 pt-5 text-left space-y-4">
+                        <div>
+                            <span class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Email Terdaftar</span>
+                            <p class="text-xs font-bold text-[#1f2937]">{{ $user->email }}</p>
+                        </div>
+                        <div>
+                            <span class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Jenjang Pendidikan</span>
+                            <p class="text-xs font-bold text-[#1f2937]">{{ $pengajuan->jenjang_pendidikan ?? '-' }}</p>
+                        </div>
+                        <div>
+                            <span class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Institusi / Sekolah</span>
+                            <p class="text-xs font-bold text-[#1f2937]">{{ $pengajuan->institusi_asal ?? '-' }}</p>
+                        </div>
+                        <div>
+                            <span class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Program Studi / Jurusan</span>
+                            <p class="text-xs font-bold text-[#1f2937]">{{ $ketua->jurusan_prodi ?? '-' }}</p>
+                        </div>
+                        <div>
+                            <span class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Tipe Pendaftaran</span>
+                            <p class="text-xs font-bold text-[#1f2937] capitalize">
+                                {{ $pengajuan ? ($isKelompok ? 'Kelompok / Tim (' . $pengajuan->anggota->count() . ' Orang)' : 'Individu') : '-' }}
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
-                <h2 class="text-xl font-bold text-[#1f2937] mb-0.5">{{ $ketua->nama_lengkap ?? $user->name }}</h2>
-                <p class="text-xs font-semibold text-gray-500 mb-6">NIM/NISN: {{ $ketua->nim_nisn ?? '-' }}</p>
-
-                <div class="w-full border-t border-gray-100 pt-5 text-left space-y-4">
-                    <div>
-                        <span class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Email
-                            Terdaftar</span>
-                        <p class="text-xs font-bold text-[#1f2937]">{{ $user->email }}</p>
+                <!-- KARTU 2FA GOOGLE AUTHENTICATOR -->
+                <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-xs">
+                    <div class="flex items-center gap-3 mb-4 border-b border-gray-100 pb-4">
+                        <div class="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 border border-indigo-100">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-[#1f2937]">Keamanan 2FA</h3>
+                            <p class="text-[10px] font-bold tracking-wide text-gray-400 uppercase">Google Authenticator</p>
+                        </div>
                     </div>
 
-                    <!-- TAMBAHAN FIELD JENJANG, INSTITUSI, JURUSAN -->
-                    <div>
-                        <span class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Jenjang
-                            Pendidikan</span>
-                        <p class="text-xs font-bold text-[#1f2937]">{{ $pengajuan->jenjang_pendidikan ?? '-' }}</p>
-                    </div>
-                    <div>
-                        <span
-                            class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Institusi
-                            / Sekolah</span>
-                        <p class="text-xs font-bold text-[#1f2937]">{{ $pengajuan->institusi_asal ?? '-' }}</p>
-                    </div>
-                    <div>
-                        <span class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Program
-                            Studi / Jurusan</span>
-                        <p class="text-xs font-bold text-[#1f2937]">{{ $ketua->jurusan_prodi ?? '-' }}</p>
-                    </div>
+                    <p class="text-xs text-gray-600 mb-5 leading-relaxed">
+                        Tingkatkan keamanan akun Anda dengan verifikasi dua langkah. Fitur ini bersifat opsional untuk peserta magang.
+                    </p>
 
-                    <div>
-                        <span class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Tipe
-                            Pendaftaran</span>
-                        <p class="text-xs font-bold text-[#1f2937] capitalize">
-                            {{ $pengajuan ? ($isKelompok ? 'Kelompok / Tim (' . $pengajuan->anggota->count() . ' Orang)' : 'Individu') : '-' }}
-                        </p>
-                    </div>
+                    @if(Auth::user()->google2fa_secret)
+                        <!-- Tampilan Jika 2FA Sudah Aktif -->
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-bold text-gray-500">Status</span>
+                            <span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-extrabold rounded-full uppercase tracking-wider border border-emerald-200">Aktif</span>
+                        </div>
+                        <a href="{{ route('2fa.setup') }}" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-bold rounded-xl transition border border-gray-200 shadow-xs cursor-pointer">
+                            Kelola 2FA
+                        </a>
+                    @else
+                        <!-- Tampilan Jika 2FA Belum Aktif -->
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-bold text-gray-500">Status</span>
+                            <span class="px-2.5 py-1 bg-gray-100 text-gray-500 text-[10px] font-extrabold rounded-full uppercase tracking-wider border border-gray-200">Belum Aktif</span>
+                        </div>
+                        <a href="{{ route('2fa.setup') }}" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#00236F] hover:bg-blue-900 text-white text-xs font-bold rounded-xl transition shadow-md hover:shadow-lg cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            Aktifkan 2FA
+                        </a>
+                    @endif
                 </div>
 
             </div>
 
-            <!-- KANAN: INFORMASI PENEMPATAN & TAMPILAN ANGGOTA -->
+            <!-- ================= KOLOM KANAN ================= -->
+            <!-- INFORMASI PENEMPATAN & TAMPILAN ANGGOTA -->
             <div class="lg:col-span-2 flex flex-col gap-6">
 
                 <!-- KARTU INFORMASI PENEMPATAN MAGANG -->
