@@ -12,6 +12,9 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+    <!-- WAJIB ADD SWEETALERT -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -80,6 +83,28 @@
                 <div>
                     <h3 class="text-sm font-bold text-amber-900 mb-0.5">Akses Dibatasi!</h3>
                     <p class="text-xs font-medium">{{ session('warning') }}</p>
+                </div>
+            </div>
+        @endif
+
+        {{-- CARD ATURAN KERJA (KUNING) - MUNCUL JIKA ADA DATA DARI ADMIN --}}
+        @if (isset($aturan_kerja) && $aturan_kerja != '')
+            <div onclick="showAturanKerja()" class="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-2xl p-4 sm:p-5 mb-6 flex items-center justify-between shadow-xs cursor-pointer hover:bg-yellow-100 transition group">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-10 h-10 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center shrink-0 border border-yellow-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-yellow-900 mb-0.5">Aturan & Tata Tertib Magang</h3>
+                        <p class="text-xs font-medium text-yellow-700">Wajib dibaca dan dipatuhi oleh seluruh peserta magang.</p>
+                    </div>
+                </div>
+                <div class="shrink-0 bg-yellow-200/50 p-2 rounded-full group-hover:bg-yellow-200 transition">
+                    <svg class="w-4 h-4 text-yellow-700 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path>
+                    </svg>
                 </div>
             </div>
         @endif
@@ -285,10 +310,10 @@
                                         <div
                                             class="w-8 h-8 rounded-full flex items-center justify-center text-xs transition-all duration-200 shrink-0 
                                             @if ($isFinalStep && $isCurrent) @if ($item->status == 'Diterima') bg-emerald-600 text-white ring-4 ring-emerald-100 @elseif($item->status == 'Ditolak') bg-red-600 text-white ring-4 ring-red-100 @else bg-amber-500 text-white ring-4 ring-amber-100 @endif
-@elseif($isPassed || $isCurrent)
-bg-[#00236F] text-white ring-4 ring-[#F0F4FF]
-@else
-bg-white text-gray-400 border-2 border-gray-300
+                                            @elseif($isPassed || $isCurrent)
+                                            bg-[#00236F] text-white ring-4 ring-[#F0F4FF]
+                                            @else
+                                            bg-white text-gray-400 border-2 border-gray-300
                                             @endif">
 
                                             @if ($stepNum == 1)
@@ -343,10 +368,10 @@ bg-white text-gray-400 border-2 border-gray-300
                                         <span
                                             class="mt-2 text-[10px] sm:text-[11px] font-bold text-center leading-tight whitespace-nowrap 
                                             @if ($isFinalStep && $isCurrent) @if ($item->status == 'Diterima') text-emerald-700 @elseif($item->status == 'Ditolak') text-red-600 @else text-amber-600 @endif
-@elseif($isPassed || $isCurrent)
-text-[#00236F]
-@else
-text-gray-400
+                                            @elseif($isPassed || $isCurrent)
+                                            text-[#00236F]
+                                            @else
+                                            text-gray-400
                                             @endif">
                                             {{ $stepData['title'] }}
                                         </span>
@@ -386,6 +411,28 @@ text-gray-400
             @endforelse
         </div>
     </main>
+
+    <!-- SCRIPT SWEETALERT ATURAN KERJA -->
+    <script>
+        function showAturanKerja() {
+            Swal.fire({
+                title: 'Aturan Kerja Peserta',
+                html: `
+                    <div class="text-left text-sm text-gray-700 whitespace-pre-line mt-2 p-5 bg-gray-50 rounded-xl border border-gray-200 leading-relaxed max-h-[60vh] overflow-y-auto shadow-inner">
+                        {!! nl2br(e($aturan_kerja ?? 'Belum ada aturan kerja.')) !!}
+                    </div>
+                `,
+                confirmButtonText: 'Saya Mengerti',
+                confirmButtonColor: '#00236F',
+                width: '600px',
+                customClass: {
+                    popup: 'rounded-2xl',
+                    title: 'text-xl font-extrabold text-[#00236F]',
+                    confirmButton: 'rounded-xl text-sm font-bold px-8 py-3'
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>
