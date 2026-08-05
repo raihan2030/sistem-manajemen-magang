@@ -124,25 +124,35 @@
                                         @endif
                                     </td>
 
-                                    <!-- Kolom Tindakan: Kirim Notifikasi Manual (REAL, submit ke server) -->
+                                    <!-- Kolom Tindakan: Kirim Notifikasi -->
                                     <td class="px-6 py-4 align-top text-center">
-                                        <form
-                                            action="{{ route('superadmin.aktivitas.kirim-notifikasi', $log->pengajuan_id) }}"
-                                            method="POST">
-                                            @csrf
-                                            <button type="submit"
-                                                class="bg-red-700 hover:bg-red-800 text-white rounded-md py-1.5 px-3 flex items-center justify-center gap-2 transition w-full max-w-[130px] mx-auto shadow-2xs cursor-pointer">
-                                                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
-                                                    </path>
+                                        <div class="flex flex-col gap-2 items-center justify-center">
+                                            
+                                            <!-- Tombol Notifikasi Akun SKPD (Eksisting) -->
+                                            <form action="{{ route('superadmin.aktivitas.kirim-notifikasi', $log->pengajuan_id) }}" method="POST" class="w-full max-w-[140px]">
+                                                @csrf
+                                                <button type="submit"
+                                                    class="bg-red-700 hover:bg-red-800 text-white rounded-md py-1.5 px-3 flex items-center justify-center gap-2 transition w-full shadow-2xs cursor-pointer">
+                                                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                                                    </svg>
+                                                    <span class="text-[11px] font-semibold text-left leading-tight">Notif ke<br>Akun SKPD</span>
+                                                </button>
+                                            </form>
+
+                                            <!-- Tombol Notifikasi WhatsApp (Baru) -->
+                                            <!-- Catatan: Sesuaikan property $log->no_wa_skpd dengan nama kolom/relasi nomor WA SKPD di databasemu -->
+                                            <a href="https://wa.me/{{ preg_replace('/^0/', '62', $log->no_wa_skpd ?? '') }}" target="_blank"
+                                                class="bg-emerald-600 hover:bg-emerald-700 text-white rounded-md py-1.5 px-3 flex items-center justify-center gap-2 transition w-full max-w-[140px] shadow-2xs cursor-pointer">
+                                                <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01a1.05 1.05 0 00-.768.357c-.264.286-1.006.985-1.006 2.404s1.03 2.785 1.173 2.984c.143.198 2.03 3.102 4.922 4.352.691.298 1.23.477 1.65.61.693.22 1.324.189 1.821.114.558-.084 1.715-.7 1.956-1.376.241-.676.241-1.255.168-1.376-.073-.121-.272-.196-.57-.345z"/>
+                                                    <path d="M12 2C6.477 2 2 6.477 2 12c0 1.763.456 3.42 1.258 4.861L2 22l5.312-1.218C8.715 21.542 10.315 22 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18.25c-1.48 0-2.921-.383-4.182-1.11l-.3-.178-3.111.712.727-3.036-.195-.311A8.204 8.204 0 013.75 12c0-4.551 3.7-8.25 8.25-8.25s8.25 3.699 8.25 8.25-3.7 8.25-8.25 8.25z"/>
                                                 </svg>
-                                                <span
-                                                    class="text-[11px] font-semibold text-left leading-tight">Kirim<br>Notifikasi</span>
-                                            </button>
-                                        </form>
+                                                <span class="text-[11px] font-semibold text-left leading-tight">Notif ke<br>WhatsApp</span>
+                                            </a>
+                                        </div>
                                     </td>
+
                                 </tr>
                             @empty
                                 <tr>

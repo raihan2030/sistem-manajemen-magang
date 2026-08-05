@@ -210,36 +210,28 @@
                             </div>
                         </div>
 
-                        <!-- Pembimbing Lapangan -->
+                        <!-- Pembimbing Lapangan (Read Only + Tombol WhatsApp) -->
                         <div>
-                            <label class="block text-[11px] font-semibold text-gray-400 mb-1.5">Pembimbing
-                                Lapangan</label>
-                            <div class="relative flex items-center">
-                                <input type="text" id="pembimbingInput"
-                                    value="{{ $pengajuan->nama_pembimbing ?? '' }}"
-                                    placeholder="Isi nama pembimbing..." disabled
-                                    class="w-full bg-white border border-gray-300 rounded-lg pl-3 pr-10 py-2 text-xs font-semibold text-[#1f2937] outline-none transition focus:border-[#00236F] disabled:bg-white disabled:border-gray-200">
-
-                                @if ($pengajuan)
-                                    <!-- Tombol Action Edit / Save -->
-                                    <button id="btnEditPembimbing" onclick="toggleEditPembimbing({{ $pengajuan->id }})"
-                                        type="button"
-                                        class="absolute right-2 text-gray-400 hover:text-[#00236F] p-1 transition cursor-pointer"
-                                        title="Edit Pembimbing">
-                                        <svg id="iconPensil" class="w-4 h-4" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                            </path>
-                                        </svg>
-                                        <svg id="iconCentang" class="w-4 h-4 text-emerald-600 hidden" fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                                d="M5 13l4 4L19 7"></path>
-                                        </svg>
-                                    </button>
-                                @endif
-                            </div>
+                            <span class="block text-[11px] font-semibold text-gray-400 mb-1.5">Pembimbing Lapangan</span>
+                            
+                            @if ($pengajuan && $pengajuan->nama_pembimbing)
+                                <div class="flex flex-col gap-2.5">
+                                    <span class="text-sm font-bold text-[#1f2937]">{{ $pengajuan->nama_pembimbing }}</span>
+                                    
+                                    @if ($pengajuan->no_wa_pembimbing)
+                                        <a href="https://wa.me/{{ preg_replace('/^0/', '62', $pengajuan->no_wa_pembimbing) }}" target="_blank"
+                                           class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition rounded-lg text-xs font-bold w-fit shadow-xs">
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01a1.05 1.05 0 00-.768.357c-.264.286-1.006.985-1.006 2.404s1.03 2.785 1.173 2.984c.143.198 2.03 3.102 4.922 4.352.691.298 1.23.477 1.65.61.693.22 1.324.189 1.821.114.558-.084 1.715-.7 1.956-1.376.241-.676.241-1.255.168-1.376-.073-.121-.272-.196-.57-.345z"/>
+                                                <path d="M12 2C6.477 2 2 6.477 2 12c0 1.763.456 3.42 1.258 4.861L2 22l5.312-1.218C8.715 21.542 10.315 22 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18.25c-1.48 0-2.921-.383-4.182-1.11l-.3-.178-3.111.712.727-3.036-.195-.311A8.204 8.204 0 013.75 12c0-4.551 3.7-8.25 8.25-8.25s8.25 3.699 8.25 8.25-3.7 8.25-8.25 8.25z"/>
+                                            </svg>
+                                            Hubungi via WhatsApp
+                                        </a>
+                                    @endif
+                                </div>
+                            @else
+                                <span class="text-sm font-bold text-gray-400 italic">Belum ditentukan</span>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -446,96 +438,6 @@
         </div>
 
     </main>
-
-    <!-- SCRIPT EDIT & SIMPAN PEMBIMBING LAPANGAN (AJAX + SWEETALERT2) -->
-    <script>
-        let isEditingPembimbing = false;
-
-        function toggleEditPembimbing(pengajuanId) {
-            const input = document.getElementById('pembimbingInput');
-            const iconPensil = document.getElementById('iconPensil');
-            const iconCentang = document.getElementById('iconCentang');
-
-            if (!isEditingPembimbing) {
-                // Aktifkan Mode Edit
-                isEditingPembimbing = true;
-                input.disabled = false;
-                input.focus();
-                input.classList.remove('disabled:bg-white', 'disabled:border-gray-200');
-
-                iconPensil.classList.add('hidden');
-                iconCentang.classList.remove('hidden');
-            } else {
-                // Simpan Perubahan via Fetch API (AJAX)
-                const namaPembimbing = input.value.trim();
-
-                fetch(`/peserta/profil/pembimbing/${pengajuanId}`, {
-                        method: 'PATCH',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                        body: JSON.stringify({
-                            nama_pembimbing: namaPembimbing
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        isEditingPembimbing = false;
-                        input.disabled = true;
-                        input.classList.add('disabled:bg-white', 'disabled:border-gray-200');
-
-                        iconCentang.classList.add('hidden');
-                        iconPensil.classList.remove('hidden');
-
-                        if (data.status === 'success') {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil Disimpan!',
-                                text: data.message || 'Nama pembimbing lapangan berhasil diperbarui.',
-                                confirmButtonColor: '#00236F',
-                                customClass: {
-                                    popup: 'rounded-2xl',
-                                    confirmButton: 'rounded-xl text-xs font-bold px-5 py-2.5'
-                                }
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal Menyimpan',
-                                text: data.message || 'Terjadi kesalahan saat menyimpan data.',
-                                confirmButtonColor: '#00236F',
-                                customClass: {
-                                    popup: 'rounded-2xl',
-                                    confirmButton: 'rounded-xl text-xs font-bold px-5 py-2.5'
-                                }
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        isEditingPembimbing = false;
-                        input.disabled = true;
-                        input.classList.add('disabled:bg-white', 'disabled:border-gray-200');
-
-                        iconCentang.classList.add('hidden');
-                        iconPensil.classList.remove('hidden');
-
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Gagal Menyimpan',
-                            text: 'Gagal terhubung ke server. Silakan coba lagi nanti.',
-                            confirmButtonColor: '#00236F',
-                            customClass: {
-                                popup: 'rounded-2xl',
-                                confirmButton: 'rounded-xl text-xs font-bold px-5 py-2.5'
-                            }
-                        });
-                    });
-            }
-        }
-    </script>
-
 </body>
 
 </html>
