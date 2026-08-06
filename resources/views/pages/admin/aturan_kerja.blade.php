@@ -63,7 +63,7 @@
             <div class="p-6 md:p-8 flex-grow">
                 @if(isset($aturan_kerja) && $aturan_kerja != '')
                     <div class="p-6 bg-yellow-50/50 border border-yellow-100 rounded-xl text-gray-700 text-sm whitespace-pre-line leading-relaxed">
-                        {!! nl2br(e($aturan_kerja)) !!}
+                        {!! e($aturan_kerja) !!}
                     </div>
                 @else
                     <div class="flex flex-col items-center justify-center py-12 text-center text-gray-400">

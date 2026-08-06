@@ -96,6 +96,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::patch('/permohonan/detail/{id}', [AdminPermohonanController::class, 'updateStatus'])->name('permohonan.update');
 
+        Route::patch('/permohonan/{id}/batalkan', [AdminPermohonanController::class, 'batalkan'])
+            ->name('permohonan.batalkan');
+
         Route::get('/permohonan/export/csv', [AdminPermohonanController::class, 'exportCsv'])
             ->name('permohonan.export.csv');
 

@@ -16,7 +16,10 @@ class PesertaMagangController extends Controller
      */
     private function calculateStatus(DataMagang $dataMagang): string
     {
-        // Jika dari database sudah eksplisit 'Selesai' (misal dari sertifikat), pertahankan
+        if ($dataMagang->status === 'Dibatalkan') {
+            return 'Dibatalkan';
+        }
+
         if ($dataMagang->status === 'Selesai') {
             return 'Selesai';
         }

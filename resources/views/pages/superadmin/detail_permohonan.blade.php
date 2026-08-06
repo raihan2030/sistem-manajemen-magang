@@ -15,6 +15,11 @@
             \Carbon\Carbon::parse($pengajuan->batas_verifikasi)->isPast();
 
         $statusTampilan = $isSlaLewat ? 'Terlambat' : $pengajuan->status;
+
+        // Override jika magang sudah dibatalkan
+        if ($pengajuan->dataMagang && $pengajuan->dataMagang->status === 'Dibatalkan') {
+            $statusTampilan = 'Dibatalkan';
+        }
     @endphp
 
     <!-- Header Page & Status Badge (Read-only untuk Superadmin) -->
@@ -34,6 +39,12 @@
 
         @php
             $statusBadge = match ($statusTampilan) {
+                'Dibatalkan' => [
+                    'bg' => 'bg-red-50',
+                    'text' => 'text-red-600',
+                    'border' => 'border-red-200',
+                    'label' => 'Dibatalkan',
+                ],
                 'Terlambat' => [
                     'bg' => 'bg-red-50',
                     'text' => 'text-red-600',

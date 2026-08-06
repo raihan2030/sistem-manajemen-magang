@@ -63,6 +63,7 @@
                             <option value="Terdaftar">Terdaftar</option>
                             <option value="Berlangsung">Berlangsung</option>
                             <option value="Selesai">Selesai</option>
+                            <option value="Dibatalkan">Dibatalkan</option>
                         </select>
                         <svg class="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-700"
                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -174,6 +175,12 @@
                                         class="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-[#00236F] border border-blue-200/80 rounded-full text-[10px] font-bold">
                                         <span class="w-1.5 h-1.5 rounded-full bg-[#00236F]"></span>
                                         Terdaftar
+                                    </span>
+                                @elseif ($row['status'] == 'Dibatalkan')
+                                    <span
+                                        class="inline-flex items-center gap-1.5 px-3 py-1 bg-red-50 text-red-600 border border-red-200/80 rounded-full text-[10px] font-bold">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                                        Dibatalkan
                                     </span>
                                 @else
                                     <span

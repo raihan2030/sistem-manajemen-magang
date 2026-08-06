@@ -32,8 +32,13 @@
             </p>
         </div>
 
+        @php
+            $sudahDibatalkan = $pengajuan->dataMagang && $pengajuan->dataMagang->status === 'Dibatalkan';
+            $bisaDibatalkan = $pengajuan->status === 'Diterima' && $pengajuan->dataMagang && !$sudahDibatalkan;
+        @endphp
+
         @if ($bisaDiverifikasi)
-            <!-- Tombol Aksi Utama -->
+            <!-- Tombol Aksi Utama (tidak berubah) -->
             <div class="flex items-center gap-3 self-start md:self-auto">
                 <button type="button" onclick="handleAction('Revisi')"
                     class="px-5 py-2.5 bg-white border border-[#00236F] text-[#00236F] hover:bg-blue-50/50 text-xs font-bold rounded-lg transition shadow-xs cursor-pointer">
@@ -50,26 +55,32 @@
             </div>
         @else
             @php
-                $statusBadge = match ($pengajuan->status) {
-                    'Diajukan' => [
+                $statusBadge = match (true) {
+                    $sudahDibatalkan => [
+                        'bg' => 'bg-red-50',
+                        'text' => 'text-red-600',
+                        'border' => 'border-red-200',
+                        'label' => 'Dibatalkan',
+                    ],
+                    $pengajuan->status === 'Diajukan' => [
                         'bg' => 'bg-yellow-50',
                         'text' => 'text-[#FEA619]',
                         'border' => 'border-[#FEA619]/30',
                         'label' => 'Menunggu Diproses',
                     ],
-                    'Diterima' => [
+                    $pengajuan->status === 'Diterima' => [
                         'bg' => 'bg-emerald-50',
                         'text' => 'text-emerald-700',
                         'border' => 'border-emerald-200',
                         'label' => 'Diterima',
                     ],
-                    'Ditolak' => [
+                    $pengajuan->status === 'Ditolak' => [
                         'bg' => 'bg-gray-100',
                         'text' => 'text-gray-600',
                         'border' => 'border-gray-300',
                         'label' => 'Ditolak',
                     ],
-                    'Revisi' => [
+                    $pengajuan->status === 'Revisi' => [
                         'bg' => 'bg-purple-50',
                         'text' => 'text-purple-700',
                         'border' => 'border-purple-200',
@@ -83,7 +94,13 @@
                     ],
                 };
             @endphp
-            <div class="self-start md:self-auto">
+            <div class="flex items-center gap-3 self-start md:self-auto">
+                @if ($bisaDibatalkan)
+                    <button type="button" onclick="handleBatalkan()"
+                        class="px-5 py-2.5 bg-white border border-red-500 text-red-600 hover:bg-red-50/50 text-xs font-bold rounded-lg transition shadow-xs cursor-pointer">
+                        Batalkan
+                    </button>
+                @endif
                 <span
                     class="inline-flex items-center gap-2 px-4 py-2.5 {{ $statusBadge['bg'] }} {{ $statusBadge['text'] }} border {{ $statusBadge['border'] }} text-xs font-bold rounded-lg">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -457,6 +474,13 @@
         <input type="hidden" name="no_wa_pembimbing" id="hidden_wa_pembimbing">
     </form>
 
+    <!-- Form Tersembunyi untuk Membatalkan Magang -->
+    <form id="formBatalkan" action="{{ route('admin.permohonan.batalkan', $pengajuan->id) }}" method="POST"
+        class="hidden">
+        @csrf
+        @method('PATCH')
+    </form>
+
     <!-- SCRIPT AKSI VERIFIKASI & EDIT PEMBIMBING -->
     <script>
         // --- HANDLER UPDATE DATA PEMBIMBING SETELAH DISETUJUI ---
@@ -504,6 +528,24 @@
                     document.getElementById('hidden_nama_pembimbing').value = result.value.nama;
                     document.getElementById('hidden_wa_pembimbing').value = result.value.wa;
                     document.getElementById('formEditPembimbing').submit();
+                }
+            });
+        }
+
+        function handleBatalkan() {
+            Swal.fire({
+                title: 'Batalkan Magang Peserta?',
+                text: 'Status magang peserta ini akan diubah menjadi "Dibatalkan" dan tidak akan dihitung sebagai peserta aktif lagi.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Batalkan',
+                cancelButtonText: 'Tidak',
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6B7280',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('formBatalkan').submit();
                 }
             });
         }

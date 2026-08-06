@@ -16,7 +16,7 @@ return new class extends Migration
                 ->constrained('pengajuan_magang')
                 ->cascadeOnDelete();
 
-            $table->enum('status', ['Terdaftar', 'Berlangsung', 'Selesai'])->default('Terdaftar');
+            $table->enum('status', ['Terdaftar', 'Berlangsung', 'Selesai', 'Dibatalkan'])->default('Terdaftar');
             $table->string('nama_pembimbing', 150)->nullable();
             $table->string('no_hp_pembimbing', 20)->nullable();
             $table->date('tanggal_selesai_aktual')->nullable();

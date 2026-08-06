@@ -6,6 +6,7 @@ use App\Models\Skpd;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class SuperadminKelolaAkunController extends Controller
 {
@@ -18,19 +19,26 @@ class SuperadminKelolaAkunController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        return view('pages.superadmin.kelola_akun', compact('listSkpd', 'akunSkpds'));
+        $usedSkpdIds = User::where('role_id', 2)->pluck('skpd_id')->toArray();
+
+        return view('pages.superadmin.kelola_akun', compact('listSkpd', 'akunSkpds', 'usedSkpdIds'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'skpd_id'  => 'required|exists:skpd,id',
+            'skpd_id'  => [
+                'required',
+                'exists:skpd,id',
+                Rule::unique('users', 'skpd_id')->where('role_id', 2),
+            ],
             'email'    => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
             'no_hp'    => 'nullable|string|max:20|regex:/^[0-9]+$/',
         ], [
             'skpd_id.required'  => 'Pilih SKPD terlebih dahulu.',
             'skpd_id.exists'    => 'SKPD yang dipilih tidak valid.',
+            'skpd_id.unique'    => 'SKPD ini sudah memiliki akun admin. Satu SKPD hanya boleh memiliki satu akun.',
             'email.required'    => 'Email dinas wajib diisi.',
             'email.unique'      => 'Email ini sudah digunakan oleh akun lain.',
             'password.required' => 'Kata sandi wajib diisi.',
@@ -60,13 +68,20 @@ class SuperadminKelolaAkunController extends Controller
         $user = User::where('role_id', 2)->findOrFail($id);
 
         $request->validate([
-            'skpd_id'  => 'required|exists:skpd,id',
+            'skpd_id'  => [
+                'required',
+                'exists:skpd,id',
+                Rule::unique('users', 'skpd_id')->where('role_id', 2)->ignore($id),
+            ],
             'email'    => 'required|email|unique:users,email,' . $id,
             'password' => 'nullable|string|min:6',
             'no_hp'    => 'nullable|string|max:20|regex:/^[0-9]+$/',
         ], [
-            'email.unique' => 'Email ini sudah digunakan akun lain.',
-            'no_hp.regex'  => 'Nomor HP hanya boleh berisi angka.',
+            'skpd_id.required' => 'Pilih SKPD terlebih dahulu.',
+            'skpd_id.exists'   => 'SKPD yang dipilih tidak valid.',
+            'skpd_id.unique'   => 'SKPD ini sudah memiliki akun admin. Satu SKPD hanya boleh memiliki satu akun.',
+            'email.unique'     => 'Email ini sudah digunakan akun lain.',
+            'no_hp.regex'      => 'Nomor HP hanya boleh berisi angka.',
         ]);
 
         $skpd = Skpd::findOrFail($request->skpd_id);

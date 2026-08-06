@@ -143,6 +143,37 @@ class AdminPermohonanController extends Controller
         }
     }
 
+    public function batalkan($id)
+    {
+        $pengajuan = PengajuanMagang::with(['dataMagang', 'anggota', 'bidang'])->findOrFail($id);
+
+        if ($pengajuan->status !== 'Diterima' || !$pengajuan->dataMagang) {
+            return redirect()
+                ->route('admin.permohonan.detail', $pengajuan->id)
+                ->with('warning', 'Permohonan ini tidak dapat dibatalkan.');
+        }
+
+        if ($pengajuan->dataMagang->status === 'Dibatalkan') {
+            return redirect()
+                ->route('admin.permohonan.detail', $pengajuan->id)
+                ->with('warning', 'Magang peserta ini sudah dibatalkan sebelumnya.');
+        }
+
+        DB::transaction(function () use ($pengajuan) {
+            $jumlahAnggota = $pengajuan->anggota->count();
+
+            $pengajuan->dataMagang->update([
+                'status' => 'Dibatalkan',
+            ]);
+
+            $pengajuan->bidang()->increment('sisa_kuota', $jumlahAnggota);
+        });
+
+        return redirect()
+            ->route('admin.permohonan.detail', $pengajuan->id)
+            ->with('success', 'Magang peserta berhasil dibatalkan dan kuota bidang telah dikembalikan.');
+    }
+
     protected function getPermohonanFilteredQuery(Request $request)
     {
         $skpdId = Auth::user()->skpd_id;
