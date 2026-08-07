@@ -20,12 +20,6 @@
     <!-- Header Page & Action Buttons -->
     <div class="mb-6 border-b border-gray-200/80 pb-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-            <div class="flex items-center text-xs font-bold text-[#00236F] mb-1.5 uppercase tracking-wider">
-                <span>SKPD {{ $current_skpd['nama_skpd'] }}</span>
-                <svg class="w-3.5 h-3.5 mx-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                </svg>
-            </div>
             <h1 class="text-2xl font-extrabold text-[#1f2937] tracking-tight">Detail Permohonan Magang</h1>
             <p class="text-sm text-[#1f2937]/70 mt-1">
                 Tinjau dan proses berkas permohonan yang masuk ke instansi Anda.

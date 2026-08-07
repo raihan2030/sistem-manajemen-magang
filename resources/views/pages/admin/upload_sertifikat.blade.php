@@ -4,6 +4,11 @@
 
 @section('content')
 
+    <div class="mb-6 border-b border-gray-200/80 pb-4">
+            <h1 class="text-2xl font-extrabold text-[#1f2937] tracking-tight">Upload Sertifikat Peserta</h1>
+            <p class="text-sm text-[#1f2937]/70 mt-1">Upload sertifikat peserta magang di instansi Anda.</p>
+    </div>
+
     {{-- ALERT BANNER SUCCESS / ERROR --}}
     @if (session('success'))
         <div

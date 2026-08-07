@@ -6,12 +6,9 @@
     <!-- CDN SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <!-- Header Page -->
-    <div class="mb-6 border-b border-gray-200/80 pb-5">
+    <div class="mb-6 border-b border-gray-200/80 pb-4">
         <h1 class="text-2xl font-extrabold text-[#1f2937] tracking-tight">Kelola Aturan Kerja Peserta</h1>
-        <p class="text-sm text-[#1f2937]/70 mt-1">
-            Buat dan perbarui tata tertib atau aturan yang harus dipatuhi oleh peserta magang di instansi Anda.
-        </p>
+        <p class="text-sm text-[#1f2937]/70 mt-1">Buat dan perbarui tata tertib atau aturan yang harus dipatuhi oleh peserta magang di instansi Anda.</p>
     </div>
 
     <div class="flex flex-col gap-6">

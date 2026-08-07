@@ -25,10 +25,9 @@
         }
     @endphp
 
-    <!-- Header Page -->
     <div class="mb-8">
-        <h1 class="text-2xl font-bold text-[#1f2937] tracking-tight">Kelola Kapasitas SKPD</h1>
-        <p class="text-sm text-[#1f2937]/70 mt-1">Kelola sub bagian/bidang serta alokasi kuota penerimaan mahasiswa magang.</p>
+        <h1 class="text-2xl font-extrabold text-[#1f2937] tracking-tight">Kelola Kapasitas SKPD</h1>
+        <p class="text-sm text-[#1f2937]/70 mt-1"> Kelola sub bagian/bidang serta alokasi kuota penerimaan peserta magang.</p>
     </div>
 
     {{-- ALERT BANNER SUCCESS --}}

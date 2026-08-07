@@ -4,14 +4,7 @@
 
 @section('content')
 
-    <!-- Breadcrumb & Header Page -->
     <div class="mb-6 border-b border-gray-200/80 pb-4">
-        <div class="flex items-center text-xs font-bold text-[#00236F] mb-1.5 uppercase tracking-wider">
-            <span>SKPD {{ $skpd->nama_skpd ?? 'Pemerintah Kota Banjarmasin' }}</span>
-            <svg class="w-3.5 h-3.5 mx-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-        </div>
         <h1 class="text-2xl font-extrabold text-[#1f2937] tracking-tight">Verifikasi Permohonan Magang</h1>
         <p class="text-sm text-[#1f2937]/70 mt-1">
             Tinjau dan proses berkas permohonan yang masuk ke <span
@@ -98,9 +91,9 @@
             <table class="w-full text-left border-collapse min-w-212.5">
                 <thead>
                     <tr class="text-xs text-gray-500 font-semibold border-b border-gray-200 bg-white">
-                        <th class="px-6 py-4 w-[22%]">Pemohon (Ketua)</th>
+                        <th class="px-6 py-4 w-[22%]">Pemohon</th>
                         <th class="px-6 py-4 w-[22%]">Institusi Asal / Jurusan</th>
-                        <th class="px-6 py-4 w-[18%]">Bidang</th>
+                        <th class="px-6 py-4 w-[18%]">Bidang / Bagian</th>
                         <th class="px-6 py-4 w-[18%]">Tanggal Masuk</th>
                         <th class="px-6 py-4 w-[12%]">Batas Waktu (SLA)</th>
                         <th class="px-6 py-4 w-[8%] text-center">Aksi</th>

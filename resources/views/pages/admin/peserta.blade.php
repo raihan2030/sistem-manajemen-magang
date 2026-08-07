@@ -4,12 +4,9 @@
 
 @section('content')
 
-    <!-- Header Page -->
     <div class="mb-8">
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-[#1f2937] tracking-tight">Daftar Peserta Magang</h1>
-        <p class="text-xs sm:text-sm text-gray-500 mt-1">
-            Manajemen dan pemantauan status kehadiran serta progres mahasiswa magang di SKPD.
-        </p>
+        <h1 class="text-2xl font-extrabold text-[#1f2937] tracking-tight">Daftar Peserta Magang</h1>
+        <p class="text-sm text-[#1f2937]/70 mt-1">Manajemen dan pemantauan status kehadiran serta progres mahasiswa magang di SKPD.</p>
     </div>
 
     <!-- Card Statistik Atas -->

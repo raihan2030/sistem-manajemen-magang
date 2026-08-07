@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Profil Mahasiswa Magang - SIMANGAT BJM</title>
+    <title>Profil Peserta Magang - SIMANGAT BJM</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -68,7 +68,7 @@
         <!-- HEADER SECTION -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <div>
-                <h1 class="text-3xl font-extrabold text-[#00236F] tracking-tight">Profil Mahasiswa Magang</h1>
+                <h1 class="text-3xl font-extrabold text-[#00236F] tracking-tight">Profil Peserta Magang</h1>
                 <p class="text-sm text-gray-500 mt-1">Detail informasi dan dokumen terkait peserta magang yang
                     terdaftar.</p>
             </div>

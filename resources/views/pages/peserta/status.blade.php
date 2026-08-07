@@ -8,7 +8,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -17,13 +17,19 @@
 
     <style>
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #F8FAFC;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #F8FAFC; /* Slate 50 */
         }
+        
+        /* Custom scrollbar untuk SweetAlert */
+        .custom-swal-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-swal-scroll::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 8px; }
+        .custom-swal-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
+        .custom-swal-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
 
-<body class="text-[#1f2937] antialiased min-h-screen flex flex-col">
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
     <!-- NAVBAR DINAMIS -->
     @include('components.navbar', [
         'sudah_submit_magang' => isset($pengajuans) && $pengajuans->isNotEmpty(),
@@ -39,50 +45,44 @@
     @endphp
 
     <!-- MAIN CONTENT -->
-    <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 flex-grow w-full">
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex-grow w-full">
 
         <!-- HEADER PAGE -->
-        <div class="mb-6 sm:mb-8">
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-[#00236F] leading-tight tracking-tight mb-2">
+        <div class="mb-8 sm:mb-10">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-[#00236F] tracking-tight mb-3">
                 Status Permohonan
             </h1>
-            <p class="text-xs sm:text-sm text-gray-600">
+            <p class="text-sm sm:text-base text-slate-600 font-medium max-w-2xl">
                 Pantau perkembangan aplikasi magang Anda di Pemerintah Kota Banjarmasin secara real-time.
             </p>
         </div>
 
         {{-- ALERT BANNER SUCCESS --}}
         @if (session('success'))
-            <div
-                class="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl p-4 sm:p-5 mb-6 flex items-start gap-3 shadow-xs">
-                <div
-                    class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
+            <div class="bg-emerald-50 border border-emerald-100 rounded-[1.5rem] p-5 mb-8 flex items-start gap-4 shadow-sm">
+                <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
                     </svg>
                 </div>
-                <div>
-                    <h3 class="text-sm font-bold text-emerald-900 mb-0.5">Berhasil!</h3>
-                    <p class="text-xs font-medium">{{ session('success') }}</p>
+                <div class="pt-1">
+                    <h3 class="text-sm font-bold text-emerald-900 mb-1">Berhasil!</h3>
+                    <p class="text-sm font-medium text-emerald-700">{{ session('success') }}</p>
                 </div>
             </div>
         @endif
 
         {{-- ALERT BANNER WARNING --}}
         @if (session('warning'))
-            <div
-                class="bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl p-4 sm:p-5 mb-6 flex items-start gap-3 shadow-xs">
-                <div
-                    class="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0 mt-0.5">
+            <div class="bg-amber-50 border border-amber-100 rounded-[1.5rem] p-5 mb-8 flex items-start gap-4 shadow-sm">
+                <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
-                        </path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                     </svg>
                 </div>
-                <div>
-                    <h3 class="text-sm font-bold text-amber-900 mb-0.5">Akses Dibatasi!</h3>
-                    <p class="text-xs font-medium">{{ session('warning') }}</p>
+                <div class="pt-1">
+                    <h3 class="text-sm font-bold text-amber-900 mb-1">Akses Dibatasi!</h3>
+                    <p class="text-sm font-medium text-amber-700">{{ session('warning') }}</p>
                 </div>
             </div>
         @endif
@@ -93,25 +93,23 @@
 
         {{-- CARD ATURAN KERJA (KUNING) - MUNCUL JIKA STATUS DITERIMA & ADA DATA DARI ADMIN --}}
         @if ($adaYangDiterima && isset($aturan_kerja) && $aturan_kerja != '')
-            <div onclick="showAturanKerja()"
-                class="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-2xl p-4 sm:p-5 mb-6 flex items-center justify-between shadow-xs cursor-pointer hover:bg-yellow-100 transition group">
-                <div class="flex items-center gap-3.5">
-                    <div
-                        class="w-10 h-10 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center shrink-0 border border-yellow-200">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            <div onclick="showAturanKerja()" class="relative overflow-hidden bg-gradient-to-r from-amber-500 to-[#FEA619] rounded-[1.5rem] p-5 sm:p-6 mb-8 flex items-center justify-between shadow-lg shadow-amber-500/20 cursor-pointer hover:scale-[1.01] transition-transform duration-300 group">
+                <!-- Dekorasi Background -->
+                <svg class="absolute right-0 top-0 h-full w-48 text-white/10 transform translate-x-8" fill="currentColor" viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,0 100,0 50,100 0,100" /></svg>
+                
+                <div class="relative z-10 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-white/20 text-white flex items-center justify-center shrink-0 backdrop-blur-sm border border-white/30">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-sm font-bold text-yellow-900 mb-0.5">Aturan & Tata Tertib Magang</h3>
-                        <p class="text-xs font-medium text-yellow-700">Wajib dibaca dan dipatuhi oleh seluruh peserta
-                            magang.</p>
+                        <h3 class="text-base font-bold text-white mb-0.5">Aturan & Tata Tertib Magang</h3>
+                        <p class="text-sm font-medium text-amber-50">Wajib dibaca dan dipatuhi oleh seluruh peserta magang.</p>
                     </div>
                 </div>
-                <div class="shrink-0 bg-yellow-200/50 p-2 rounded-full group-hover:bg-yellow-200 transition">
-                    <svg class="w-4 h-4 text-yellow-700 transition-transform group-hover:translate-x-0.5" fill="none"
-                        stroke="currentColor" viewBox="0 0 24 24">
+                <div class="relative z-10 shrink-0 bg-white/20 p-2.5 rounded-xl backdrop-blur-sm group-hover:bg-white/30 transition-colors border border-white/30">
+                    <svg class="w-5 h-5 text-white transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path>
                     </svg>
                 </div>
@@ -119,20 +117,15 @@
         @endif
 
         <!-- LIST CARDS STATUS PERMOHONAN -->
-        <div class="space-y-6">
+        <div class="space-y-8">
             @forelse($pengajuans as $item)
                 @php
-                    // Logika Stage Stepper berdasarkan Alur 3 Langkah
-                    // Stage 1: Diajukan (Default setelah user klik submit)
-                    // Stage 2: Diproses (Setelan admin klik button 'Proses')
-                    // Stage 3: Keputusan (Diterima, Ditolak, atau Revisi)
                     $currentStep = match ($item->status) {
                         'Diproses' => 2,
                         'Diterima', 'Ditolak', 'Revisi' => 3,
                         default => 1, // 'Diajukan'
                     };
 
-                    // Persentase Lebar Garis Progress (0% -> 50% -> 100%)
                     $progressPercent = match ($currentStep) {
                         2 => 50,
                         3 => 100,
@@ -140,52 +133,42 @@
                     };
                 @endphp
 
-                <div class="bg-white border border-gray-200 rounded-2xl shadow-xs overflow-hidden">
+                <div class="bg-white border border-slate-200/60 rounded-[2rem] shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
 
                     <!-- KARTU ATAS: INFORMASI UTAMA & HASIL KEPUTUSAN -->
-                    <div class="p-5 sm:p-6 md:p-8 flex flex-col md:flex-row md:items-start justify-between gap-4">
+                    <div class="p-6 sm:p-8 flex flex-col md:flex-row md:items-start justify-between gap-6">
 
                         <!-- SISI KIRI: BIDANG & INSTANSI -->
                         <div class="flex-grow">
-                            <h2 class="text-lg sm:text-xl md:text-2xl font-bold text-[#1f2937] tracking-tight mb-1">
+                            <!-- Label Instansi -->
+                            <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                                <svg class="w-4 h-4 text-[#00236F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                </svg>
+                                {{ $item->bidang->skpd->nama_skpd ?? 'Instansi Pemkot Banjarmasin' }}
+                            </div>
+                            
+                            <!-- Nama Bidang -->
+                            <h2 class="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#00236F] tracking-tight mb-5">
                                 {{ $item->bidang->nama_bidang ?? 'Bidang Magang' }}
                             </h2>
-                            <div class="flex items-start gap-2 text-xs font-semibold text-gray-500 mb-4">
-                                <svg class="w-4 h-4 flex-shrink-0 mt-0.5 text-[#00236F]" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
-                                    </path>
-                                </svg>
-                                <span
-                                    class="leading-relaxed">{{ $item->bidang->skpd->nama_skpd ?? 'Instansi Pemkot Banjarmasin' }}</span>
-                            </div>
 
                             <!-- 📍 BANNER INFORMASI DETAIL KEPUTUSAN ADMIN -->
                             @if ($item->status == 'Diterima')
-                                <div
-                                    class="p-4 bg-emerald-50 border border-emerald-200/90 rounded-xl text-xs text-emerald-900 flex items-start gap-3">
-                                    <svg class="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" fill="none"
-                                        stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
+                                <div class="p-5 bg-emerald-50/80 border border-emerald-100 rounded-2xl text-sm text-emerald-900 flex items-start gap-4">
+                                    <div class="bg-emerald-100 rounded-full p-1.5 shrink-0">
+                                        <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                    </div>
                                     <div>
-                                        <span class="font-bold block mb-0.5 text-emerald-950">Selamat! Permohonan Magang
-                                            Diterima</span>
-                                        <span>Permohonan Anda telah disetujui oleh admin instansi. Silakan cek halaman
-                                            profil Anda untuk informasi lebih lanjut mengenai pembimbing lapangan dan
-                                            jadwal kegiatan.</span>
+                                        <span class="font-extrabold block mb-1 text-emerald-950 text-base">Selamat! Permohonan Diterima</span>
+                                        <span class="text-emerald-800 font-medium leading-relaxed block">Permohonan Anda disetujui. Silakan cek halaman profil untuk info pembimbing lapangan dan jadwal kegiatan.</span>
 
                                         @if ($item->surat_balasan)
-                                            <a href="{{ $item->surat_balasan_url }}" target="_blank"
-                                                class="inline-flex items-center gap-1.5 mt-2.5 text-emerald-800 font-bold underline hover:text-emerald-900">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                                                    </path>
+                                            <a href="{{ $item->surat_balasan_url }}" target="_blank" class="inline-flex items-center gap-1.5 mt-3 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-colors shadow-sm">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                                 </svg>
                                                 Unduh Surat Balasan Resmi
                                             </a>
@@ -193,100 +176,83 @@
                                     </div>
                                 </div>
                             @elseif ($item->status == 'Ditolak')
-                                <div
-                                    class="p-4 bg-red-50 border border-red-200/90 rounded-xl text-xs text-red-900 flex items-start gap-3">
-                                    <svg class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="none"
-                                        stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z">
-                                        </path>
-                                    </svg>
+                                <div class="p-5 bg-red-50/80 border border-red-100 rounded-2xl text-sm text-red-900 flex items-start gap-4">
+                                    <div class="bg-red-100 rounded-full p-1.5 shrink-0">
+                                        <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                    </div>
                                     <div>
-                                        <span class="font-bold block mb-0.5 text-red-950">Permohonan Tidak
-                                            Diterima</span>
-                                        <span>Mohon maaf, permohonan magang Anda belum dapat diterima pada periode ini
-                                            karena keterbatasan kuota atau kesesuaian berkas. Terima kasih telah
-                                            mendaftar.</span>
+                                        <span class="font-extrabold block mb-1 text-red-950 text-base">Permohonan Tidak Diterima</span>
+                                        <span class="text-red-800 font-medium leading-relaxed block">Mohon maaf, permohonan magang belum dapat diterima pada periode ini karena keterbatasan kuota atau kesesuaian berkas. Tetap semangat!</span>
                                     </div>
                                 </div>
                             @elseif ($item->status == 'Revisi')
-                                <div
-                                    class="p-4 bg-amber-50 border border-amber-200/90 rounded-xl text-xs text-amber-900 flex items-start gap-3">
-                                    <svg class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="none"
-                                        stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                        </path>
-                                    </svg>
+                                <div class="p-5 bg-amber-50/80 border border-amber-100 rounded-2xl text-sm text-amber-900 flex items-start gap-4">
+                                    <div class="bg-amber-100 rounded-full p-1.5 shrink-0">
+                                        <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
+                                    </div>
                                     <div>
-                                        <span class="font-bold block mb-0.5 text-amber-950">Catatan Revisi dari
-                                            Admin:</span>
-                                        <span>{{ $item->komentar_revisi ?? 'Mohon periksa kembali kelengkapan dokumen pengajuan Anda.' }}</span>
+                                        <span class="font-extrabold block mb-1 text-amber-950 text-base">Catatan Revisi Admin:</span>
+                                        <span class="text-amber-800 font-medium leading-relaxed block">{{ $item->komentar_revisi ?? 'Mohon periksa kembali kelengkapan dokumen pengajuan Anda.' }}</span>
                                     </div>
                                 </div>
                             @endif
                         </div>
 
                         <!-- SISI KANAN: BADGE STATUS, TANGGAL & TOMBOL AKSI -->
-                        <div
-                            class="flex flex-col sm:flex-row md:flex-col items-start sm:items-center md:items-end justify-between gap-3 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-gray-100">
+                        <div class="flex flex-col sm:flex-row md:flex-col items-start sm:items-center md:items-end justify-between gap-4 shrink-0 pt-4 md:pt-0 border-t border-slate-100 md:border-t-0 mt-2 md:mt-0">
+                            
+                            <!-- TANGGAL PENGAJUAN -->
+                            <div class="text-right w-full sm:w-auto">
+                                <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Tanggal Pengajuan</span>
+                                <span class="block text-sm font-bold text-slate-700">
+                                    {{ \Carbon\Carbon::parse($item->tanggal_pengajuan)->translatedFormat('d M Y') }}
+                                </span>
+                            </div>
 
                             <!-- BADGE KETERANGAN STATUS -->
                             <div>
                                 @if ($item->status == 'Diterima')
-                                    <span
-                                        class="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200/80 text-xs font-bold px-3.5 py-1.5 rounded-full shadow-2xs">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                    <span class="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-extrabold px-4 py-2 rounded-xl">
+                                        <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span>
                                         Diterima
                                     </span>
                                 @elseif ($item->status == 'Ditolak')
-                                    <span
-                                        class="inline-flex items-center gap-1.5 bg-red-50 text-red-600 border border-red-200/80 text-xs font-bold px-3.5 py-1.5 rounded-full shadow-2xs">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                                    <span class="inline-flex items-center gap-2 bg-red-50 text-red-700 border border-red-200 text-xs font-extrabold px-4 py-2 rounded-xl">
+                                        <span class="w-2 h-2 rounded-full bg-red-500"></span>
                                         Ditolak
                                     </span>
                                 @elseif ($item->status == 'Revisi')
-                                    <span
-                                        class="inline-flex items-center gap-1.5 bg-amber-50 text-amber-700 border border-amber-200/80 text-xs font-bold px-3.5 py-1.5 rounded-full shadow-2xs">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                    <span class="inline-flex items-center gap-2 bg-amber-50 text-amber-700 border border-amber-200 text-xs font-extrabold px-4 py-2 rounded-xl">
+                                        <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span></span>
                                         Revisi Berkas
                                     </span>
                                 @elseif ($item->status == 'Diproses')
-                                    <span
-                                        class="inline-flex items-center gap-1.5 bg-blue-50 text-blue-700 border border-blue-200/80 text-xs font-bold px-3.5 py-1.5 rounded-full shadow-2xs">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                                    <span class="inline-flex items-center gap-2 bg-blue-50 text-blue-700 border border-blue-200 text-xs font-extrabold px-4 py-2 rounded-xl">
+                                        <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span></span>
                                         Sedang Diproses
                                     </span>
                                 @else
-                                    <span
-                                        class="inline-flex items-center gap-1.5 bg-gray-100 text-gray-700 border border-gray-200 text-xs font-bold px-3.5 py-1.5 rounded-full shadow-2xs">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+                                    <span class="inline-flex items-center gap-2 bg-slate-100 text-slate-700 border border-slate-200 text-xs font-extrabold px-4 py-2 rounded-xl">
+                                        <span class="w-2 h-2 rounded-full bg-slate-400"></span>
                                         Diajukan
                                     </span>
                                 @endif
                             </div>
 
-                            <!-- TANGGAL PENGAJUAN -->
-                            <span class="text-xs font-medium text-gray-400">
-                                Tanggal Pengajuan:
-                                {{ \Carbon\Carbon::parse($item->tanggal_pengajuan)->translatedFormat('d M Y') }}
-                            </span>
-
                             <!-- TOMBOL AKSI -->
                             @if ($item->status == 'Revisi')
-                                <a href="{{ route('peserta.pendaftaran.edit', $item->id) }}"
-                                    class="w-full sm:w-auto text-center px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl transition shadow-2xs flex items-center justify-center gap-2">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                        </path>
+                                <a href="{{ route('peserta.pendaftaran.edit', $item->id) }}" class="w-full sm:w-auto text-center px-6 py-3 bg-[#FEA619] hover:bg-amber-500 text-slate-900 text-sm font-bold rounded-xl transition shadow-sm flex items-center justify-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                     </svg>
                                     Perbaiki Berkas
                                 </a>
                             @else
-                                <a href="{{ route('peserta.profil') }}"
-                                    class="w-full sm:w-auto text-center px-5 py-2.5 bg-[#E2E8F0]/60 hover:bg-[#E2E8F0] text-[#00236F] text-xs font-bold rounded-xl transition shadow-2xs">
+                                <a href="{{ route('peserta.profil') }}" class="w-full sm:w-auto text-center px-6 py-3 bg-slate-100 hover:bg-slate-200 text-[#00236F] text-sm font-bold rounded-xl transition">
                                     Lihat Profil
                                 </a>
                             @endif
@@ -294,15 +260,15 @@
                     </div>
 
                     <!-- KARTU BAWAH: PROGRESS TRACKER (3 STAGE ALUR) -->
-                    <div class="bg-[#F0F4FF]/70 border-t border-gray-100 p-6 md:px-12 md:py-8">
-                        <div class="relative w-full max-w-xl mx-auto pt-2 pb-2">
+                    <div class="bg-slate-50 border-t border-slate-100 p-6 md:px-12 md:py-8 relative">
+                        <div class="relative w-full max-w-2xl mx-auto py-2">
 
                             <!-- Track Background Line -->
-                            <div class="absolute left-6 right-6 top-6 h-[2px] bg-gray-300 z-0"></div>
+                            <div class="absolute left-8 right-8 top-[1.35rem] h-[3px] bg-slate-200 z-0 rounded-full"></div>
 
                             <!-- Track Active Line -->
-                            <div class="absolute left-6 top-6 h-[2px] bg-[#00236F] z-0 transition-all duration-500"
-                                style="width: {{ $progressPercent }}%;">
+                            <div class="absolute left-8 top-[1.35rem] h-[3px] bg-[#00236F] z-0 transition-all duration-700 ease-in-out rounded-full"
+                                style="width: calc({{ $progressPercent }}% - 2rem);">
                             </div>
 
                             <!-- Render 3 Steps -->
@@ -316,71 +282,58 @@
 
                                     <div class="flex flex-col items-center">
                                         <!-- Circle Icon Indicator -->
-                                        <div
-                                            class="w-8 h-8 rounded-full flex items-center justify-center text-xs transition-all duration-200 shrink-0 
-                                            @if ($isFinalStep && $isCurrent) @if ($item->status == 'Diterima') bg-emerald-600 text-white ring-4 ring-emerald-100 @elseif($item->status == 'Ditolak') bg-red-600 text-white ring-4 ring-red-100 @else bg-amber-500 text-white ring-4 ring-amber-100 @endif
-@elseif($isPassed || $isCurrent)
-bg-[#00236F] text-white ring-4 ring-[#F0F4FF]
-@else
-bg-white text-gray-400 border-2 border-gray-300
+                                        <div class="w-12 h-12 rounded-full flex items-center justify-center text-sm transition-all duration-300 shrink-0 shadow-sm
+                                            @if ($isFinalStep && $isCurrent) 
+                                                @if ($item->status == 'Diterima') bg-emerald-500 text-white ring-4 ring-emerald-50 
+                                                @elseif($item->status == 'Ditolak') bg-red-500 text-white ring-4 ring-red-50 
+                                                @else bg-amber-500 text-white ring-4 ring-amber-50 
+                                                @endif
+                                            @elseif($isPassed || $isCurrent)
+                                                bg-[#00236F] text-white ring-4 ring-blue-50
+                                            @else
+                                                bg-white text-slate-400 border-2 border-slate-200
                                             @endif">
 
                                             @if ($stepNum == 1)
-                                                <!-- Step 1: Diajukan -->
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
                                                 </svg>
                                             @elseif ($stepNum == 2)
-                                                <!-- Step 2: Diproses -->
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                                 </svg>
                                             @elseif ($stepNum == 3)
-                                                <!-- Step 3: Keputusan Dynamic Icon -->
                                                 @if ($item->status == 'Diterima')
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
                                                     </svg>
                                                 @elseif($item->status == 'Ditolak')
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
                                                     </svg>
                                                 @elseif($item->status == 'Revisi')
-                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                                        </path>
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                                     </svg>
                                                 @else
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                                     </svg>
                                                 @endif
                                             @endif
                                         </div>
 
                                         <!-- Title Label -->
-                                        <span
-                                            class="mt-2 text-[10px] sm:text-[11px] font-bold text-center leading-tight whitespace-nowrap 
-                                            @if ($isFinalStep && $isCurrent) @if ($item->status == 'Diterima') text-emerald-700 @elseif($item->status == 'Ditolak') text-red-600 @else text-amber-600 @endif
-@elseif($isPassed || $isCurrent)
-text-[#00236F]
-@else
-text-gray-400
+                                        <span class="mt-3 text-xs sm:text-sm font-bold text-center tracking-wide
+                                            @if ($isFinalStep && $isCurrent) 
+                                                @if ($item->status == 'Diterima') text-emerald-700 
+                                                @elseif($item->status == 'Ditolak') text-red-600 
+                                                @else text-amber-600 
+                                                @endif
+                                            @elseif($isPassed || $isCurrent)
+                                                text-[#00236F]
+                                            @else
+                                                text-slate-400
                                             @endif">
                                             {{ $stepData['title'] }}
                                         </span>
@@ -394,26 +347,20 @@ text-gray-400
                 </div>
             @empty
                 <!-- TAMPILAN JIKA BELUM ADA PENGAJUAN -->
-                <div class="bg-white border border-gray-200 rounded-2xl p-8 sm:p-12 text-center shadow-xs">
-                    <div
-                        class="w-16 h-16 rounded-full bg-blue-50 text-[#00236F] flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 01-2-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                            </path>
+                <div class="bg-white border border-slate-200/60 rounded-[2rem] p-10 sm:p-16 text-center shadow-sm">
+                    <div class="w-20 h-20 rounded-full bg-slate-50 text-slate-300 border-2 border-slate-100 flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 01-2-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
                     </div>
-                    <h3 class="text-lg font-bold text-[#1f2937] mb-1">Belum Ada Pengajuan Magang</h3>
-                    <p class="text-xs text-gray-500 mb-6 max-w-md mx-auto">
-                        Anda belum pernah mengirimkan formulir pendaftaran magang. Silakan pilih instansi dan bidang
-                        yang tersedia.
+                    <h3 class="text-xl sm:text-2xl font-extrabold text-[#00236F] mb-3">Belum Ada Pengajuan Magang</h3>
+                    <p class="text-sm sm:text-base text-slate-500 font-medium mb-8 max-w-md mx-auto leading-relaxed">
+                        Anda belum pernah mengirimkan formulir pendaftaran magang. Silakan eksplorasi instansi dan bidang yang tersedia.
                     </p>
-                    <a href="{{ route('skpd.index') }}"
-                        class="inline-flex items-center gap-2 px-6 py-3 bg-[#00236F] text-white text-xs font-bold rounded-xl hover:bg-blue-900 transition shadow-xs">
+                    <a href="{{ route('skpd.index') }}" class="inline-flex items-center gap-2 px-8 py-3.5 bg-[#00236F] text-white text-sm font-bold rounded-xl hover:bg-[#001b57] transition shadow-lg shadow-blue-900/20 active:scale-95">
                         Cari Instansi Magang
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                         </svg>
                     </a>
                 </div>
@@ -427,17 +374,17 @@ text-gray-400
             Swal.fire({
                 title: 'Aturan Kerja Peserta',
                 html: `
-                    <div class="text-left text-sm text-gray-700 whitespace-pre-line mt-2 p-5 bg-gray-50 rounded-xl border border-gray-200 leading-relaxed max-h-[60vh] overflow-y-auto shadow-inner">
+                    <div class="text-left text-sm text-slate-700 font-medium whitespace-pre-line mt-4 p-5 bg-slate-50 rounded-2xl border border-slate-200 leading-relaxed max-h-[60vh] overflow-y-auto shadow-inner custom-swal-scroll">
                         {!! e($aturan_kerja ?? 'Belum ada aturan kerja.') !!}
                     </div>
                 `,
                 confirmButtonText: 'Saya Mengerti',
                 confirmButtonColor: '#00236F',
-                width: '600px',
+                width: '640px',
                 customClass: {
-                    popup: 'rounded-2xl',
-                    title: 'text-xl font-extrabold text-[#00236F]',
-                    confirmButton: 'rounded-xl text-sm font-bold px-8 py-3'
+                    popup: 'rounded-[2rem] p-4',
+                    title: 'text-2xl font-extrabold text-[#00236F]',
+                    confirmButton: 'rounded-xl text-sm font-bold px-8 py-3.5'
                 }
             });
         }

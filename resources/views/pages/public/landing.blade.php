@@ -2,289 +2,281 @@
 @section('title', 'Beranda')
 @section('content')
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
-    #beranda, #cara-kerja, #instansi { scroll-margin-top: 5rem; }
-
-    /* Menyamakan semua jenis font menjadi Inter */
-    body, 
-    .sim-font-display, 
-    .sim-font-body, 
-    .sim-font-mono { 
-        font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; 
+    body { 
+        font-family: 'Plus Jakarta Sans', sans-serif; 
+        scroll-behavior: smooth;
     }
 
-    a:focus-visible, button:focus-visible {
-        outline: 2px solid #FEA619;
-        outline-offset: 2px;
-        border-radius: 4px;
+    /* Animasi masuk yang mulus dan tidak berlebihan */
+    .reveal { 
+        opacity: 0; 
+        transform: translateY(30px); 
+        transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); 
     }
+    .reveal.active { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+    
+    .delay-100 { transition-delay: 100ms; }
+    .delay-200 { transition-delay: 200ms; }
+    .delay-300 { transition-delay: 300ms; }
+    .delay-400 { transition-delay: 400ms; }
 
-    @keyframes sim-fade-up { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
-    .sim-anim-1 { animation: sim-fade-up .7s ease both; animation-delay: .05s; }
-    .sim-anim-2 { animation: sim-fade-up .7s ease both; animation-delay: .15s; }
-    .sim-anim-3 { animation: sim-fade-up .7s ease both; animation-delay: .28s; }
-    .sim-anim-4 { animation: sim-fade-up .7s ease both; animation-delay: .4s; }
-
-    .sim-reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
-    .sim-reveal.sim-in { opacity: 1; transform: translateY(0); }
-    .sim-delay-1 { transition-delay: .05s; }
-    .sim-delay-2 { transition-delay: .15s; }
-    .sim-delay-3 { transition-delay: .25s; }
-    .sim-delay-4 { transition-delay: .35s; }
-
-    .sim-wave-draw path,
-    .sim-wave-draw use { stroke-dasharray: 2000; stroke-dashoffset: 2000; transition: stroke-dashoffset 1.7s ease-out; }
-    .sim-wave-draw.sim-in path,
-    .sim-wave-draw.sim-in use { stroke-dashoffset: 0; }
-
-    .sim-card-hover { transition: transform .35s ease, box-shadow .35s ease; }
-    .sim-card-hover:hover { transform: translateY(-4px); box-shadow: 0 16px 32px -14px rgba(0,35,111,0.2); }
-
-    @media (prefers-reduced-motion: reduce) {
-        .sim-anim-1, .sim-anim-2, .sim-anim-3, .sim-anim-4 { animation: none; opacity: 1; transform: none; }
-        .sim-reveal { opacity: 1; transform: none; transition: none; }
-        .sim-wave-draw path, .sim-wave-draw use { stroke-dashoffset: 0; transition: none; }
-        .sim-card-hover:hover { transform: none; }
+    /* Pola background titik-titik untuk section CTA */
+    .bg-pattern {
+        background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+        background-size: 24px 24px;
     }
 </style>
 
-<!-- Motif garis sungai -->
-<svg width="0" height="0" class="absolute" aria-hidden="true" focusable="false">
-    <defs>
-        <path id="river-line" d="M0,20 C60,2 120,38 180,20 C240,2 300,38 360,20 C420,2 480,38 540,20 C600,2 660,38 720,20" />
-        <path id="river-line-sm" d="M0,8 C20,0 40,16 60,8 C80,0 100,16 120,8 C140,0 160,16 180,8" />
-    </defs>
-</svg>
-
 <!-- Hero Section -->
-<div id="beranda" class="relative bg-[#eef2f6] mx-4 mt-6 sm:mt-8 lg:mx-8 rounded-xl overflow-hidden shadow-sm min-h-[500px] sm:min-h-[460px] md:min-h-[520px] lg:min-h-[560px] flex flex-col justify-center">
-    <!-- Background Image -->
-    <div class="absolute inset-0 flex justify-end">
-        <img src="{{ asset('images/balaikota.jpg') }}" alt="Balai Kota Banjarmasin" class="w-full h-full object-cover object-center">
+<section class="relative pt-12 pb-20 lg:pt-20 lg:pb-28 overflow-hidden bg-white">
+    <!-- Dekorasi background halus -->
+    <div class="absolute inset-0 -z-10 bg-[#F8FAFC]">
+        <div class="absolute top-0 right-0 -translate-y-12 translate-x-1/3 w-[800px] h-[800px] rounded-full bg-gradient-to-br from-[#DEE9FC]/60 to-transparent blur-3xl"></div>
     </div>
 
-    <!-- Gradient Overlay -->
-    <div class="absolute inset-0 bg-gradient-to-r from-[#DEE9FC] via-[#DEE9FC]/85 to-[#DEE9FC]/40 sm:via-[#DEE9FC]/70 sm:to-transparent"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        <div class="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+            
+            <!-- Teks Hero -->
+            <div class="max-w-2xl reveal active">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-200 shadow-sm mb-6">
+                    <span class="flex h-2.5 w-2.5 relative">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FEA619] opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#FEA619]"></span>
+                    </span>
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-700">Portal Resmi Pemerintah Kota Banjarmasin</span>
+                </div>
 
-    <!-- Konten Teks & Tombol -->
-    <div class="relative z-10 p-6 sm:p-12 md:p-16 lg:p-20 flex flex-col justify-center h-full max-w-2xl">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[#00236F] leading-[1.15] mb-6 tracking-tight">
+                    Sistem Informasi Magang <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#00236F] to-[#FEA619]">Akurat</span>
+                </h1>
+                
+                <p class="text-lg text-slate-600 mb-8 leading-relaxed max-w-lg font-medium">
+                    Jelajahi dan ajukan peluang magang di berbagai Satuan Kerja Perangkat Daerah (SKPD) secara mudah dan terintegrasi.
+                </p>
 
-        <div class="sim-anim-1 inline-flex w-fit items-center gap-2 bg-white/80 sim-font-mono text-[11px] sm:text-xs font-semibold tracking-wide uppercase text-[#00236F] px-3.5 py-1.5 rounded-full border border-[#00236F]/15 shadow-sm mb-5">
-            <span class="relative flex h-2 w-2">
-                <span class="motion-safe:animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FEA619] opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2 w-2 bg-[#FEA619]"></span>
-            </span>
-            Portal Resmi Pemerintah Kota Banjarmasin
+                <div class="flex flex-wrap items-center gap-4">
+                    @auth
+                        <a href="{{ route('skpd.index') }}" class="inline-flex justify-center items-center gap-2 bg-[#00236F] hover:bg-[#001b57] text-white px-8 py-3.5 rounded-xl font-semibold transition-all shadow-lg shadow-blue-900/20 active:scale-95 w-full sm:w-auto">
+                            Cari Instansi
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </a>
+                    @else
+                        <a href="{{ route('login') }}" class="inline-flex justify-center items-center gap-2 bg-[#00236F] hover:bg-[#001b57] text-white px-8 py-3.5 rounded-xl font-semibold transition-all shadow-lg shadow-blue-900/20 active:scale-95 w-full sm:w-auto">
+                            Daftar Sekarang
+                        </a>
+                        <a href="{{ route('skpd.index') }}" class="inline-flex justify-center items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-8 py-3.5 rounded-xl font-semibold transition-all active:scale-95 w-full sm:w-auto">
+                            Lihat Instansi
+                        </a>
+                    @endauth
+                </div>
+            </div>
+
+            <!-- Gambar Hero (Sekarang Muncul di Mobile) -->
+            <div class="relative h-[320px] sm:h-[400px] lg:h-[550px] reveal active delay-100 mt-8 lg:mt-0">
+                <!-- Background shadow/aksen di belakang gambar -->
+                <div class="absolute inset-0 bg-gradient-to-tr from-[#00236F]/10 to-transparent rounded-[2rem] lg:rounded-[2.5rem] transform rotate-3 scale-105 transition-transform hover:rotate-6 duration-700"></div>
+                
+                <img src="{{ asset('images/balaikota.jpg') }}" alt="Balai Kota Banjarmasin" class="relative w-full h-full object-cover rounded-[2rem] lg:rounded-[2.5rem] shadow-2xl border-4 border-white">
+                
+                <!-- Floating Badge menyesuaikan ukuran layar -->
+                <div class="absolute -bottom-6 -left-2 sm:-left-4 lg:-bottom-8 lg:-left-8 bg-white p-3 sm:p-4 lg:p-5 rounded-xl lg:rounded-2xl shadow-xl border border-slate-100 flex items-center gap-3 lg:gap-4 animate-bounce" style="animation-duration: 3s;">
+                    <div class="w-10 h-10 lg:w-12 lg:h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600 shrink-0">
+                        <svg class="w-5 h-5 lg:w-6 lg:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                    <div>
+                        <p class="text-xs lg:text-sm font-bold text-slate-800">Terverifikasi</p>
+                        <p class="text-[10px] lg:text-xs text-slate-500 font-medium">Program Resmi Pemerintah Kota Banjarmasin</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- Keunggulan (Bento Grid Style) -->
+<section class="py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto mb-16 reveal">
+            <h2 class="text-sm font-bold tracking-widest text-[#FEA619] uppercase mb-3">Mengapa Menggunakan Portal Ini</h2>
+            <h3 class="text-3xl md:text-4xl font-extrabold text-[#00236F]">Dirancang Untuk Kemudahan Anda</h3>
         </div>
 
-        <h1 class="sim-anim-2 sim-font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#00236F] leading-tight mb-5">
-            Sistem Informasi Magang Akurat<br class="hidden sm:block">
-            Pemerintahan Kota<br class="hidden sm:block">
-            <span class="relative inline-block text-[#FEA619]">
-                Banjarmasin
-            </span>
-        </h1>
+        <div class="grid md:grid-cols-3 gap-6">
+            <!-- Kotak 1 (Lebar 2 kolom di desktop) -->
+            <div class="md:col-span-2 bg-slate-50 rounded-[2rem] p-8 lg:p-10 border border-slate-100 hover:border-[#00236F]/20 transition-colors reveal delay-100">
+                <div class="w-14 h-14 bg-white rounded-2xl shadow-sm border border-slate-200 flex items-center justify-center text-[#00236F] mb-6">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                </div>
+                <h4 class="text-xl font-bold text-slate-900 mb-3">Resmi & Terverifikasi</h4>
+                <p class="text-slate-600 leading-relaxed max-w-lg font-medium">Setiap instansi yang ada di platform ini adalah Satuan Kerja Perangkat Daerah (SKPD) resmi di lingkungan Pemerintah Kota Banjarmasin. Tidak ada perantara.</p>
+            </div>
 
-        <p class="sim-anim-3 sim-font-body text-[#1f2937]/80 text-sm md:text-base mb-8 max-w-md font-medium leading-relaxed">
-            Temukan dan ajukan peluang magang di berbagai instansi Pemerintah Kota Banjarmasin.
-        </p>
+            <!-- Kotak 2 -->
+            <div class="bg-slate-50 rounded-[2rem] p-8 lg:p-10 border border-slate-100 hover:border-[#00236F]/20 transition-colors reveal delay-200">
+                <div class="w-14 h-14 bg-white rounded-2xl shadow-sm border border-slate-200 flex items-center justify-center text-[#00236F] mb-6">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                </div>
+                <h4 class="text-xl font-bold text-slate-900 mb-3">Beragam Bidang</h4>
+                <p class="text-slate-600 leading-relaxed font-medium">Dari teknologi, administrasi, hingga kesehatan. Temukan tempat yang paling sesuai dengan jurusanmu.</p>
+            </div>
 
-        <div class="sim-anim-4 flex flex-wrap items-center gap-3">
+            <!-- Kotak 3 -->
+            <div class="bg-slate-50 rounded-[2rem] p-8 lg:p-10 border border-slate-100 hover:border-[#00236F]/20 transition-colors reveal delay-300">
+                <div class="w-14 h-14 bg-white rounded-2xl shadow-sm border border-slate-200 flex items-center justify-center text-[#00236F] mb-6">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
+                </div>
+                <h4 class="text-xl font-bold text-slate-900 mb-3">Proses Transparan</h4>
+                <p class="text-slate-600 leading-relaxed font-medium">Pantau langsung status pengajuan magangmu dari dashboard. Tidak perlu repot datang ke kantor untuk bertanya.</p>
+            </div>
+            
+            <!-- Kotak 4 (Aksen warna gelap) -->
+            <div class="md:col-span-2 bg-[#00236F] rounded-[2rem] p-8 lg:p-10 text-white relative overflow-hidden reveal delay-100">
+                <div class="absolute right-0 bottom-0 opacity-10 pointer-events-none">
+                    <svg width="250" height="250" viewBox="0 0 200 200"><path fill="currentColor" d="M45.7,-76.3C58.9,-69.3,68.9,-54.6,76.5,-40.1C84.1,-25.6,89.3,-12.8,87.9,-1.4C86.5,10,78.5,20,70.8,30.3C63.1,40.6,55.8,51.2,45.2,58.4C34.6,65.6,20.7,69.5,6.5,70.9C-7.7,72.3,-22.2,71.2,-34.5,65.1C-46.8,59,-56.9,47.9,-66.1,35.7C-75.3,23.5,-83.6,10.2,-85.1,-3.5C-86.6,-17.2,-81.3,-31.3,-71.8,-42.1C-62.3,-52.9,-48.6,-60.4,-35.1,-67.2C-21.6,-74,-8.3,-80.1,6.5,-82.9C21.3,-85.7,42.6,-85.2,45.7,-76.3Z" transform="translate(100 100)"/></svg>
+                </div>
+                <div class="relative z-10">
+                    <h4 class="text-2xl font-bold mb-3">Kemudahan Alur Sistem</h4>
+                    <p class="text-blue-100 leading-relaxed max-w-lg mb-6 font-medium">Cukup lengkapi data diri dan berkas sekali saja, dan kamu siap melamar ke berbagai instansi yang tersedia di sistem kami.</p>
+                    <a href="#cara-kerja" class="inline-flex items-center gap-2 text-[#FEA619] font-bold hover:text-white transition-colors">
+                        Lihat Alur Pendaftaran <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Cara Kerja (Timeline / Step) -->
+<section id="cara-kerja" class="py-24 bg-[#F8FAFC]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto mb-16 reveal">
+            <h2 class="text-sm font-bold tracking-widest text-[#FEA619] uppercase mb-3">Panduan</h2>
+            <h3 class="text-3xl md:text-4xl font-extrabold text-[#00236F]">Bagaimana Cara Kerjanya?</h3>
+        </div>
+
+        <div class="relative max-w-5xl mx-auto">
+            <!-- Garis Penghubung (Hanya muncul di desktop) -->
+            <div class="hidden md:block absolute top-[2.25rem] left-0 w-full h-0.5 bg-slate-200 z-0"></div>
+
+            <div class="grid md:grid-cols-4 gap-12 md:gap-6 relative z-10">
+                <!-- Step 1 -->
+                <div class="relative text-center reveal delay-100">
+                    <div class="w-16 h-16 mx-auto bg-white border-4 border-[#F8FAFC] rounded-2xl shadow-sm flex items-center justify-center text-xl font-extrabold text-[#00236F] mb-6 relative z-10 rotate-3 hover:rotate-0 transition-transform">
+                        1
+                    </div>
+                    <h4 class="text-lg font-bold text-slate-900 mb-2">Buat Akun</h4>
+                    <p class="text-sm text-slate-600 leading-relaxed font-medium px-2">Daftarkan dirimu dengan data pribadi dan institusi pendidikan.</p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="relative text-center reveal delay-200">
+                    <div class="w-16 h-16 mx-auto bg-white border-4 border-[#F8FAFC] rounded-2xl shadow-sm flex items-center justify-center text-xl font-extrabold text-[#00236F] mb-6 relative z-10 -rotate-3 hover:rotate-0 transition-transform">
+                        2
+                    </div>
+                    <h4 class="text-lg font-bold text-slate-900 mb-2">Pilih Instansi</h4>
+                    <p class="text-sm text-slate-600 leading-relaxed font-medium px-2">Cari dan pilih SKPD yang paling sesuai dengan bidangmu.</p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="relative text-center reveal delay-300">
+                    <div class="w-16 h-16 mx-auto bg-white border-4 border-[#F8FAFC] rounded-2xl shadow-sm flex items-center justify-center text-xl font-extrabold text-[#00236F] mb-6 relative z-10 rotate-3 hover:rotate-0 transition-transform">
+                        3
+                    </div>
+                    <h4 class="text-lg font-bold text-slate-900 mb-2">Upload Berkas</h4>
+                    <p class="text-sm text-slate-600 leading-relaxed font-medium px-2">Kirim dokumen persyaratan magang langsung lewat sistem.</p>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="relative text-center reveal delay-400">
+                    <div class="w-16 h-16 mx-auto bg-[#00236F] border-4 border-[#F8FAFC] rounded-2xl shadow-md flex items-center justify-center text-white mb-6 relative z-10 -rotate-3 hover:rotate-0 transition-transform">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                    <h4 class="text-lg font-bold text-slate-900 mb-2">Mulai Magang</h4>
+                    <p class="text-sm text-slate-600 leading-relaxed font-medium px-2">Pantau persetujuan admin dan bersiap mulai magang.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Daftar Instansi -->
+<section id="instansi" class="py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 reveal">
+            <div class="max-w-2xl">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-[#00236F] mb-4">Daftar Instansi (SKPD)</h2>
+                <p class="text-slate-600 text-lg font-medium">Temukan tempat magang yang tepat untuk mengembangkan potensimu di lingkungan Pemerintahan Kota.</p>
+            </div>
+            <div>
+                <a href="{{ route('skpd.index') }}" class="inline-flex items-center gap-2 bg-[#FEA619] hover:bg-amber-500 text-slate-900 font-bold px-5 py-2.5 rounded-xl text-sm transition shadow-sm group">
+                    Lihat Semua 
+                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 reveal delay-100">
+            @forelse($skpds as $skpd)
+                <x-skpd-card :skpd="$skpd" />
+            @empty
+                <div class="col-span-full py-20 text-center bg-slate-50 rounded-3xl border border-slate-100">
+                    <div class="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center text-slate-400 mx-auto mb-4">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-700 mb-1">Belum Ada Data</h3>
+                    <p class="text-slate-500 font-medium">Daftar instansi (SKPD) saat ini belum tersedia.</p>
+                </div>
+            @endforelse
+        </div>
+    </div>
+</section>
+
+<!-- CTA / Call to Action -->
+<section class="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-20 reveal">
+    <div class="relative bg-[#00236F] bg-pattern rounded-[2.5rem] overflow-hidden px-8 py-16 md:px-16 md:py-20 text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-10 shadow-2xl shadow-blue-900/20 border border-blue-800">
+        <div class="max-w-2xl relative z-10">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-4 tracking-tight">Siap Memulai Perjalananmu?</h2>
+            <p class="text-blue-100 text-lg mb-0 font-medium">Daftar sekarang. Gratis, resmi, dan didukung penuh oleh Pemerintah Kota Banjarmasin.</p>
+        </div>
+        <div class="shrink-0 relative z-10">
             @auth
-                <a href="{{ route('skpd.index') }}" class="group inline-flex items-center gap-2 bg-[#00236F] text-white px-6 py-3.5 sm:py-3 rounded-md text-sm font-semibold hover:bg-[#001b57] active:scale-[0.98] transition shadow-sm">
+                <a href="{{ route('skpd.index') }}" class="inline-flex justify-center items-center gap-2 bg-[#FEA619] hover:bg-amber-400 text-slate-900 px-8 py-4 rounded-xl font-bold transition-all shadow-lg active:scale-95 text-lg">
                     Cari Instansi Magang
-                    <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
                 </a>
             @else
-                <a href="{{ route('login') }}" class="group inline-flex items-center gap-2 bg-[#00236F] text-white px-6 py-3.5 sm:py-3 rounded-md text-sm font-semibold hover:bg-[#001b57] active:scale-[0.98] transition shadow-sm">
+                <a href="{{ route('login') }}" class="inline-flex justify-center items-center gap-2 bg-[#FEA619] hover:bg-amber-400 text-slate-900 px-8 py-4 rounded-xl font-bold transition-all shadow-lg active:scale-95 text-lg">
                     Daftar Sekarang
-                    <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
-                </a>
-                <a href="{{ route('skpd.index') }}" class="inline-flex items-center gap-2 bg-white/70 hover:bg-white text-[#00236F] px-6 py-3.5 sm:py-3 rounded-md text-sm font-semibold border border-[#00236F]/20 transition">
-                    Lihat Instansi
                 </a>
             @endauth
         </div>
     </div>
-</div>
-
-<!-- Kenapa Melalui Portal Ini -->
-<section class="px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24">
-    <div class="max-w-2xl mx-auto text-center mb-12 sim-reveal sim-observe">
-        <p class="sim-font-mono text-xs font-semibold tracking-widest uppercase text-[#FEA619] mb-3">Kenapa Melalui Portal Ini</p>
-        <h2 class="sim-font-display text-2xl sm:text-3xl font-bold text-[#00236F] mb-3">Dirancang Agar Proses Pengajuan Magang Anda Lebih Mudah</h2>
-        <p class="text-sm text-[#1f2937]/70">Satu sistem untuk menemukan, mengajukan, dan memantau magang di lingkungan Pemerintah Kota Banjarmasin.</p>
-    </div>
-
-    <!-- Menyamakan tinggi grid items dengan h-full pada child items -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
-        <div class="sim-reveal sim-observe sim-delay-1 sim-card-hover bg-white rounded-xl border border-gray-100 shadow-sm p-6 h-full flex flex-col">
-            <div class="w-11 h-11 rounded-lg bg-[#00236F]/10 text-[#00236F] flex items-center justify-center mb-4">
-                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z" />
-                    <path d="M9 12l2 2 4-4" />
-                </svg>
-            </div>
-            <h3 class="sim-font-display font-bold text-[#00236F] mb-1.5">Resmi &amp; Terverifikasi</h3>
-            <p class="text-sm text-[#1f2937]/70 leading-relaxed flex-grow">Setiap instansi yang tercantum merupakan Satuan Kerja Perangkat Daerah resmi di lingkungan Pemerintah Kota Banjarmasin.</p>
-        </div>
-
-        <div class="sim-reveal sim-observe sim-delay-2 sim-card-hover bg-white rounded-xl border border-gray-100 shadow-sm p-6 h-full flex flex-col">
-            <div class="w-11 h-11 rounded-lg bg-[#00236F]/10 text-[#00236F] flex items-center justify-center mb-4">
-                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="3" width="7" height="7" rx="1.5" />
-                    <rect x="14" y="3" width="7" height="7" rx="1.5" />
-                    <rect x="3" y="14" width="7" height="7" rx="1.5" />
-                    <rect x="14" y="14" width="7" height="7" rx="1.5" />
-                </svg>
-            </div>
-            <h3 class="sim-font-display font-bold text-[#00236F] mb-1.5">Beragam Bidang Studi</h3>
-            <p class="text-sm text-[#1f2937]/70 leading-relaxed flex-grow">Dari teknologi informasi, kesehatan, hingga administrasi publik. Silakan pilih instansi yang sesuai jurusan Anda.</p>
-        </div>
-
-        <div class="sim-reveal sim-observe sim-delay-3 sim-card-hover bg-white rounded-xl border border-gray-100 shadow-sm p-6 h-full flex flex-col">
-            <div class="w-11 h-11 rounded-lg bg-[#00236F]/10 text-[#00236F] flex items-center justify-center mb-4">
-                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="5" y="4" width="14" height="17" rx="2" />
-                    <path d="M9 3.5h6a1 1 0 011 1V6H8V4.5a1 1 0 011-1z" />
-                    <path d="M9 13l2 2 4-4" />
-                </svg>
-            </div>
-            <h3 class="sim-font-display font-bold text-[#00236F] mb-1.5">Proses Transparan</h3>
-            <p class="text-sm text-[#1f2937]/70 leading-relaxed flex-grow">Pantau status pengajuan magang Anda secara langsung, tanpa perlu datang berulang kali.</p>
-        </div>
-    </div>
-</section>
-
-<!-- Cara Kerja -->
-<section id="cara-kerja" class="px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24">
-    <div class="max-w-2xl mx-auto text-center mb-14 sim-reveal sim-observe">
-        <p class="sim-font-mono text-xs font-semibold tracking-widest uppercase text-[#FEA619] mb-3">Alur Pendaftaran</p>
-        <h2 class="sim-font-display text-2xl sm:text-3xl font-bold text-[#00236F]">Cara Kerja Sistem</h2>
-    </div>
-
-    <div class="relative max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-y-10 gap-x-6">
-        <div class="relative sim-reveal sim-observe sim-delay-1 text-center">
-            <div class="relative z-10 w-14 h-14 mx-auto rounded-full bg-[#00236F] text-white sim-font-mono text-sm font-semibold flex items-center justify-center shadow-md mb-3">01</div>
-            <svg class="w-6 h-6 mx-auto text-[#00236F] mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="10" cy="8" r="3.5" />
-                <path d="M3.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6" />
-                <path d="M18.5 8.5v5M16 11h5" />
-            </svg>
-            <h3 class="sim-font-display font-bold text-[#00236F] text-sm mb-1">Buat Akun</h3>
-            <p class="text-xs text-[#1f2937]/65 leading-relaxed px-2">Daftar menggunakan data diri dan institusi pendidikan Anda.</p>
-        </div>
-
-        <div class="relative sim-reveal sim-observe sim-delay-2 text-center">
-            <div class="relative z-10 w-14 h-14 mx-auto rounded-full bg-[#00236F] text-white sim-font-mono text-sm font-semibold flex items-center justify-center shadow-md mb-3">02</div>
-            <svg class="w-6 h-6 mx-auto text-[#00236F] mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M5 21V5.5a1.5 1.5 0 011.5-1.5h5A1.5 1.5 0 0113 5.5V21" />
-                <path d="M13 10.5h4.5A1.5 1.5 0 0119 12v9" />
-                <path d="M5 21h14" />
-                <path d="M8 8h2M8 12h2M8 16h2" />
-            </svg>
-            <h3 class="sim-font-display font-bold text-[#00236F] text-sm mb-1">Pilih Instansi</h3>
-            <p class="text-xs text-[#1f2937]/65 leading-relaxed px-2">Jelajahi daftar SKPD dan temukan yang sesuai minat Anda.</p>
-        </div>
-
-        <div class="relative sim-reveal sim-observe sim-delay-3 text-center">
-            <div class="relative z-10 w-14 h-14 mx-auto rounded-full bg-[#00236F] text-white sim-font-mono text-sm font-semibold flex items-center justify-center shadow-md mb-3">03</div>
-            <svg class="w-6 h-6 mx-auto text-[#00236F] mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 3L3 10.5l7.5 3L14 21l7-18z" />
-                <path d="M10.5 13.5L21 3" />
-            </svg>
-            <h3 class="sim-font-display font-bold text-[#00236F] text-sm mb-1">Ajukan Permohonan</h3>
-            <p class="text-xs text-[#1f2937]/65 leading-relaxed px-2">Kirim berkas persyaratan langsung melalui sistem.</p>
-        </div>
-
-        <div class="relative sim-reveal sim-observe sim-delay-4 text-center">
-            <div class="relative z-10 w-14 h-14 mx-auto rounded-full bg-[#00236F] text-white sim-font-mono text-sm font-semibold flex items-center justify-center shadow-md mb-3">04</div>
-            <svg class="w-6 h-6 mx-auto text-[#00236F] mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M2 9l10-5 10 5-10 5-10-5z" />
-                <path d="M6 11v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5" />
-                <path d="M22 9v6" />
-            </svg>
-            <h3 class="sim-font-display font-bold text-[#00236F] text-sm mb-1">Mulai Magang</h3>
-            <p class="text-xs text-[#1f2937]/65 leading-relaxed px-2">Setelah disetujui, mulai program magang di instansi pilihan.</p>
-        </div>
-    </div>
-</section>
-
-<!-- Section Daftar Instansi -->
-<div id="instansi" class="w-full px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 pb-20">
-    <!-- Grid Card Instansi -->
-    <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
-    
-    <!-- Header Section -->
-    <div class="mb-10 flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4">
-        <div>
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-[#00236F] mb-2">Daftar Instansi (SKPD)</h2>
-            <p class="text-sm text-slate-600">Pilih instansi yang sesuai dengan minat dan bidang studi Anda.</p>
-        </div>
-        
-        <!-- Tombol Lihat Semua -->
-        <div>
-            <a href="{{ route('skpd.index') }}" class="inline-flex items-center gap-2 bg-[#FEA619] hover:bg-amber-500 text-slate-900 font-bold px-5 py-2.5 rounded-xl text-sm transition shadow-sm group">
-                Lihat Semua 
-                <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
-            </a>
-        </div>
-    </div>
-
-    <!-- Grid Card Instansi -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        @forelse($skpds as $skpd)
-            <x-skpd-card :skpd="$skpd" />
-        @empty
-            <div class="col-span-1 md:col-span-3 text-center py-16 bg-white rounded-2xl border border-slate-200 shadow-xs">
-                <svg class="w-12 h-12 text-slate-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                <p class="text-sm text-slate-500 font-medium">Belum ada data instansi (SKPD) yang tersedia saat ini.</p>
-            </div>
-        @endforelse
-    </div>
-</div>
-
-<!-- CTA Penutup -->
-<section class="relative overflow-hidden mx-4 lg:mx-8 mb-20 rounded-2xl bg-gradient-to-br from-[#00236F] to-[#062B5C] sim-reveal sim-observe">
-    <svg class="absolute inset-x-0 bottom-0 w-full h-24 sim-wave-draw sim-observe" viewBox="0 0 720 40" preserveAspectRatio="none" aria-hidden="true">
-        <use href="#river-line" stroke="#FEA619" stroke-width="3" fill="none" stroke-opacity="0.18" />
-    </svg>
-    <div class="relative z-10 px-6 sm:px-12 py-14 sm:py-16 text-center max-w-2xl mx-auto">
-        <h2 class="sim-font-display text-2xl sm:text-3xl font-bold text-white mb-3">Siap Memulai Perjalanan Magang Anda?</h2>
-        <p class="text-sm sm:text-base text-white/75 mb-8">Gratis, resmi, dan didukung penuh oleh Pemerintah Kota Banjarmasin.</p>
-        @auth
-            <a href="{{ route('skpd.index') }}" class="inline-flex items-center gap-2 bg-[#FEA619] text-[#1f2937] px-7 py-3.5 rounded-md text-sm font-semibold hover:bg-opacity-90 active:scale-[0.98] transition shadow-sm">
-                Cari Instansi Magang
-            </a>
-        @else
-            <a href="{{ route('login') }}" class="inline-flex items-center gap-2 bg-[#FEA619] text-[#1f2937] px-7 py-3.5 rounded-md text-sm font-semibold hover:bg-opacity-90 active:scale-[0.98] transition shadow-sm">
-                Daftar Sekarang
-            </a>
-        @endauth
-    </div>
 </section>
 
 <script>
-    (function () {
-        var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        var targets = document.querySelectorAll('.sim-observe');
-
-        if (prefersReduced || !('IntersectionObserver' in window)) {
-            targets.forEach(function (el) { el.classList.add('sim-in'); });
-            return;
-        }
-
-        var io = new IntersectionObserver(function (entries) {
-            entries.forEach(function (entry) {
+    // Script ringan untuk mendeteksi scroll dan menjalankan animasi CSS
+    document.addEventListener("DOMContentLoaded", () => {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('sim-in');
-                    io.unobserve(entry.target);
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+        }, {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        });
 
-        targets.forEach(function (el) { io.observe(el); });
-    })();
+        document.querySelectorAll('.reveal').forEach((el) => {
+            observer.observe(el);
+        });
+    });
 </script>
 @endsection
