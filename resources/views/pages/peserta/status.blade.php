@@ -151,6 +151,7 @@
             @forelse($pengajuans as $item)
                 @php
                     $isDibatalkan = $item->dataMagang && $item->dataMagang->status === 'Dibatalkan';
+                    $isSelesai = $item->dataMagang && $item->dataMagang->status === 'Selesai';
 
                     $currentStep = match ($item->status) {
                         'Diproses' => 2,
@@ -211,6 +212,26 @@
                                         </span>
                                     </div>
                                 </div>
+                            @elseif ($isSelesai)
+                                <div
+                                    class="p-5 bg-blue-50/80 border border-blue-100 rounded-2xl text-sm text-blue-900 flex items-start gap-4">
+                                    <div class="bg-blue-100 rounded-full p-1.5 shrink-0">
+                                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <span class="font-extrabold block mb-1 text-blue-950 text-base">Magang Telah
+                                            Selesai</span>
+                                        <span class="text-blue-800 font-medium leading-relaxed block">
+                                            Selamat, masa magang Anda telah berakhir pada
+                                            {{ \Carbon\Carbon::parse($item->dataMagang->tanggal_selesai_aktual)->translatedFormat('d F Y') }}.
+                                            Silakan cek halaman profil untuk sertifikat penyelesaian magang Anda.
+                                        </span>
+                                    </div>
+                                </div>
                             @elseif ($item->status == 'Diterima')
                                 <div
                                     class="p-5 bg-emerald-50/80 border border-emerald-100 rounded-2xl text-sm text-emerald-900 flex items-start gap-4">
@@ -224,7 +245,8 @@
                                     <div>
                                         <span class="font-extrabold block mb-1 text-emerald-950 text-base">Selamat!
                                             Permohonan Diterima</span>
-                                        <span class="text-emerald-800 font-medium leading-relaxed block">Permohonan Anda
+                                        <span class="text-emerald-800 font-medium leading-relaxed block">Permohonan
+                                            Anda
                                             disetujui. Silakan cek halaman profil untuk info pembimbing lapangan dan
                                             jadwal kegiatan.</span>
 
@@ -304,6 +326,12 @@
                                         class="inline-flex items-center gap-2 bg-red-50 text-red-700 border border-red-200 text-xs font-extrabold px-4 py-2 rounded-xl">
                                         <span class="w-2 h-2 rounded-full bg-red-500"></span>
                                         Dibatalkan
+                                    </span>
+                                @elseif ($isSelesai)
+                                    <span
+                                        class="inline-flex items-center gap-2 bg-blue-50 text-blue-700 border border-blue-200 text-xs font-extrabold px-4 py-2 rounded-xl">
+                                        <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                                        Selesai
                                     </span>
                                 @elseif ($item->status == 'Diterima')
                                     <span
@@ -390,8 +418,9 @@
                                         <!-- Circle Icon Indicator -->
                                         <div
                                             class="w-12 h-12 rounded-full flex items-center justify-center text-sm transition-all duration-300 shrink-0 shadow-sm
-                                            @if ($isFinalStep && $isCurrent)
-                                                @if ($isDibatalkan) bg-red-500 text-white ring-4 ring-red-50
+                                            @if ($isFinalStep && $isCurrent) 
+                                                @if ($isDibatalkan) bg-red-500 text-white ring-4 ring-red-50 
+                                                @elseif ($isSelesai) bg-blue-500 text-white ring-4 ring-blue-50
                                                 @elseif ($item->status == 'Diterima') bg-emerald-500 text-white ring-4 ring-emerald-50 
                                                 @elseif($item->status == 'Ditolak') bg-red-500 text-white ring-4 ring-red-50 
                                                 @else bg-amber-500 text-white ring-4 ring-amber-50 @endif
@@ -416,8 +445,14 @@
                                                 </svg>
                                             @elseif ($stepNum == 3)
                                                 @if ($isDibatalkan)
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                @elseif ($isSelesai)
+                                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
                                                     </svg>
                                                 @elseif ($item->status == 'Diterima')
                                                     <svg class="w-6 h-6" fill="none" stroke="currentColor"
@@ -453,13 +488,16 @@
                                         <!-- Title Label -->
                                         <span
                                             class="mt-3 text-xs sm:text-sm font-bold text-center tracking-wide
-                                            @if ($isFinalStep && $isCurrent)
+                                            @if ($isFinalStep && $isCurrent) 
                                                 @if ($isDibatalkan) text-red-600
+                                                @elseif ($isSelesai) text-blue-600
                                                 @elseif ($item->status == 'Diterima') text-emerald-700
                                                 @elseif($item->status == 'Ditolak') text-red-600 
                                                 @else text-amber-600 @endif
-                                            @elseif($isPassed || $isCurrent) text-[#00236F]
-                                            @else text-slate-400
+                                            @elseif($isPassed || $isCurrent)
+                                            text-[#00236F]
+                                            @else
+                                            text-slate-400
                                             @endif">
                                             {{ $stepData['title'] }}
                                         </span>

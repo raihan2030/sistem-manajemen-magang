@@ -24,13 +24,17 @@ class PengajuanMagangController extends Controller
     {
         $userId = Auth::id();
 
-        $pengajuanTerakhir = PengajuanMagang::query()
+        $pengajuanTerakhir = PengajuanMagang::with('dataMagang')
             ->where('perwakilan_user_id', $userId)
             ->latest('tanggal_pengajuan')
             ->first();
 
         if ($pengajuanTerakhir) {
-            if (in_array($pengajuanTerakhir->status, ['Diajukan', 'Diproses', 'Diterima'])) {
+            $magangSudahBerakhir = $pengajuanTerakhir->status === 'Diterima'
+                && $pengajuanTerakhir->dataMagang
+                && in_array($pengajuanTerakhir->dataMagang->status, ['Dibatalkan', 'Selesai']);
+
+            if (in_array($pengajuanTerakhir->status, ['Diajukan', 'Diproses', 'Diterima']) && !$magangSudahBerakhir) {
                 return redirect()->route('peserta.status')
                     ->with('warning', 'Anda sudah memiliki permohonan magang yang sedang diproses atau telah disetujui.');
             }

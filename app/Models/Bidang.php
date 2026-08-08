@@ -27,9 +27,10 @@ class Bidang extends Model
         $pesertaAktif = $this->pengajuan
             ->filter(function ($item) {
                 $statusAktif = in_array($item->status, ['Diterima', 'Diproses']);
-                $sudahDibatalkan = $item->dataMagang && $item->dataMagang->status === 'Dibatalkan';
+                $magangSudahBerakhir = $item->dataMagang
+                    && in_array($item->dataMagang->status, ['Dibatalkan', 'Selesai']);
 
-                return $statusAktif && !$sudahDibatalkan;
+                return $statusAktif && !$magangSudahBerakhir;
             })
             ->sum(fn ($item) => $item->anggota->count());
 

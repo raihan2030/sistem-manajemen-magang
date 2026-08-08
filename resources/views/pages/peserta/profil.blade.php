@@ -33,6 +33,7 @@
         $ketua = $pengajuan?->anggota->first();
         $isKelompok = $pengajuan && $pengajuan->anggota->count() > 1;
         $isDibatalkan = $pengajuan && $pengajuan->dataMagang && $pengajuan->dataMagang->status === 'Dibatalkan';
+        $isSelesai = $pengajuan && $pengajuan->dataMagang && $pengajuan->dataMagang->status === 'Selesai';
 
         $periodeFormat = '-';
         if ($pengajuan && $pengajuan->tanggal_mulai && $pengajuan->tanggal_selesai) {
@@ -43,6 +44,7 @@
 
         $statusLabel = match (true) {
             $isDibatalkan => 'Magang Dibatalkan',
+            $isSelesai => 'Magang Selesai',
             default => match ($pengajuan?->status) {
                 'Diajukan' => 'Diajukan',
                 'Diproses' => 'Sedang Diproses',
@@ -55,6 +57,7 @@
 
         $badgeClass = match (true) {
             $isDibatalkan => 'bg-red-50 text-red-700 border-red-200/80',
+            $isSelesai => 'bg-blue-50 text-blue-700 border-blue-200/80',
             default => match ($pengajuan?->status) {
                 'Diajukan' => 'bg-gray-100 text-gray-700 border-gray-200',
                 'Diproses' => 'bg-blue-50 text-blue-700 border-blue-200/80',
@@ -107,7 +110,7 @@
                 </div>
             </div>
         @endif
-        
+
         @if (!$pengajuan)
             <!-- BANNERS INFO JIKA BELUM MENGAJUKAN MAGANG -->
             <div

@@ -12,7 +12,7 @@ trait RedirectsByRole
         $target = match ((int) $user->role_id) {
             1 => route('superadmin.dashboard', absolute: false),
             2 => route('admin.dashboard', absolute: false),
-            3 => '/',
+            3 => route('home', absolute: false),
             default => '/',
         };
 

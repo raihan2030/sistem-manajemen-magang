@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Models\DataMagang;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 class UpdateStatusMagang extends Command
 {
@@ -40,7 +39,7 @@ class UpdateStatusMagang extends Command
 
     private function updateBerlangsungKeSelesai(): int
     {
-        $dataMagangs = DataMagang::with(['pengajuan.anggota', 'pengajuan.bidang'])
+        $dataMagangs = DataMagang::with('pengajuan')
             ->where('status', 'Berlangsung')
             ->whereHas('pengajuan', function ($q) {
                 $q->whereDate('tanggal_selesai', '<', now()->toDateString());
@@ -48,17 +47,10 @@ class UpdateStatusMagang extends Command
             ->get();
 
         foreach ($dataMagangs as $dataMagang) {
-            DB::transaction(function () use ($dataMagang) {
-                $pengajuan = $dataMagang->pengajuan;
-                $jumlahAnggota = $pengajuan->anggota->count();
-
-                $dataMagang->update([
-                    'status' => 'Selesai',
-                    'tanggal_selesai_aktual' => $pengajuan->tanggal_selesai,
-                ]);
-
-                $pengajuan->bidang()->increment('sisa_kuota', $jumlahAnggota);
-            });
+            $dataMagang->update([
+                'status' => 'Selesai',
+                'tanggal_selesai_aktual' => $dataMagang->pengajuan->tanggal_selesai,
+            ]);
         }
 
         return $dataMagangs->count();
