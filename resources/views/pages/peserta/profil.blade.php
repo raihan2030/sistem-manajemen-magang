@@ -30,11 +30,9 @@
     @include('components.navbar', ['sudah_submit_magang' => !is_null($pengajuan)])
 
     @php
-        // Ambil data ketua / pemohon utama (Index 0 dari relasi anggota)
         $ketua = $pengajuan?->anggota->first();
         $isKelompok = $pengajuan && $pengajuan->anggota->count() > 1;
 
-        // Formatter Periode
         $periodeFormat = '-';
         if ($pengajuan && $pengajuan->tanggal_mulai && $pengajuan->tanggal_selesai) {
             $tglMulai = \Carbon\Carbon::parse($pengajuan->tanggal_mulai)->translatedFormat('d F Y');
@@ -42,7 +40,6 @@
             $periodeFormat = "{$tglMulai} - {$tglSelesai}";
         }
 
-        // Mapping Status Badge (Sesuai Enum DB Baru)
         $statusLabel = match ($pengajuan?->status) {
             'Diajukan' => 'Diajukan',
             'Diproses' => 'Sedang Diproses',
@@ -169,7 +166,7 @@
                         Tingkatkan keamanan akun Anda dengan verifikasi dua langkah. Fitur ini bersifat opsional untuk peserta magang.
                     </p>
 
-                    @if(Auth::user()->google2fa_secret)
+                    @if(Auth::user()->has2FAEnabled())
                         <!-- Tampilan Jika 2FA Sudah Aktif -->
                         <div class="flex items-center justify-between mb-4">
                             <span class="text-xs font-bold text-gray-500">Status</span>
@@ -412,7 +409,6 @@
                 <!-- SERTIFIKAT PENYELESAIAN MAGANG BOX -->
                 @if ($pengajuan && $pengajuan->status === 'Diterima')
                     @php
-                        // Cek apakah ada minimal 1 anggota yang sudah memiliki sertifikat
                         $adaSertifikat = $pengajuan->anggota->contains(function ($member) {
                             return $member->sertifikat !== null;
                         });

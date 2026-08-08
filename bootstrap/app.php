@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'role' => CheckRole::class,
+            'ensure2fa' => \App\Http\Middleware\Ensure2FA::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

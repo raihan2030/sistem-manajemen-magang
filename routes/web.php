@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminAturanKerjaController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminKapasitasController;
 use App\Http\Controllers\AdminPermohonanController;
@@ -14,8 +15,6 @@ use App\Http\Controllers\SuperadminKelolaAkunController;
 use App\Http\Controllers\SuperadminPermohonanController;
 use App\Http\Controllers\SuperadminSkpdController;
 use App\Http\Controllers\UploadSertifikatController;
-use App\Http\Controllers\AdminAturanKerjaController;
-use App\Http\Controllers\TwoFactorController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -47,15 +46,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         };
     })->name('dashboard');
 
-    Route::get('/2fa/setup', [TwoFactorController::class, 'setup'])->name('2fa.setup');
-    Route::post('/2fa/setup', [TwoFactorController::class, 'setupPost'])->name('2fa.setup.post');
-
-    // Halaman dan Proses Verifikasi 2FA (Setiap kali login rutin)
-    Route::get('/2fa/verify', [TwoFactorController::class, 'verify'])->name('2fa.verify');
-    Route::post('/2fa/verify', [TwoFactorController::class, 'verifyPost'])->name('2fa.verify.post');
-
     // === KHUSUS SUPERADMIN (Role 1) ===
-    Route::middleware(['role:1'])->prefix('superadmin')->name('superadmin.')->group(function () {
+    Route::middleware(['role:1', 'ensure2fa'])->prefix('superadmin')->name('superadmin.')->group(function () {
         Route::get('/dashboard', [SuperadminDashboardController::class, 'index'])->name('dashboard');
 
         Route::get('/permohonan', [SuperadminPermohonanController::class, 'index'])->name('permohonan');
@@ -85,7 +77,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // === KHUSUS ADMIN SKPD (Role 2) ===
-    Route::middleware(['role:2'])->prefix('admin')->name('admin.')->group(function () {
+    Route::middleware(['role:2', 'ensure2fa'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
         Route::get('/permohonan', [AdminPermohonanController::class, 'index'])->name('permohonan');
@@ -105,7 +97,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/permohonan/export/pdf', [AdminPermohonanController::class, 'exportPdf'])
             ->name('permohonan.export.pdf');
 
-        // Kelola Kapasitas & Bidang
         Route::get('/kapasitas', [AdminKapasitasController::class, 'index'])->name('kapasitas.index');
         Route::post('/kapasitas', [AdminKapasitasController::class, 'store'])->name('kapasitas.store');
         Route::put('/kapasitas/{id}', [AdminKapasitasController::class, 'update'])->name('kapasitas.update');

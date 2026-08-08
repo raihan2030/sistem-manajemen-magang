@@ -7,18 +7,15 @@ use Illuminate\Http\RedirectResponse;
 
 trait RedirectsByRole
 {
-    /**
-     * Redirect user ke dashboard/halaman awal sesuai role_id.
-     * Dipakai bersama oleh login manual (AuthenticatedSessionController)
-     * dan login via Google (GoogleAuthController) agar perilakunya konsisten.
-     */
-    protected function redirectByRole(User $user): RedirectResponse
+    protected function redirectByRole(User $user, bool $useIntended = true): RedirectResponse
     {
-        return match ((int) $user->role_id) {
-            1 => redirect()->intended(route('superadmin.dashboard', absolute: false)),
-            2 => redirect()->intended(route('admin.dashboard', absolute: false)),
-            3 => redirect()->intended(route('peserta.status', absolute: false)),
-            default => redirect()->intended('/'),
+        $target = match ((int) $user->role_id) {
+            1 => route('superadmin.dashboard', absolute: false),
+            2 => route('admin.dashboard', absolute: false),
+            3 => '/',
+            default => '/',
         };
+
+        return $useIntended ? redirect()->intended($target) : redirect()->to($target);
     }
 }

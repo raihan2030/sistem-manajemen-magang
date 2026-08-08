@@ -30,13 +30,11 @@ class PengajuanMagangController extends Controller
             ->first();
 
         if ($pengajuanTerakhir) {
-            // 🛑 Proteksi: Jika status sedang diproses atau sudah diterima
             if (in_array($pengajuanTerakhir->status, ['Diajukan', 'Diproses', 'Diterima'])) {
                 return redirect()->route('peserta.status')
                     ->with('warning', 'Anda sudah memiliki permohonan magang yang sedang diproses atau telah disetujui.');
             }
 
-            // ⚠️ Mode Revisi: Jika admin meminta perbaikan berkas
             if ($pengajuanTerakhir->status === 'Revisi') {
                 $bidang = Bidang::with('skpd')->find($pengajuanTerakhir->bidang_id);
 
@@ -64,7 +62,6 @@ class PengajuanMagangController extends Controller
     {
         $userId = Auth::id();
 
-        // 🛑 Double protection di server-side untuk status aktif
         $existingPengajuan = PengajuanMagang::query()
             ->where('perwakilan_user_id', '=', $userId)
             ->where(function ($q) {
@@ -110,7 +107,6 @@ class PengajuanMagangController extends Controller
 
                 $this->syncAnggota($pengajuan, $request->anggota, $request);
 
-                // 🔔 Buat notifikasi "permohonan baru" untuk admin SKPD terkait
                 $pengajuan->load(['bidang', 'anggota']);
                 $notifikasiService->buatNotifikasiPermohonanBaru($pengajuan);
             });
@@ -137,7 +133,6 @@ class PengajuanMagangController extends Controller
     {
         $pengajuan = PengajuanMagang::with(['bidang.skpd', 'anggota'])->findOrFail($id);
 
-        // Keamanan: Pastikan hanya pemilik pengajuan & status Revisi yang bisa mengedit
         if ($pengajuan->perwakilan_user_id !== Auth::id() || $pengajuan->status !== 'Revisi') {
             return redirect()->route('peserta.status')->with('warning', 'Anda tidak memiliki akses untuk merevisi permohonan ini.');
         }
@@ -146,7 +141,6 @@ class PengajuanMagangController extends Controller
         $status_pengajuan = 'revisi';
         $catatan_revisi = $pengajuan->komentar_revisi;
 
-        // Bawa variabel $pengajuan ke pendaftaran.blade.php
         return view('pages.peserta.pendaftaran', compact('bidang', 'pengajuan', 'status_pengajuan', 'catatan_revisi'));
     }
 
@@ -163,14 +157,12 @@ class PengajuanMagangController extends Controller
 
         try {
             DB::transaction(function () use ($request, $pengajuan) {
-                // Update Surat Permohonan jika peserta mengupload file baru
                 if ($request->hasFile('surat_permohonan')) {
                     $pengajuan->surat_permohonan = $request->file('surat_permohonan')->store('surat_permohonan', 'minio');
                 }
 
                 $batasVerifikasi = PengajuanMagang::hitungBatasVerifikasi();
 
-                // Update data utama
                 $pengajuan->jenjang_pendidikan = $request->jenjang_pendidikan;
                 $pengajuan->institusi_asal = $request->institusi_asal;
                 $pengajuan->tanggal_mulai = $request->tanggal_mulai;
@@ -205,15 +197,13 @@ class PengajuanMagangController extends Controller
      */
     public function status(): View
     {
-        // Ambil pengajuan beserta relasi skpd agar kita bisa mengakses aturan_kerja
-        $pengajuans = PengajuanMagang::with(['bidang.skpd', 'anggota'])
+        $pengajuans = PengajuanMagang::with(['bidang.skpd.adminSkpd', 'anggota'])
             ->where('perwakilan_user_id', Auth::id())
             ->orderBy('tanggal_pengajuan', 'desc')
             ->get();
 
         $aturan_kerja = '';
 
-        // Jika ada pengajuan, ambil aturan kerjanya dari relasi SKPD di pengajuan pertama (terbaru)
         if ($pengajuans->isNotEmpty()) {
             $pengajuanPertama = $pengajuans->first();
             if ($pengajuanPertama->bidang && $pengajuanPertama->bidang->skpd) {

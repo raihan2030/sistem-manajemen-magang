@@ -56,6 +56,7 @@ class SuperadminKelolaAkunController extends Controller
             'skpd_id'          => $skpd->id,
             'no_hp'            => $request->no_hp,
             'plain_password'   => $request->password,
+            'email_verified_at' => now(),
         ]);
 
         return redirect()
