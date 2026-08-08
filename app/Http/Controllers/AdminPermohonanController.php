@@ -105,11 +105,6 @@ class AdminPermohonanController extends Controller
                         ['status' => 'Terdaftar']
                     );
 
-                    if ($statusSebelumnya !== 'Diterima') {
-                        $jumlahAnggota = $pengajuan->anggota->count();
-                        $pengajuan->bidang()->decrement('sisa_kuota', $jumlahAnggota);
-                    }
-
                     if ($request->filled('nama_pembimbing') || $request->filled('no_wa_pembimbing')) {
                         $dataMagang->update([
                             'nama_pembimbing' => $request->nama_pembimbing,
@@ -119,9 +114,6 @@ class AdminPermohonanController extends Controller
                 }
             });
 
-            // Kalau statusnya TIDAK berubah (edit pembimbing setelah Diterima),
-            // tetap di halaman detail yang sama. Kalau ini aksi approve/tolak/revisi
-            // baru (status berubah), kembali ke daftar permohonan seperti biasa.
             if ($statusSebelumnya === $request->status) {
                 return redirect()
                     ->route('admin.permohonan.detail', $pengajuan->id)
@@ -143,8 +135,14 @@ class AdminPermohonanController extends Controller
         }
     }
 
-    public function batalkan($id)
+    public function batalkan(Request $request, $id)
     {
+        $request->validate([
+            'alasan_pembatalan' => ['required', 'string', 'min:5', 'max:1000'],
+        ], [
+            'alasan_pembatalan.required' => 'Alasan pembatalan wajib diisi.',
+        ]);
+
         $pengajuan = PengajuanMagang::with(['dataMagang', 'anggota', 'bidang'])->findOrFail($id);
 
         if ($pengajuan->status !== 'Diterima' || !$pengajuan->dataMagang) {
@@ -159,15 +157,10 @@ class AdminPermohonanController extends Controller
                 ->with('warning', 'Magang peserta ini sudah dibatalkan sebelumnya.');
         }
 
-        DB::transaction(function () use ($pengajuan) {
-            $jumlahAnggota = $pengajuan->anggota->count();
-
-            $pengajuan->dataMagang->update([
-                'status' => 'Dibatalkan',
-            ]);
-
-            $pengajuan->bidang()->increment('sisa_kuota', $jumlahAnggota);
-        });
+        $pengajuan->dataMagang->update([
+            'status' => 'Dibatalkan',
+            'catatan' => $request->input('alasan_pembatalan'),
+        ]);
 
         return redirect()
             ->route('admin.permohonan.detail', $pengajuan->id)

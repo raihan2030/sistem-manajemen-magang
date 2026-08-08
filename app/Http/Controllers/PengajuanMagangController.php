@@ -197,7 +197,7 @@ class PengajuanMagangController extends Controller
      */
     public function status(): View
     {
-        $pengajuans = PengajuanMagang::with(['bidang.skpd.adminSkpd', 'anggota'])
+        $pengajuans = PengajuanMagang::with(['bidang.skpd.adminSkpd', 'anggota', 'dataMagang'])
             ->where('perwakilan_user_id', Auth::id())
             ->orderBy('tanggal_pengajuan', 'desc')
             ->get();

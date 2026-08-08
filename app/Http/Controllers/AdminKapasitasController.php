@@ -18,7 +18,8 @@ class AdminKapasitasController extends Controller
     {
         $user = Auth::user();
 
-        $skpd = Skpd::with('bidang')->findOrFail($user->skpd_id);
+        $skpd = Skpd::with(['bidang.pengajuan.anggota', 'bidang.pengajuan.dataMagang'])
+            ->findOrFail($user->skpd_id);
         $bidangs = $skpd->bidang;
 
         $selectedBidangId = $request->query('bidang_id', $bidangs->first()?->id);

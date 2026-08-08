@@ -254,6 +254,19 @@
                         </button>
                     </div>
                 @endif
+                @if ($sudahDibatalkan && $pengajuan->dataMagang->catatan)
+                    <div class="bg-red-50 border border-red-200 rounded-xl p-5">
+                        <div class="flex items-center gap-2 mb-3 text-xs font-bold text-red-700">
+                            <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                                </path>
+                            </svg>
+                            <span>Alasan Pembatalan</span>
+                        </div>
+                        <p class="text-xs text-gray-700 leading-relaxed">{{ $pengajuan->dataMagang->catatan }}</p>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -473,11 +486,11 @@
         class="hidden">
         @csrf
         @method('PATCH')
+        <input type="hidden" name="alasan_pembatalan" id="hidden_alasan_pembatalan">
     </form>
 
     <!-- SCRIPT AKSI VERIFIKASI & EDIT PEMBIMBING -->
     <script>
-        // --- HANDLER UPDATE DATA PEMBIMBING SETELAH DISETUJUI ---
         function editPembimbingLanjutan(namaLama, waLama) {
             Swal.fire({
                 title: 'Edit Pembimbing Lapangan',
@@ -529,16 +542,35 @@
         function handleBatalkan() {
             Swal.fire({
                 title: 'Batalkan Magang Peserta?',
-                text: 'Status magang peserta ini akan diubah menjadi "Dibatalkan" dan tidak akan dihitung sebagai peserta aktif lagi.',
+                html: `
+            <p class="text-sm text-gray-600 text-left mb-4">
+                Status magang peserta ini akan diubah menjadi "Dibatalkan" dan tidak akan dihitung sebagai peserta aktif lagi.
+            </p>
+            <div class="text-left">
+                <label class="block text-xs font-bold text-gray-700 mb-1.5">Alasan / Komentar Pembatalan</label>
+                <textarea id="swal-alasan-batal" rows="3"
+                    class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3.5 py-3 text-sm focus:ring-red-500 focus:border-red-500 outline-none resize-none"
+                    placeholder="Contoh: Peserta mengundurkan diri karena..."></textarea>
+            </div>
+        `,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Ya, Batalkan',
                 cancelButtonText: 'Tidak',
                 confirmButtonColor: '#ef4444',
                 cancelButtonColor: '#6B7280',
-                reverseButtons: true
+                reverseButtons: true,
+                preConfirm: () => {
+                    const alasan = document.getElementById('swal-alasan-batal').value.trim();
+                    if (!alasan) {
+                        Swal.showValidationMessage('Alasan pembatalan wajib diisi!');
+                        return false;
+                    }
+                    return alasan;
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
+                    document.getElementById('hidden_alasan_pembatalan').value = result.value;
                     document.getElementById('formBatalkan').submit();
                 }
             });

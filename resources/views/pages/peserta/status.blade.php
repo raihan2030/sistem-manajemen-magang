@@ -150,6 +150,8 @@
         <div class="space-y-8">
             @forelse($pengajuans as $item)
                 @php
+                    $isDibatalkan = $item->dataMagang && $item->dataMagang->status === 'Dibatalkan';
+
                     $currentStep = match ($item->status) {
                         'Diproses' => 2,
                         'Diterima', 'Ditolak', 'Revisi' => 3,
@@ -190,7 +192,26 @@
                             </h2>
 
                             <!-- 📍 BANNER INFORMASI DETAIL KEPUTUSAN ADMIN -->
-                            @if ($item->status == 'Diterima')
+                            @if ($isDibatalkan)
+                                <div
+                                    class="p-5 bg-red-50/80 border border-red-100 rounded-2xl text-sm text-red-900 flex items-start gap-4">
+                                    <div class="bg-red-100 rounded-full p-1.5 shrink-0">
+                                        <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <span class="font-extrabold block mb-1 text-red-950 text-base">Magang
+                                            Dibatalkan</span>
+                                        <span class="text-red-800 font-medium leading-relaxed block">
+                                            {{ $item->dataMagang->catatan ?? 'Status magang Anda telah dibatalkan oleh instansi terkait.' }}
+                                        </span>
+                                    </div>
+                                </div>
+                            @elseif ($item->status == 'Diterima')
                                 <div
                                     class="p-5 bg-emerald-50/80 border border-emerald-100 rounded-2xl text-sm text-emerald-900 flex items-start gap-4">
                                     <div class="bg-emerald-100 rounded-full p-1.5 shrink-0">
@@ -278,7 +299,13 @@
 
                             <!-- BADGE KETERANGAN STATUS -->
                             <div>
-                                @if ($item->status == 'Diterima')
+                                @if ($isDibatalkan)
+                                    <span
+                                        class="inline-flex items-center gap-2 bg-red-50 text-red-700 border border-red-200 text-xs font-extrabold px-4 py-2 rounded-xl">
+                                        <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                                        Dibatalkan
+                                    </span>
+                                @elseif ($item->status == 'Diterima')
                                     <span
                                         class="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-extrabold px-4 py-2 rounded-xl">
                                         <span class="relative flex h-2 w-2"><span
@@ -363,13 +390,15 @@
                                         <!-- Circle Icon Indicator -->
                                         <div
                                             class="w-12 h-12 rounded-full flex items-center justify-center text-sm transition-all duration-300 shrink-0 shadow-sm
-                                            @if ($isFinalStep && $isCurrent) @if ($item->status == 'Diterima') bg-emerald-500 text-white ring-4 ring-emerald-50 
+                                            @if ($isFinalStep && $isCurrent)
+                                                @if ($isDibatalkan) bg-red-500 text-white ring-4 ring-red-50
+                                                @elseif ($item->status == 'Diterima') bg-emerald-500 text-white ring-4 ring-emerald-50 
                                                 @elseif($item->status == 'Ditolak') bg-red-500 text-white ring-4 ring-red-50 
                                                 @else bg-amber-500 text-white ring-4 ring-amber-50 @endif
-@elseif($isPassed || $isCurrent)
-bg-[#00236F] text-white ring-4 ring-blue-50
-@else
-bg-white text-slate-400 border-2 border-slate-200
+                                            @elseif($isPassed || $isCurrent)
+                                                bg-[#00236F] text-white ring-4 ring-blue-50
+                                            @else
+                                                bg-white text-slate-400 border-2 border-slate-200
                                             @endif">
 
                                             @if ($stepNum == 1)
@@ -386,7 +415,11 @@ bg-white text-slate-400 border-2 border-slate-200
                                                         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                                 </svg>
                                             @elseif ($stepNum == 3)
-                                                @if ($item->status == 'Diterima')
+                                                @if ($isDibatalkan)
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                @elseif ($item->status == 'Diterima')
                                                     <svg class="w-6 h-6" fill="none" stroke="currentColor"
                                                         viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -420,13 +453,13 @@ bg-white text-slate-400 border-2 border-slate-200
                                         <!-- Title Label -->
                                         <span
                                             class="mt-3 text-xs sm:text-sm font-bold text-center tracking-wide
-                                            @if ($isFinalStep && $isCurrent) @if ($item->status == 'Diterima') text-emerald-700 
+                                            @if ($isFinalStep && $isCurrent)
+                                                @if ($isDibatalkan) text-red-600
+                                                @elseif ($item->status == 'Diterima') text-emerald-700
                                                 @elseif($item->status == 'Ditolak') text-red-600 
                                                 @else text-amber-600 @endif
-@elseif($isPassed || $isCurrent)
-text-[#00236F]
-@else
-text-slate-400
+                                            @elseif($isPassed || $isCurrent) text-[#00236F]
+                                            @else text-slate-400
                                             @endif">
                                             {{ $stepData['title'] }}
                                         </span>

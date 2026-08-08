@@ -22,17 +22,16 @@ class Bidang extends Model
         return $this->hasMany(PengajuanMagang::class, 'bidang_id');
     }
 
-    /**
-     * Hitung sisa kuota/slot secara otomatis & real-time
-     * Memperhitungkan jumlah peserta dari pengajuan yang statusnya masih aktif magang.
-     */
     public function getSisaKuotaAttribute(): int
     {
-        $pesertaAktif = $this->pengajuan()
-            ->whereIn('status', ['Diterima', 'Diproses']) 
-            ->withCount('anggota')
-            ->get()
-            ->sum('anggota_count');
+        $pesertaAktif = $this->pengajuan
+            ->filter(function ($item) {
+                $statusAktif = in_array($item->status, ['Diterima', 'Diproses']);
+                $sudahDibatalkan = $item->dataMagang && $item->dataMagang->status === 'Dibatalkan';
+
+                return $statusAktif && !$sudahDibatalkan;
+            })
+            ->sum(fn ($item) => $item->anggota->count());
 
         return max(0, $this->kuota_total - $pesertaAktif);
     }

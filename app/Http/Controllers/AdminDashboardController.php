@@ -46,7 +46,10 @@ class AdminDashboardController extends Controller
             ->count();
 
         $kuotaTotal = Bidang::where('skpd_id', $user->skpd_id)->sum('kuota_total');
-        $sisaKuota = Bidang::where('skpd_id', $user->skpd_id)->sum('sisa_kuota');
+        $sisaKuota = Bidang::where('skpd_id', $user->skpd_id)
+            ->with(['pengajuan.anggota', 'pengajuan.dataMagang'])
+            ->get()
+            ->sum('sisa_kuota');
 
         $cardStats = [
             'total_menunggu' => $totalMenunggu,

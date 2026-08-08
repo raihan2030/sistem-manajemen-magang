@@ -32,6 +32,7 @@
     @php
         $ketua = $pengajuan?->anggota->first();
         $isKelompok = $pengajuan && $pengajuan->anggota->count() > 1;
+        $isDibatalkan = $pengajuan && $pengajuan->dataMagang && $pengajuan->dataMagang->status === 'Dibatalkan';
 
         $periodeFormat = '-';
         if ($pengajuan && $pengajuan->tanggal_mulai && $pengajuan->tanggal_selesai) {
@@ -40,22 +41,28 @@
             $periodeFormat = "{$tglMulai} - {$tglSelesai}";
         }
 
-        $statusLabel = match ($pengajuan?->status) {
-            'Diajukan' => 'Diajukan',
-            'Diproses' => 'Sedang Diproses',
-            'Diterima' => 'Magang Diterima',
-            'Ditolak' => 'Pengajuan Ditolak',
-            'Revisi' => 'Perlu Revisi',
-            default => 'Belum Terdaftar',
+        $statusLabel = match (true) {
+            $isDibatalkan => 'Magang Dibatalkan',
+            default => match ($pengajuan?->status) {
+                'Diajukan' => 'Diajukan',
+                'Diproses' => 'Sedang Diproses',
+                'Diterima' => 'Magang Diterima',
+                'Ditolak' => 'Pengajuan Ditolak',
+                'Revisi' => 'Perlu Revisi',
+                default => 'Belum Terdaftar',
+            },
         };
 
-        $badgeClass = match ($pengajuan?->status) {
-            'Diajukan' => 'bg-gray-100 text-gray-700 border-gray-200',
-            'Diproses' => 'bg-blue-50 text-blue-700 border-blue-200/80',
-            'Revisi' => 'bg-amber-50 text-amber-700 border-amber-200/80',
-            'Diterima' => 'bg-emerald-50 text-emerald-700 border-emerald-200/80',
-            'Ditolak' => 'bg-red-50 text-red-700 border-red-200/80',
-            default => 'bg-gray-100 text-gray-600 border-gray-200',
+        $badgeClass = match (true) {
+            $isDibatalkan => 'bg-red-50 text-red-700 border-red-200/80',
+            default => match ($pengajuan?->status) {
+                'Diajukan' => 'bg-gray-100 text-gray-700 border-gray-200',
+                'Diproses' => 'bg-blue-50 text-blue-700 border-blue-200/80',
+                'Revisi' => 'bg-amber-50 text-amber-700 border-amber-200/80',
+                'Diterima' => 'bg-emerald-50 text-emerald-700 border-emerald-200/80',
+                'Ditolak' => 'bg-red-50 text-red-700 border-red-200/80',
+                default => 'bg-gray-100 text-gray-600 border-gray-200',
+            },
         };
     @endphp
 
@@ -83,6 +90,24 @@
             </div>
         </div>
 
+        @if ($isDibatalkan)
+            <div
+                class="mb-6 bg-red-50 border border-red-200 text-red-800 rounded-xl p-4 flex items-start gap-3 shadow-xs">
+                <svg class="w-5 h-5 text-red-600 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                    </path>
+                </svg>
+                <div>
+                    <h3 class="text-sm font-bold text-red-900 mb-1">Magang Anda Telah Dibatalkan</h3>
+                    <p class="text-xs font-medium text-red-700">
+                        {{ $pengajuan->dataMagang->catatan ?? 'Tidak ada catatan tambahan dari instansi.' }}
+                    </p>
+                </div>
+            </div>
+        @endif
+        
         @if (!$pengajuan)
             <!-- BANNERS INFO JIKA BELUM MENGAJUKAN MAGANG -->
             <div
@@ -108,12 +133,15 @@
 
             <!-- ================= KOLOM KIRI ================= -->
             <div class="lg:col-span-1 flex flex-col gap-6">
-                
+
                 <!-- KARTU PROFIL IDENTITAS -->
-                <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-xs flex flex-col items-center justify-center text-center">
+                <div
+                    class="bg-white border border-gray-200 rounded-xl p-6 shadow-xs flex flex-col items-center justify-center text-center">
                     <!-- Avatar Placeholder Circle -->
-                    <div class="w-24 h-24 rounded-full bg-blue-50/60 border border-blue-100 flex items-center justify-center mb-4 text-[#00236F] shadow-inner">
-                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                    <div
+                        class="w-24 h-24 rounded-full bg-blue-50/60 border border-blue-100 flex items-center justify-center mb-4 text-[#00236F] shadow-inner">
+                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                         </svg>
@@ -124,23 +152,32 @@
 
                     <div class="w-full border-t border-gray-100 pt-5 text-left space-y-4">
                         <div>
-                            <span class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Email Terdaftar</span>
+                            <span
+                                class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Email
+                                Terdaftar</span>
                             <p class="text-xs font-bold text-[#1f2937]">{{ $user->email }}</p>
                         </div>
                         <div>
-                            <span class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Jenjang Pendidikan</span>
+                            <span
+                                class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Jenjang
+                                Pendidikan</span>
                             <p class="text-xs font-bold text-[#1f2937]">{{ $pengajuan->jenjang_pendidikan ?? '-' }}</p>
                         </div>
                         <div>
-                            <span class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Institusi / Sekolah</span>
+                            <span
+                                class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Institusi
+                                / Sekolah</span>
                             <p class="text-xs font-bold text-[#1f2937]">{{ $pengajuan->institusi_asal ?? '-' }}</p>
                         </div>
                         <div>
-                            <span class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Program Studi / Jurusan</span>
+                            <span
+                                class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Program
+                                Studi / Jurusan</span>
                             <p class="text-xs font-bold text-[#1f2937]">{{ $ketua->jurusan_prodi ?? '-' }}</p>
                         </div>
                         <div>
-                            <span class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Tipe Pendaftaran</span>
+                            <span class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Tipe
+                                Pendaftaran</span>
                             <p class="text-xs font-bold text-[#1f2937] capitalize">
                                 {{ $pengajuan ? ($isKelompok ? 'Kelompok / Tim (' . $pengajuan->anggota->count() . ' Orang)' : 'Individu') : '-' }}
                             </p>
@@ -151,39 +188,50 @@
                 <!-- KARTU 2FA GOOGLE AUTHENTICATOR -->
                 <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-xs">
                     <div class="flex items-center gap-3 mb-4 border-b border-gray-100 pb-4">
-                        <div class="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 border border-indigo-100">
+                        <div
+                            class="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 border border-indigo-100">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                                </path>
                             </svg>
                         </div>
                         <div>
                             <h3 class="text-sm font-bold text-[#1f2937]">Keamanan 2FA</h3>
-                            <p class="text-[10px] font-bold tracking-wide text-gray-400 uppercase">Google Authenticator</p>
+                            <p class="text-[10px] font-bold tracking-wide text-gray-400 uppercase">Google Authenticator
+                            </p>
                         </div>
                     </div>
 
                     <p class="text-xs text-gray-600 mb-5 leading-relaxed">
-                        Tingkatkan keamanan akun Anda dengan verifikasi dua langkah. Fitur ini bersifat opsional untuk peserta magang.
+                        Tingkatkan keamanan akun Anda dengan verifikasi dua langkah. Fitur ini bersifat opsional untuk
+                        peserta magang.
                     </p>
 
-                    @if(Auth::user()->has2FAEnabled())
+                    @if (Auth::user()->has2FAEnabled())
                         <!-- Tampilan Jika 2FA Sudah Aktif -->
                         <div class="flex items-center justify-between mb-4">
                             <span class="text-xs font-bold text-gray-500">Status</span>
-                            <span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-extrabold rounded-full uppercase tracking-wider border border-emerald-200">Aktif</span>
+                            <span
+                                class="px-2.5 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-extrabold rounded-full uppercase tracking-wider border border-emerald-200">Aktif</span>
                         </div>
-                        <a href="{{ route('2fa.setup') }}" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-bold rounded-xl transition border border-gray-200 shadow-xs cursor-pointer">
+                        <a href="{{ route('2fa.setup') }}"
+                            class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-bold rounded-xl transition border border-gray-200 shadow-xs cursor-pointer">
                             Kelola 2FA
                         </a>
                     @else
                         <!-- Tampilan Jika 2FA Belum Aktif -->
                         <div class="flex items-center justify-between mb-4">
                             <span class="text-xs font-bold text-gray-500">Status</span>
-                            <span class="px-2.5 py-1 bg-gray-100 text-gray-500 text-[10px] font-extrabold rounded-full uppercase tracking-wider border border-gray-200">Belum Aktif</span>
+                            <span
+                                class="px-2.5 py-1 bg-gray-100 text-gray-500 text-[10px] font-extrabold rounded-full uppercase tracking-wider border border-gray-200">Belum
+                                Aktif</span>
                         </div>
-                        <a href="{{ route('2fa.setup') }}" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#00236F] hover:bg-blue-900 text-white text-xs font-bold rounded-xl transition shadow-md hover:shadow-lg cursor-pointer">
+                        <a href="{{ route('2fa.setup') }}"
+                            class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#00236F] hover:bg-blue-900 text-white text-xs font-bold rounded-xl transition shadow-md hover:shadow-lg cursor-pointer">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4v16m8-8H4"></path>
                             </svg>
                             Aktifkan 2FA
                         </a>
@@ -258,7 +306,8 @@
                                         class="text-sm font-bold text-[#1f2937]">{{ $pengajuan->dataMagang->nama_pembimbing }}</span>
 
                                     @if ($pengajuan->dataMagang->whatsapp_pembimbing_url)
-                                        <a href="{{ $pengajuan->dataMagang->whatsapp_pembimbing_url }}" target="_blank"
+                                        <a href="{{ $pengajuan->dataMagang->whatsapp_pembimbing_url }}"
+                                            target="_blank"
                                             class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition rounded-lg text-xs font-bold w-fit shadow-xs">
                                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                                                 <path
