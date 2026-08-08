@@ -40,7 +40,7 @@
         $ketua = $is_edit_mode ? $pengajuan->anggota->first() : null;
     @endphp
 
-    @include('components.navbar', ['sudah_submit_magang' => $status_pengajuan !== 'belum_submit'])
+    @include('layouts.navbar', ['sudah_submit_magang' => $status_pengajuan !== 'belum_submit'])
 
     <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-grow w-full">
         <!-- HEADER PAGE -->

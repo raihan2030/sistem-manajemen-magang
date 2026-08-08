@@ -22,7 +22,7 @@ class OtpController extends Controller
             return redirect()->route('login');
         }
 
-        return view('pages.auth.otp-verify');
+        return view('auth.otp-verify');
     }
 
     public function verify(Request $request, OtpService $otpService): RedirectResponse

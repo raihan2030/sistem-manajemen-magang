@@ -19,7 +19,7 @@
 </head>
 <body class="bg-[#f3f4f6] text-[#1f2937] antialiased">
 
-    @include('components.navbar')
+    @include('layouts.navbar')
 
     <main class="min-h-screen">
         @yield('content')

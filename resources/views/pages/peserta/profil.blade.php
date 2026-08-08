@@ -27,7 +27,7 @@
 <body class="text-[#1f2937] antialiased min-h-screen flex flex-col">
 
     <!-- NAVBAR DINAMIS -->
-    @include('components.navbar', ['sudah_submit_magang' => !is_null($pengajuan)])
+    @include('layouts.navbar', ['sudah_submit_magang' => !is_null($pengajuan)])
 
     @php
         $ketua = $pengajuan?->anggota->first();

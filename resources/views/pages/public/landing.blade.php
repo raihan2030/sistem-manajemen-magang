@@ -9,7 +9,6 @@
         scroll-behavior: smooth;
     }
 
-    /* Animasi masuk yang mulus dan tidak berlebihan */
     .reveal { 
         opacity: 0; 
         transform: translateY(30px); 
@@ -25,7 +24,6 @@
     .delay-300 { transition-delay: 300ms; }
     .delay-400 { transition-delay: 400ms; }
 
-    /* Pola background titik-titik untuk section CTA */
     .bg-pattern {
         background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px);
         background-size: 24px 24px;

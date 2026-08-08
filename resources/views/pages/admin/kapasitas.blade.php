@@ -226,8 +226,49 @@
                 </div>
             @endif
 
+            <!-- Card Alur Pengisian Pengelolaan Kapasitas -->
+            <div class="bg-white border border-slate-200/80 rounded-2xl p-4 mb-4 shadow-sm">
+                <div class="flex items-center gap-2 mb-3 pb-2.5 border-b border-slate-100">
+                    <svg class="w-4 h-4 text-[#00236F] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <h3 class="font-extrabold text-xs text-[#00236F]">Cara Atur Kapasitas</h3>
+                </div>
+
+                <!-- List 4 Langkah Vertikal (Lega & Tidak Mepet) -->
+                <div class="space-y-2.5">
+                    <div class="flex items-start gap-2.5">
+                        <span class="w-5 h-5 rounded-full bg-blue-100 text-[#00236F] text-[11px] font-extrabold flex items-center justify-center shrink-0 mt-0.5">1</span>
+                        <p class="text-xs text-slate-600 leading-snug">
+                            Tambah <span class="font-bold text-slate-800">Nama Bidang/Subbag</span> di atas.
+                        </p>
+                    </div>
+
+                    <div class="flex items-start gap-2.5">
+                        <span class="w-5 h-5 rounded-full bg-blue-100 text-[#00236F] text-[11px] font-extrabold flex items-center justify-center shrink-0 mt-0.5">2</span>
+                        <p class="text-xs text-slate-600 leading-snug">
+                            Pilih bidang yang mau diisi pada <span class="font-bold text-slate-800">Menu Pilihan</span>.
+                        </p>
+                    </div>
+
+                    <div class="flex items-start gap-2.5">
+                        <span class="w-5 h-5 rounded-full bg-blue-100 text-[#00236F] text-[11px] font-extrabold flex items-center justify-center shrink-0 mt-0.5">3</span>
+                        <p class="text-xs text-slate-600 leading-snug">
+                            Isi <span class="font-bold text-slate-800">Jumlah Kuota</span> anak magang, lalu simpan.
+                        </p>
+                    </div>
+
+                    <div class="flex items-start gap-2.5">
+                        <span class="w-5 h-5 rounded-full bg-blue-100 text-[#00236F] text-[11px] font-extrabold flex items-center justify-center shrink-0 mt-0.5">4</span>
+                        <p class="text-xs text-slate-600 leading-snug">
+                            Untuk ubah/hapus, cek tabel di <span class="font-bold text-slate-800">Daftar Bidang</span>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             <!-- Card Catatan Petunjuk -->
-            <div class="bg-[#1E293B] text-white rounded-xl p-5 shadow-xs">
+            <div class="bg-[#1E293B] text-white rounded-2xl p-5 shadow-xs">
                 <div class="flex items-center gap-2 mb-2">
                     <svg class="w-4 h-4 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

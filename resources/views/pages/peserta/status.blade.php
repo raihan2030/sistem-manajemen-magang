@@ -46,7 +46,7 @@
 
 <body class="text-slate-800 antialiased min-h-screen flex flex-col">
     <!-- NAVBAR DINAMIS -->
-    @include('components.navbar', [
+    @include('layouts.navbar', [
         'sudah_submit_magang' => isset($pengajuans) && $pengajuans->isNotEmpty(),
     ])
 
