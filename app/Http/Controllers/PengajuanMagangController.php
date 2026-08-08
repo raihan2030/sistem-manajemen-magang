@@ -66,14 +66,21 @@ class PengajuanMagangController extends Controller
     {
         $userId = Auth::id();
 
-        $existingPengajuan = PengajuanMagang::query()
-            ->where('perwakilan_user_id', '=', $userId)
+        $existingPengajuan = PengajuanMagang::with('dataMagang')
+            ->where('perwakilan_user_id', $userId)
             ->where(function ($q) {
                 $q->where('status', 'Diajukan')
                     ->orWhere('status', 'Diproses')
                     ->orWhere('status', 'Diterima');
             })
-            ->first();
+            ->get()
+            ->first(function ($pengajuan) {
+                $magangSudahBerakhir = $pengajuan->status === 'Diterima'
+                    && $pengajuan->dataMagang
+                    && in_array($pengajuan->dataMagang->status, ['Dibatalkan', 'Selesai']);
+
+                return !$magangSudahBerakhir;
+            });
 
         if ($existingPengajuan) {
             return redirect()->route('peserta.status')
